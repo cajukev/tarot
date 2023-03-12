@@ -1,0 +1,102 @@
+/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  background-color: $bg;
+  overflow-x: hidden;
+  font-size: $base-font-size;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: $other-font;
+  color: $off-white;
+}
+
+main {
+  padding-bottom: 2rem;
+}
+
+h1 {
+  font-size: $header-font-size;
+  font-family: $header-font;
+  margin: 0;
+}
+h2 {
+  font-size: $subheader-font-size;
+  margin: 0;
+  font-weight: 300;
+}
+
+// Breakpoints
+
+.bp1,
+.bp2,
+.bp3,
+.ubp1,
+.ubp2,
+.ubp3 {
+  display: none;
+}
+@media (min-width: $breakpoint-1) {
+  .bp1 {
+    display: initial;
+  }
+}
+@media (min-width: $breakpoint-2) {
+  .bp2 {
+    display: initial;
+  }
+}
+@media (min-width: $breakpoint-3) {
+  .bp3 {
+    display: initial;
+  }
+}
+@media (max-width: $breakpoint-1-1) {
+  .ubp1 {
+    display: initial;
+  }
+}
+@media (max-width: $breakpoint-2-1) {
+  .ubp2 {
+    display: initial;
+  }
+}
+@media (max-width: $breakpoint-3-1) {
+  .ubp3 {
+    display: initial;
+  }
+}
+
+// Utilities
+
+.text-center{
+  text-align: center;
+}
+
+.dummy {
+  display: none !important;
+}
+
+.hidden {
+  transform: translateY(3rem);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stacked {
+  display: grid;
+  > * {
+    grid-row: 1;
+    grid-column: 1;
+    transition: all 0.5s ease-in-out;
+  }
+}

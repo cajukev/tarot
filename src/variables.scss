@@ -1,0 +1,29 @@
+/* Variables and mixins declared here will be available in all other SCSS files */
+
+
+$header-font:'Quintessential', serif;
+$other-font:serif;
+
+$bg:#212B34;
+$off-white:#F5F5F5;
+
+$header-font-size: clamp(40px,10vw,96px);
+$button-font-size: clamp(32px,3vw,48px);
+$subheader-font-size: clamp(18px, 2.3vw, 36px);
+$base-font-size: clamp(16px,1.6vw,22px);
+$mini-font-size: clamp(12px,1.2vw,16px);
+
+$box-shadow: 4px 4px 0px #000000ab;
+
+$bottom-menu-height: 3rem;
+
+/* Breakpoints */
+
+$breakpoint-1: 550px;
+$breakpoint-2: 700px;
+$breakpoint-3: 900px;
+$breakpoint-4: 1400px;
+$breakpoint-1-1: calc($breakpoint-1 - 1px);
+$breakpoint-2-1: calc($breakpoint-2 - 1px);
+$breakpoint-3-1: calc($breakpoint-3 - 1px);
+$breakpoint-4-1: calc($breakpoint-4 - 1px);
