@@ -37,15 +37,17 @@
 			.then((res) => res.json())
 			.then((data) => data.body)
 			.then((body: { conclusion?: string; reading?: ReadingType }) => {
-				if (body.conclusion) {
-					console.log(body.conclusion);
-					state = 4; // conclusion
-					error = body.conclusion;
-				}
-				if (body.reading) {
-					console.log(body.reading);
-					state = 3; // reading / inaccuracies
-					reading = body.reading;
+				if(state !== 1){
+					if (body.conclusion) {
+						console.log(body.conclusion);
+						state = 4; // conclusion
+						error = body.conclusion;
+					}
+					if (body.reading) {
+						console.log(body.reading);
+						state = 3; // reading / inaccuracies
+						reading = body.reading;
+					}
 				}
 			});
 	};
