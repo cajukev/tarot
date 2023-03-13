@@ -2,7 +2,7 @@
 	import energies from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
 	import { onMount } from 'svelte';
-	import { readingStore, conclusionStore, timeVariableStore } from '../stores';
+	import { readingStore, conclusionStore, timeVariableStore, settingStore } from '../stores';
 
 	export let state: number;
 	export let energy = '';
@@ -18,6 +18,8 @@
 	let pressedSegment = 0;
 
 	let setting = '1c';
+	$: console.log(setting);
+	$: settingStore.set(setting);
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {

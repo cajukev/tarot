@@ -115,9 +115,8 @@
 				<button on:click={handleSubmitInformation}>+ Add</button> -->
 			{/if}
 			<!-- Restart button -->
-			<button on:click={() => state = 1}>Restart</button>
 		</div>
-		<div class={state !== 4 ? 'hidden' : ''}>
+		<div class={state !== 4 ? 'hidden error' : 'error'}>
 			{error}
 			<!-- Restart button -->
 			<button on:click={() => state = 1}>Restart</button>
@@ -143,5 +142,8 @@
 			margin-top: 2rem;
 			text-align: center;
 		}
+	}
+	.error{
+		text-align: center;
 	}
 </style>

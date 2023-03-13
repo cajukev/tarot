@@ -1,12 +1,16 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
+	import { settingStore } from '../stores';
 	export let reading: ReadingType;
 	export let state: number;
 	export let error: string;
 
-	let readingScenario = readingScenarios.get(reading?.setting);
+	let readingScenario = readingScenarios.get($settingStore);
 	let positions = readingScenario?.positions;
-	$: console.log(reading);
+	$: {
+		readingScenario = readingScenarios.get($settingStore)
+		positions = readingScenario?.positions;
+	};
 	// Reading state
 	let flippedCards: boolean[];
 	$: {
@@ -57,6 +61,14 @@
 
 	let restart = () => {
 		state = 1;
+		reading = {
+			question: '',
+			energy: '',
+			cards: [],
+			setting: '',
+			conclusion: ''
+
+		};
 		flippedCards = new Array(readingScenario?.positions.length).fill(false);
 	};
 

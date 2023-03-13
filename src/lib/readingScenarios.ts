@@ -21,10 +21,10 @@ export default new Map<string, ReadingScenario>([
     explanation: "The reading is based off of the timeframe given in the question",
     inputs: ["Question"],
     example: `"Draw a {random} card and intuit what can go right from it
-  energy= "insightful"
-  position= "present"
-  question= Should I work out tonight?
-  {"title": "The Hermit", "reversed": true, "position": "Pros", "reading": "The Hermit reversed in the present position suggests that working out tonight may provide you with the opportunity for self-reflection and introspection. It may give you the insight needed to make positive changes in your fitness routine."}`
+energy= "insightful"
+position= "present"
+question= Should I work out tonight?
+{"title": "The Hermit", "reversed": true, "position": "Pros", "reading": "The Hermit reversed in the present position suggests that working out tonight may provide you with the opportunity for self-reflection and introspection. It may give you the insight needed to make positive changes in your fitness routine."}`
   }],
   ['ppf', {
     key: 'ppf',

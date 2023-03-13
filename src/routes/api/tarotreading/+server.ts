@@ -12,18 +12,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let setting = formData.reading.setting || "ppf";
   console.log('setting', setting)
   let question = formData.reading.question || "No question";
-  let trimmedQuestion = await trimQuestion(question);
-  if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
-    return new Response(
-      JSON.stringify({
-        status: 200,
-        body: {
-          conclusion: "... Try again with a different question ...."
-        }
-      }),
-    );
-  } else {
-    question = trimmedQuestion;
+  if(formData.reading.cards.length === 0){
+
+    let trimmedQuestion = await trimQuestion(question);
+    if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
+      return new Response(
+        JSON.stringify({
+          status: 200,
+          body: {
+            conclusion: "... Try again ...."
+          }
+        }),
+      );
+    } else {
+      question = trimmedQuestion;
+    }
   }
 
   let energy = formData.reading.energy || "";
@@ -95,6 +98,7 @@ question= ${question}
     messages: messages,
     max_tokens: 2048,
     temperature: 1,
+    stop:`}`
   })
   let responseText = openAIresponse.data.choices[0].message?.content
   console.log('responseText', responseText)
@@ -109,7 +113,7 @@ question= ${question}
   let reading;
   try {
     console.log('reading', reading)
-    reading = JSON.parse('{"' + (responseText.slice(0, responseText.indexOf('}') + 1)));
+    reading = JSON.parse('{"' + (responseText) + '}');
     console.log('reading', reading)
   } catch (e) {
     return new Response(
@@ -165,6 +169,7 @@ Input= ${qQuestion}`
       },
     ],
     max_tokens: 1000,
+    stop:[`.`, ` `]
   })
   let qAnswer = qopenAIresponse.data.choices[0].message?.content as string;
   qAnswer = qAnswer.trim();
