@@ -61,7 +61,6 @@
 			setting: setting
 		};
 		reading.setting = setting;
-		console.log(reading);
 		fetch('/api/tarotreading', {
 			method: 'POST',
 			headers: {

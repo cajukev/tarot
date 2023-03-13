@@ -76,11 +76,6 @@
 			});
 	};
 
-	let restart = () => {
-		state = 1;
-		question = '';
-		energy = '';
-	};
 
 	let timeVarInterval: NodeJS.Timeout;
 	onMount(() => {

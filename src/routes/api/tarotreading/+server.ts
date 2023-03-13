@@ -168,8 +168,7 @@ Will my crush ask me out?.
 Input= ${qQuestion}`
       },
     ],
-    max_tokens: 1000,
-    stop:[`.`, ` `]
+    max_tokens: 1000
   })
   let qAnswer = qopenAIresponse.data.choices[0].message?.content as string;
   qAnswer = qAnswer.trim();
