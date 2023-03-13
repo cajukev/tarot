@@ -54,12 +54,18 @@
 			.replace('The Judgement', 'Judgement');
 	};
 
+
+	let restart = () => {
+		state = 1;
+		flippedCards = new Array(readingScenario?.positions.length).fill(false);
+	};
+
 </script>
 
 <div class="reading">
 	<h2>"{reading.question}"</h2>
 	<div class="cards">
-		{#each new Array(positions?.length) as card, i}
+		{#each new Array(readingScenario?.positions.length) as card, i}
 			<div>
 				<p class="text-center">{positions && positions[i]}</p>
 				<div class="stacked">
@@ -98,6 +104,8 @@
 		{/each}
 	</div>
 	<p class="conclusion">{reading.conclusion || ""}</p>
+	<!-- Restart button -->
+	<button on:click={() => restart()}>Restart</button>
 </div>
 
 <style lang="scss">

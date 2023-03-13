@@ -36,17 +36,6 @@
 	}
 	let positions = readingScenario?.positions;
 
-	// Reading state
-	let flippedCards: boolean[];
-	$: {
-		flippedCards = new Array(readingScenario?.positions.length).fill(false);
-	}
-
-	let flipCard = (index: number) => {
-		flippedCards[index] = !flippedCards[index];
-		generateNextReading();
-	};
-
 	let handleSubmitInformation = () => {
 		fetch('/api/information', {
 			method: 'POST',
@@ -87,6 +76,12 @@
 			});
 	};
 
+	let restart = () => {
+		state = 1;
+		question = '';
+		energy = '';
+	};
+
 	let timeVarInterval: NodeJS.Timeout;
 	onMount(() => {
 		console.log("onMount")
@@ -119,11 +114,13 @@
 				<input type="text" name="information" id="information" bind:value={information} />
 				<button on:click={handleSubmitInformation}>+ Add</button> -->
 			{/if}
-			<Generate bind:state bind:energy bind:reading bind:error />
+			<!-- Restart button -->
+			<button on:click={() => state = 1}>Restart</button>
 		</div>
 		<div class={state !== 4 ? 'hidden' : ''}>
 			{error}
-			<Generate bind:state bind:energy bind:reading bind:error />
+			<!-- Restart button -->
+			<button on:click={() => state = 1}>Restart</button>
 		</div>
 	</div>
 </div>
