@@ -1,7 +1,7 @@
 <script lang="ts">
 	import energies from '$lib/energies';
 	import Generate from './Generate.svelte';
-	import ReadingScenarios from '$lib/ReadingScenarios';
+	import readingScenarios from '$lib/readingScenarios';
 	import { fade, fly } from 'svelte/transition';
 	import Reading from './Reading.svelte';
 	import { timeVariableStore, readingStore } from '../stores';
@@ -26,10 +26,10 @@
 	let error: string;
 
 
-	let readingScenario = ReadingScenarios.get("2c-pc");
+	let readingScenario = readingScenarios.get("2c-pc");
 	$: {
 		console.log($readingStore?.setting);
-		readingScenario = ReadingScenarios.get($readingStore?.setting);
+		readingScenario = readingScenarios.get($readingStore?.setting);
 		console.log(readingScenario);
 	}
 	let positions = readingScenario?.positions;

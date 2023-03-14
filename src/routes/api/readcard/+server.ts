@@ -12,6 +12,7 @@ export const POST: RequestHandler = async ({ request }) => {
     position: string,
     cardTexts: string[],
     example: string,
+    cardTextLength: number;
   } = await request.json();
   let instruction = formData.instruction || "No instruction";
   let question = formData.question || "No question";
@@ -21,6 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
   let position = formData.position || "";
   let cardTexts = formData.cardTexts || [];
   let example = formData.example || "";
+  let cardTextLength = formData.cardTextLength || 30;
 
   let system = `You are now a professional Tarot card reader. You offer guidance, knowledge, insight or other depending on the energy next to the question. You have a mysterious voice and unknown motives.
 ${instruction}
@@ -35,7 +37,7 @@ ${cardText}`
     })
   }
   system += `
-  ~~~Answer using approx 30 words, no more`
+~~~Answer using approx ${cardTextLength} words, no more`
 
   let user1 = `energy= ${energy}
 card= ${card}
@@ -59,8 +61,8 @@ question= ${question}
     stop: "}"
   })
   console.log(openAIresponseReading.data.choices[0].message?.content)
-  console.log(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}'))
-  let reading = JSON.parse(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}'));
+  console.log(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}').replace('"}"}', '"}'))
+  let reading = JSON.parse(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}').replace('"}"}', '"}').replace(/[\r]?[\n]/g, '\\n'));
   console.log('openAIresponseReading', reading.reading, openAIresponseReading.data.usage?.total_tokens)
 
   return new Response(

@@ -129,14 +129,18 @@
 			margin-bottom: 2rem;
 		}
 		.cards {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr) );
+			// display: grid;
+			// grid-template-columns: repeat(auto-fit, minmax(250px, 1fr) );
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: space-evenly;
 			grid-gap: clamp(32px, 3vw, 64px);
 			
 			@media screen and (max-width: 600px) {
 				grid-template-columns: repeat(1, 1fr);
 			}
 			& .card {
+				flex-grow: 1;
 				display: flex;
 				flex-direction: column;
 				align-items: center;

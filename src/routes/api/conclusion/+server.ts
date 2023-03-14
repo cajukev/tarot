@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({request}) => {
 
   let readings = formData.readings || [];
 
-  let system = `As a fortune teller, using mysterious language, summarize the folowing readin into approx 40 words:`
+  let system = `Using mysterious language, summarize the following reading in a short phrase then add your own conclusion of approx. 80 words.`
   readings.forEach(reading => {
     system += `
     ${reading}`

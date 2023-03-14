@@ -1,4 +1,4 @@
-type ReadingScenario = {
+export type ReadingScenarioType = {
   key: string;
   name: string;
   positions: string[];
@@ -7,9 +7,11 @@ type ReadingScenario = {
   inputs: string[];
   example: string;
   drawExample?: string;
+  conclusion?: boolean;
+  cardTextLength: number;
 };
 
-export default new Map<string, ReadingScenario>([
+export default new Map<string, ReadingScenarioType>([
   ["bme", {
     key: "bme",
     name: "Beginning, Middle, End",
@@ -26,10 +28,11 @@ card= The Hermit
 reversed=true
 position= Beginning
 question= Should I work out tonight?
-{"reading": "The Hermit reversed in the beginning position ... .. "}`,
+{"reading": "The Hermit reversed in the beginning position !20 words max!"}`,
     drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Beginning"},
 {"title":"The Hermit","reversed":false,"position":"Middle"},
-{"title":"The Empress","reversed":true,"position":"End"}]`
+{"title":"The Empress","reversed":true,"position":"End"}]`,
+cardTextLength: 20
   }],
   ["ppf", {
     key: "ppf",
@@ -50,16 +53,18 @@ card= The Hermit
 reversed= true
 position= present
 question= Should I work out tonight?
-{"reading": "The Hermit reversed in the present position ... .. "}`,
+{"reading": "The Hermit reversed in the present position"}`,
     drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Past"},
 {"title":"The Hermit","reversed":false,"position":"Present"},
-{"title":"The Empress","reversed":true,"position":"Future"}]`
+{"title":"The Empress","reversed":true,"position":"Future"}]`,
+    conclusion: true,
+    cardTextLength: 20
   }],
   ["1c", {
     key: "1c",
     name: "One Card Reading",
     positions: ["Answer"],
-    instructions: ["What is the answer to the question?"],
+    instructions: ["Using mysterious language, summarize the main meaning of the card in a short phrase then add your own conclusion of approx. 80 words"],
     explanation: "A single card reading for the question",
     inputs: ["Question"],
     example: `energy= insightful
@@ -68,7 +73,8 @@ reversed= true
 position= answer
 question= Should I work out tonight?
 {"reading": "The Hermit reversed tells me that ... ."}`,
-drawExample: `[{"title":"The Sun","reversed":false,"position":"Answer"}]`
+drawExample: `[{"title":"The Sun","reversed":false,"position":"Answer"}]`,
+cardTextLength: 70
   }],
   // ["2c-options", {
   //   key: "2c-options",
@@ -86,15 +92,16 @@ drawExample: `[{"title":"The Sun","reversed":false,"position":"Answer"}]`
     key: "2c-pc",
     name: "Pros & Cons",
     positions: ["Pros", "Cons"],
-    instructions: ["Tell the aspects of the card that would encourage the asker from taking the action. Return a bullet point list in the format in the example", "Tell the aspects of the card that would discourage the asker from taking the action. Return a bullet point list in the format in the example"],
+    instructions: ["Tell the aspects of the card that would encourage the asker from taking the action. Return a bullet point list in the format in the example <ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>", "Tell the aspects of the card that would discourage the asker from taking the action. Return a bullet point list in the format in the example <ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>"],
     explanation: "2 random cards are drawn, the first one shows the pros and the second one shows the cons",
     inputs: ["Question"],
     example: `energy= abundance
 position= cons
 question= Should I eat pineapple on pizza?
-{"reading": "<ul><li>... . </li><li>... . <li><li>... . </ul>"}`,
+{"reading": "<ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>"}`,
     drawExample: `
-    [{"title":"The Sun","reversed":false,"position":"Pros"},
-{"title":"The Tower","reversed":true,"position":"Cons"}]`
+[{"title":"The Sun","reversed":false,"position":"Pros"},
+{"title":"The Tower","reversed":true,"position":"Cons"}]`,
+    cardTextLength: 30
   }]
 ])

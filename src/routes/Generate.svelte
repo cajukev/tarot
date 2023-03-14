@@ -97,7 +97,7 @@
 
 	let readcards = (cardsToRead: Card[]) => {
 		let cardTexts = cards.map((card) => card.reading).filter((reading) => reading);
-		if (cardsToRead.length === 0 && cards.length > 1) {
+		if (cardsToRead.length === 0 && cards.length > 1 && readingScenarios.get(setting)?.conclusion) {
 			fetch('/api/conclusion', {
 				method: 'POST',
 				headers: {
@@ -129,6 +129,7 @@
 					question: question,
 					instruction: readingScenarios.get(setting)?.instructions[index],
 					example: readingScenarios.get(setting)?.example,
+					cardTextLength: readingScenarios.get(setting)?.cardTextLength,
 					energy: energy,
 					setting: setting,
 					card: card.title,
