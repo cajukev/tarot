@@ -21,7 +21,7 @@ declare global {
 		title: string
 		reversed: boolean
 		position: string
-		reading: string
+		reading?: string
 	}
 
 	type ReadingType = {

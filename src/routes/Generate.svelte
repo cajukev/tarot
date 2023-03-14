@@ -1,25 +1,31 @@
 <script lang="ts">
 	import energies from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
+	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
 	import { readingStore, conclusionStore, timeVariableStore, settingStore } from '../stores';
 
 	export let state: number;
 	export let energy = '';
-	export let reading: ReadingType;
 	export let error = '';
 
 	let innerState = 1;
-
-	// Form values
-	let question = '';
 
 	let generateButtonWrapper: HTMLDivElement;
 	let pressedSegment = 0;
 
 	let setting = '1c';
-	$: console.log(setting);
 	$: settingStore.set(setting);
+
+	let cards: Card[] = [];
+	let question = '';
+	let conclusion = '';
+	$: {
+		console.log(cards, question);
+		$readingStore.cards = cards;
+		$readingStore.question = question;
+		$readingStore.conclusion = conclusion;
+	}
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {
@@ -47,46 +53,140 @@
 	let clickSegment = (segment: number) => {
 		pressedSegment = segment;
 		innerState = 2;
-		handleSubmit();
+		handleSubmit2();
 	};
-	let handleSubmit = () => {
+
+	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
 		energy = energies[pressedSegment - 1][$timeVariableStore];
-		reading = {
-			energy: energy,
-			question: question,
-			cards: [],
-			conclusion: '',
-			setting: setting
-		};
-		reading.setting = setting;
-		fetch('/api/tarotreading', {
+
+		fetch('/api/draw', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				reading
+				question: question,
+				energy: energy,
+				setting: setting,
 			})
 		})
 			.then((res) => res.json())
 			.then((data) => data.body)
-			.then((body: { conclusion?: string; reading?: ReadingType }) => {
-				if (body.conclusion) {
-					console.log(body.conclusion);
-					state = 4; // conclusion
-					error = body.conclusion;
-					conclusionStore.set(body.conclusion);
+			.then(
+				(body: {
+					cards?: { title: string; reversed: boolean; position: string }[];
+					error?: string;
+				}) => {
+					console.log(body);
+					if (body.error) {
+						state = 4;
+						error = body.error;
+						return;
+					}
+					if (body.cards) {
+						cards = body.cards;
+						cards = [...cards];
+						state = 3; // reading
+						readcards(cards);
+					}
 				}
-				if (body.reading) {
-					console.log(body.reading);
-					state = 3; // reading / inaccuracies
-					reading = body.reading;
-					readingStore.set(reading);
-				}
-			});
+			);
 	};
+
+	let readcards = (cardsToRead: Card[]) => {
+		let cardTexts = cards.map((card) => card.reading).filter((reading) => reading);
+		if (cardsToRead.length === 0 && cards.length > 1) {
+			fetch('/api/conclusion', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					readings: cardTexts,
+				})
+			})
+				.then((res) => res.json())
+				.then((data) => data.body)
+				.then((body: { conclusion: string }) => {
+					conclusion = body.conclusion;
+					console.log(conclusion);
+				});
+			return;
+		}else{
+			if(cardsToRead.length === 0){
+				return;
+			}
+			let card = cardsToRead[0];
+			let index = cards.indexOf(card);
+			fetch('/api/readcard', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					question: question,
+					instruction: readingScenarios.get(setting)?.instructions[index],
+					example: readingScenarios.get(setting)?.example,
+					energy: energy,
+					setting: setting,
+					card: card.title,
+					reversed: card.reversed,
+					position: card.position,
+					cardTexts: cardTexts
+				})
+			})
+				.then((res) => res.json())
+				.then((data) => data.body)
+				.then((body: { reading: string }) => {
+					cardTexts.push(body.reading);
+					console.log(body.reading);
+					cards[index].reading = body.reading;
+					cards = [...cards];
+					readcards(cardsToRead.slice(1));
+				});
+		}
+	};
+
+	// let handleSubmit = () => {
+	// 	state = 2; // loading
+	// 	innerState = 1;
+	// 	energy = energies[pressedSegment - 1][$timeVariableStore];
+	// 	reading = {
+	// 		energy: energy,
+	// 		question: question,
+	// 		cards: [],
+	// 		conclusion: '',
+	// 		setting: setting
+	// 	};
+	// 	reading.setting = setting;
+	// 	fetch('/api/tarotreading', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			reading
+	// 		})
+	// 	})
+	// 		.then((res) => res.json())
+	// 		.then((data) => data.body)
+	// 		.then((body: { conclusion?: string; reading?: ReadingType }) => {
+	// 			if (body.conclusion) {
+	// 				console.log(body.conclusion);
+	// 				state = 4; // conclusion
+	// 				error = body.conclusion;
+	// 				conclusionStore.set(body.conclusion);
+	// 			}
+	// 			if (body.reading) {
+	// 				console.log(body.reading);
+	// 				state = 3; // reading / inaccuracies
+	// 				reading = body.reading;
+	// 				readingStore.set(reading);
+	// 			}
+	// 		});
+	// };
 </script>
 
 <div class="stacked container">

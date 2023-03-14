@@ -100,6 +100,7 @@ question= ${question}
     temperature: 1,
     stop:`}`
   })
+  console.log('openAIresponse', openAIresponse.data.usage?.total_tokens)
   let responseText = openAIresponse.data.choices[0].message?.content
   console.log('responseText', responseText)
   if (!responseText) {

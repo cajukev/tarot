@@ -1,10 +1,10 @@
 <script lang="ts">
 	import energies from '$lib/energies';
 	import Generate from './Generate.svelte';
-	import readingScenarios from '$lib/readingScenarios';
+	import ReadingScenarios from '$lib/ReadingScenarios';
 	import { fade, fly } from 'svelte/transition';
 	import Reading from './Reading.svelte';
-	import { timeVariableStore } from '../stores';
+	import { timeVariableStore, readingStore } from '../stores';
 	import { onMount } from 'svelte';
 
 	$: console.log($timeVariableStore);
@@ -12,7 +12,7 @@
 	// state 1: question
 	// state 1.1: confirm-question
 	// state 2: loading
-	// state 3: reading / inaccuracies
+	// state 3: $readingStore / inaccuracies
 	// state 3.1: confirm-inaccuracies
 	// state 4: error
 
@@ -23,15 +23,13 @@
 	let energy = '';
 	let information = '';
 
-	// Reading values
-	let reading: ReadingType;
-	$: console.log(reading);
 	let error: string;
 
-	let readingScenario = readingScenarios.get("2c-pc");
+
+	let readingScenario = ReadingScenarios.get("2c-pc");
 	$: {
-		console.log(reading?.setting);
-		readingScenario = readingScenarios.get(reading?.setting);
+		console.log($readingStore?.setting);
+		readingScenario = ReadingScenarios.get($readingStore?.setting);
 		console.log(readingScenario);
 	}
 	let positions = readingScenario?.positions;
@@ -50,28 +48,28 @@
 			.then((data) => console.log(data.body));
 	};
 
-	let generateNextReading = () => {
-		fetch('/api/tarotreading', {
+	let generateNext$readingStore = () => {
+		fetch('/api/tarot$readingStore', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				reading
+				$readingStore
 			})
 		})
 			.then((res) => res.json())
 			.then((data) => data.body)
-			.then((body: { conclusion?: string; reading?: ReadingType }) => {
+			.then((body: { conclusion?: string; $readingStore?: ReadingType }) => {
 				if (body.conclusion) {
 					console.log(body.conclusion);
 					state = 4; // conclusion
 					error = body.conclusion;
 				}
-				if (body.reading) {
-					console.log(body.reading);
-					state = 3; // reading / inaccuracies
-					reading = body.reading;
+				if (body.$readingStore) {
+					console.log(body.$readingStore);
+					state = 3; // $readingStore / inaccuracies
+					$readingStore = body.$readingStore;
 				}
 			});
 	};
@@ -88,12 +86,11 @@
 	
 </script>
 
-
 <div class="container">
 	<h1><span class={$timeVariableStore === 0 || $timeVariableStore === 3 ? "illuminated" : ""}>Call upon</span> <span class={$timeVariableStore === 1 || $timeVariableStore === 3 ? "illuminated" : ""}>the power</span> <span class={$timeVariableStore === 2 || $timeVariableStore === 3 ? "illuminated" : ""}>of Tarot</span></h1>
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
-			<Generate bind:state bind:energy bind:reading bind:error />
+			<Generate bind:state bind:energy bind:error />
 		</div>
 	
 		<div class={'loading ' + (state !== 2 ? 'hidden' : '')}>
@@ -102,8 +99,8 @@
 		</div>
 	
 		<div class={state !== 3 ? 'hidden' : ''}>
-			{#if reading}
-				<Reading bind:reading bind:error bind:state ></Reading>
+			{#if $readingStore}
+				<Reading bind:state ></Reading>
 	
 				<!-- <p>Are there any inaccuracies?</p>
 				<input type="text" name="information" id="information" bind:value={information} />
@@ -112,8 +109,8 @@
 			<!-- Restart button -->
 		</div>
 		<div class={state !== 4 ? 'hidden error' : 'error'}>
-			{error}
 			<!-- Restart button -->
+			{error}
 			<button on:click={() => state = 1}>Restart</button>
 		</div>
 	</div>

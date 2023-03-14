@@ -1,9 +1,8 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
 	import { settingStore } from '../stores';
-	export let reading: ReadingType;
+	import { readingStore } from '../stores';
 	export let state: number;
-	export let error: string;
 
 	let readingScenario = readingScenarios.get($settingStore);
 	let positions = readingScenario?.positions;
@@ -17,11 +16,13 @@
 		flippedCards = new Array(readingScenario?.positions.length).fill(false);
 	}
 
+	$: console.log($readingStore);
+
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
-    if(index !== flippedCards.length - 1 || flippedCards.length !== 1){
-      generateNextReading();
-    }
+    // if(index !== flippedCards.length - 1 || flippedCards.length !== 1){
+    //   generateNextReading();
+    // }
 	};
 
 	let generateNextReading = () => {
@@ -31,7 +32,7 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				reading
+				$readingStore
 			})
 		})
 			.then((res) => res.json())
@@ -41,12 +42,11 @@
 					if (body.conclusion) {
 						console.log(body.conclusion);
 						state = 4; // conclusion
-						error = body.conclusion;
 					}
 					if (body.reading) {
 						console.log(body.reading);
 						state = 3; // reading / inaccuracies
-						reading = body.reading;
+						$readingStore = body.reading;
 					}
 				}
 			});
@@ -63,27 +63,26 @@
 
 	let restart = () => {
 		state = 1;
-		reading = {
+		readingStore.set({
 			question: '',
 			energy: '',
 			cards: [],
 			setting: '',
 			conclusion: ''
-
-		};
+		});
 		flippedCards = new Array(readingScenario?.positions.length).fill(false);
 	};
 
 </script>
 
 <div class="reading">
-	<h2>"{reading.question}"</h2>
+	<h2>"{$readingStore.question}"</h2>
 	<div class="cards">
 		{#each new Array(readingScenario?.positions.length) as card, i}
 			<div>
 				<p class="text-center">{positions && positions[i]}</p>
 				<div class="stacked">
-					{#if reading.cards[i]}
+					{#if $readingStore.cards[i]}
 						<div class="stacked">
 							<div
 								class={'card ' + (flippedCards[i] ? 'cardhidden' : 'ready')}
@@ -92,18 +91,18 @@
 								<img
 									src="/cards/cardback.webp"
 									alt=""
-									class={reading.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
+									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 								/>
 							</div>
 
 							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{correctTitle(reading.cards[i].title)}-400.webp"
+									src="/cards/{correctTitle($readingStore.cards[i].title)}-400.webp"
 									alt=""
-									class={reading.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
+									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 								/>
-								<h3>{correctTitle(reading.cards[i].title)}<span>{reading.cards[i].reversed ? " | reversed" : ""}</span></h3>
-								<p>{@html reading.cards[i].reading}</p>
+								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " | reversed" : ""}</span></h3>
+								<p>{@html $readingStore.cards[i].reading}</p>
 							</div>
 						</div>
 					{:else}
@@ -117,7 +116,7 @@
 			</div>
 		{/each}
 	</div>
-	<p class="conclusion">{reading.conclusion || ""}</p>
+	<p class="conclusion">{$readingStore.conclusion || ""}</p>
 	<!-- Restart button -->
 	<button on:click={() => restart()}>Restart</button>
 </div>
@@ -142,7 +141,7 @@
 				flex-direction: column;
 				align-items: center;
 				transition: all 0.5s ease;
-				max-width: 400px;
+				max-width: min(80vw,400px);;
 				justify-self: center;
 				& p {
 					width: 100%;
@@ -151,7 +150,7 @@
 				& img {
 					margin: 1rem 0rem;
 					width: 100%;
-					max-width: 400px;
+					max-width: min(80vw,400px);;
 					border-radius: 20px;
 					border: 0.5rem solid #000;
 					transition: all 0.5s ease;
