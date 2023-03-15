@@ -28,7 +28,7 @@ card= The Hermit
 reversed=true
 position= Beginning
 question= Should I work out tonight?
-{"reading": "The Hermit reversed in the beginning position !20 words max!"}`,
+The Hermit reversed in the beginning position`,
     drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Beginning"},
 {"title":"The Hermit","reversed":false,"position":"Middle"},
 {"title":"The Empress","reversed":true,"position":"End"}]`,
@@ -53,7 +53,7 @@ card= The Hermit
 reversed= true
 position= present
 question= Should I work out tonight?
-{"reading": "The Hermit reversed in the present position"}`,
+The Hermit reversed in the present position ... `,
     drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Past"},
 {"title":"The Hermit","reversed":false,"position":"Present"},
 {"title":"The Empress","reversed":true,"position":"Future"}]`,
@@ -72,9 +72,9 @@ card= The Hermit
 reversed= true
 position= answer
 question= Should I work out tonight?
-{"reading": "The Hermit reversed tells me that ... ."}`,
+The Hermit reversed tells me that... `,
 drawExample: `[{"title":"The Sun","reversed":false,"position":"Answer"}]`,
-cardTextLength: 70
+cardTextLength: 60
   }],
   // ["2c-options", {
   //   key: "2c-options",
@@ -98,7 +98,8 @@ cardTextLength: 70
     example: `energy= abundance
 position= cons
 question= Should I eat pineapple on pizza?
-{"reading": "<ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>"}`,
+Short paragraph about the cons of eating pineapple on pizza approx 20 words
+<ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>`,
     drawExample: `
 [{"title":"The Sun","reversed":false,"position":"Pros"},
 {"title":"The Tower","reversed":true,"position":"Cons"}]`,

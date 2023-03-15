@@ -87,6 +87,7 @@ h2 {
 }
 
 .hidden {
+  transition: opacity 0s;
   transform: translateY(3rem);
   opacity: 0;
   height: 0;

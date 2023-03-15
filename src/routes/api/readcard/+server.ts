@@ -44,7 +44,7 @@ card= ${card}
 reversed= ${reversed}
 position= ${position}
 question= ${question}
-{"reading": "`
+`
 
   let messages: ChatCompletionRequestMessage[] = [
     { role: "system", 'content': system },
@@ -58,19 +58,58 @@ question= ${question}
     messages: messages,
     max_tokens: 2048,
     temperature: 1,
-    stop: "}"
-  })
-  console.log(openAIresponseReading.data.choices[0].message?.content)
-  console.log(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}').replace('"}"}', '"}'))
-  let reading = JSON.parse(('{"reading": "' + openAIresponseReading.data.choices[0].message?.content + '"}').replace('""','"').replace('}}', '}').replace('}}', '}').replace('"}"}', '"}').replace(/[\r]?[\n]/g, '\\n'));
-  console.log('openAIresponseReading', reading.reading, openAIresponseReading.data.usage?.total_tokens)
+    stop: "}",
+    stream: true
+  },
+  { responseType: "stream" })
 
-  return new Response(
-    JSON.stringify({
-      status: 200,
-      body: {
-        reading: reading.reading
+  return new Response(new ReadableStream({
+    async start(controller) {
+      let streamingText = '';
+      for await (const message of streamCompletion(openAIresponseReading.data)) {
+        try {
+          let messageObject: any = JSON.parse(message)
+          let messageString = messageObject.choices[0].delta.content
+          if (messageString !== undefined) {
+            streamingText += messageString
+            controller.enqueue(streamingText);
+          }
+        } catch (error) {
+          //console.error("Could not JSON parse stream message", message, error);
+        }
       }
-    }),
+      controller.close();
+
+    },
+  }),
+    { headers: { 'Content-Type': 'text/event-stream' } },
   );
 };
+
+async function* chunksToLines(chunksAsync: any) {
+  let previous = "";
+  for await (const chunk of chunksAsync) {
+    const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    previous += bufferChunk;
+    let eolIndex;
+    while ((eolIndex = previous.indexOf("\n")) >= 0) {
+      // line includes the EOL
+      const line = previous.slice(0, eolIndex + 1).trimEnd();
+      if (line === "data: [DONE]") break;
+      if (line.startsWith("data: ")) yield line;
+      previous = previous.slice(eolIndex + 1);
+    }
+  }
+}
+
+async function* linesToMessages(linesAsync: any) {
+  for await (const line of linesAsync) {
+    const message = line.substring("data :".length);
+
+    yield message;
+  }
+}
+
+async function* streamCompletion(data: any) {
+  yield* linesToMessages(chunksToLines(data));
+}

@@ -58,6 +58,7 @@ let messages: ChatCompletionRequestMessage[] = [
   console.log('openAIresponseCards', openAIresponseCards.data.choices[0].message?.content, openAIresponseCards.data.usage?.total_tokens)
 
   try {
+
     let cards = JSON.parse('[{' + openAIresponseCards.data.choices[0].message?.content + "]") as Card[];
     console.log('cards', cards)
     return new Response(

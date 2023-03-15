@@ -10,47 +10,7 @@
 		readingScenario = readingScenarios.get($settingStore)
 		positions = readingScenario?.positions;
 	};
-	// Reading state
-	let flippedCards: boolean[];
-	$: {
-		flippedCards = new Array(readingScenario?.positions.length).fill(false);
-	}
 
-	$: console.log($readingStore);
-
-	let flipCard = (index: number) => {
-		flippedCards[index] = !flippedCards[index];
-    // if(index !== flippedCards.length - 1 || flippedCards.length !== 1){
-    //   generateNextReading();
-    // }
-	};
-
-	let generateNextReading = () => {
-		fetch('/api/tarotreading', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				$readingStore
-			})
-		})
-			.then((res) => res.json())
-			.then((data) => data.body)
-			.then((body: { conclusion?: string; reading?: ReadingType }) => {
-				if(state !== 1){
-					if (body.conclusion) {
-						console.log(body.conclusion);
-						state = 4; // conclusion
-					}
-					if (body.reading) {
-						console.log(body.reading);
-						state = 3; // reading / inaccuracies
-						$readingStore = body.reading;
-					}
-				}
-			});
-	};
 
 	let correctTitle = (title: string) => {
 		return title
@@ -63,14 +23,6 @@
 
 	let restart = () => {
 		state = 1;
-		readingStore.set({
-			question: '',
-			energy: '',
-			cards: [],
-			setting: '',
-			conclusion: ''
-		});
-		flippedCards = new Array(readingScenario?.positions.length).fill(false);
 	};
 
 </script>
@@ -85,8 +37,7 @@
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
 							<div
-								class={'card ' + (flippedCards[i] ? 'cardhidden' : 'ready')}
-								on:click={() => flipCard(i)}
+								class={'card ' + ($readingStore.cards[i].reading ? 'cardhidden' : 'ready')}
 							>
 								<img
 									src="/cards/cardback.webp"
@@ -95,14 +46,14 @@
 								/>
 							</div>
 
-							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
+							<div class={'card ' + ($readingStore.cards[i].reading ? '' : 'cardhidden')}>
 								<img
 									src="/cards/{correctTitle($readingStore.cards[i].title)}-400.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 								/>
 								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " | reversed" : ""}</span></h3>
-								<p>{@html $readingStore.cards[i].reading}</p>
+								<p>{@html ($readingStore.cards[i].reading)?.trim()}</p>
 							</div>
 						</div>
 					{:else}
@@ -116,7 +67,7 @@
 			</div>
 		{/each}
 	</div>
-	<p class="conclusion">{$readingStore.conclusion || ""}</p>
+	<p class="conclusion">{($readingStore.conclusion).trim() || ""}</p>
 	<!-- Restart button -->
 	<button on:click={() => restart()}>Restart</button>
 </div>
@@ -125,6 +76,7 @@
 	.reading {
 		margin-top: 2rem;
 		text-align: center;
+		white-space: break-spaces;
 		& h2 {
 			margin-bottom: 2rem;
 		}
@@ -182,6 +134,7 @@
 	}
 
 	.cardhidden {
+		transition: opacity 0s;
 		rotate: y 180deg;
 		opacity: 0;
 		pointer-events: none;

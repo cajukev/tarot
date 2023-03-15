@@ -21,10 +21,9 @@
 	let question = '';
 	let conclusion = '';
 	$: {
-		console.log(cards, question);
+		console.log(cards, question, conclusion);
 		$readingStore.cards = cards;
 		$readingStore.question = question;
-		$readingStore.conclusion = conclusion;
 	}
 
 	let mouseoverSegment = (segment: number) => {
@@ -60,7 +59,7 @@
 		state = 2; // loading
 		innerState = 1;
 		energy = energies[pressedSegment - 1][$timeVariableStore];
-
+		$readingStore.conclusion = "";
 		fetch('/api/draw', {
 			method: 'POST',
 			headers: {
@@ -86,6 +85,9 @@
 						return;
 					}
 					if (body.cards) {
+						$readingStore.energy = energy;
+						$readingStore.setting = setting;
+						conclusion = '';
 						cards = body.cards;
 						cards = [...cards];
 						state = 3; // reading
@@ -107,15 +109,20 @@
 					readings: cardTexts,
 				})
 			})
-				.then((res) => res.json())
-				.then((data) => data.body)
-				.then((body: { conclusion: string }) => {
-					conclusion = body.conclusion;
-					console.log(conclusion);
-				});
-			return;
+			.then(async (res) => {
+				const reader = res.body?.getReader();
+				
+				while (true && reader) {
+					const { done, value } = await reader.read();
+					console.log(done, value);
+					const text = new TextDecoder("utf-8").decode(value);
+					if (text) $readingStore.conclusion = text;
+					if (done) break;
+				}
+			})
 		}else{
 			if(cardsToRead.length === 0){
+				console.log('no conclusion');
 				return;
 			}
 			let card = cardsToRead[0];
@@ -138,15 +145,33 @@
 					cardTexts: cardTexts
 				})
 			})
-				.then((res) => res.json())
-				.then((data) => data.body)
-				.then((body: { reading: string }) => {
-					cardTexts.push(body.reading);
-					console.log(body.reading);
-					cards[index].reading = body.reading;
-					cards = [...cards];
-					readcards(cardsToRead.slice(1));
-				});
+			.then(async (res) => {
+				const reader = res.body?.getReader();
+				
+				while (true && reader) {
+					const { done, value } = await reader.read();
+					console.log(done, value);
+					const text = new TextDecoder("utf-8").decode(value);
+					if (text){
+						card.reading = text;
+						cards[index] = card;
+						cards = [...cards];
+					}
+					if (done){
+						readcards(cardsToRead.slice(1));
+						break;
+					}
+				}
+			})
+				// .then((res) => res.json())
+				// .then((data) => data.body)
+				// .then((body: { reading: string }) => {
+				// 	cardTexts.push(body.reading);
+				// 	console.log(body.reading);
+				// 	cards[index].reading = body.reading;
+				// 	cards = [...cards];
+				// 	readcards(cardsToRead.slice(1));
+				// });
 		}
 	};
 
@@ -261,7 +286,7 @@
 		.generateButton {
 			display: grid;
 			grid-template-columns: repeat(4, 1fr);
-			width: 20rem;
+			width: 16rem;
 			height: 5rem;
 			& button {
 				width: 100%;
