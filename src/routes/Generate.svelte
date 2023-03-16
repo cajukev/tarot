@@ -107,6 +107,8 @@
 				},
 				body: JSON.stringify({
 					readings: cardTexts,
+					question: question,
+					energy: energy,
 				})
 			})
 			.then(async (res) => {

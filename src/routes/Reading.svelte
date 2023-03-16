@@ -67,7 +67,7 @@
 			</div>
 		{/each}
 	</div>
-	<p class="conclusion">{($readingStore.conclusion).trim() || ""}</p>
+	<p class="conclusion">{@html ($readingStore.conclusion).trim() || ""}</p>
 	<!-- Restart button -->
 	<button on:click={() => restart()}>Restart</button>
 </div>
@@ -76,7 +76,6 @@
 	.reading {
 		margin-top: 2rem;
 		text-align: center;
-		white-space: break-spaces;
 		& h2 {
 			margin-bottom: 2rem;
 		}
@@ -96,12 +95,16 @@
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				transition: all 0.5s ease;
+				transition: all 0.75s ease;
 				max-width: min(80vw,400px);;
 				justify-self: center;
 				& p {
 					width: 100%;
 					text-align: center;
+					white-space: break-spaces;
+					& li{
+						margin: 0.5rem 0rem;
+					}
 				}
 				& img {
 					margin: 1rem 0rem;
@@ -109,7 +112,7 @@
 					max-width: min(80vw,400px);;
 					border-radius: 20px;
 					border: 0.5rem solid #000;
-					transition: all 0.5s ease;
+					transition: all 0.75s ease;
 				}
 				&.ready img {
 					cursor: pointer;
@@ -130,12 +133,20 @@
 		.conclusion {
 			margin: 2rem auto 0rem;
 			max-width: 40rem;
+			white-space: break-spaces;
 		}
 	}
 
 	.cardhidden {
 		transition: opacity 0s;
 		rotate: y 180deg;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.cardhiddenReversed {
+		transition: opacity 0s;
+		rotate: y 180deg z 180deg;
 		opacity: 0;
 		pointer-events: none;
 	}
@@ -148,10 +159,10 @@
 	}
 
 	.cardGrow {
-		animation: cardGrowAnim 1s ease forwards;
+		animation: cardGrowAnim 0.5s ease forwards;
 	}
 	.cardGrowReversed {
-		animation: cardGrowAnimReversed 1s ease forwards;
+		animation: cardGrowAnimReversed 0.5s ease forwards;
 	}
 	@keyframes cardGrowAnim {
 		0% {

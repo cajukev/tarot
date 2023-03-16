@@ -28,18 +28,16 @@ export const POST: RequestHandler = async ({request}) => {
   
   let energy = formData.energy || "";
 
-  let system = `You are now a professional Tarot card reader. You offer guidance, knowledge, insight or other depending on the energy next to the question.
+  let system = `You are now a professional Tarot card reader. You draw cards that tell a story, based on the value of {energy}.
   Here are the possible cards: [The Magician, The High Priestess, The Empress, The Emperor, The Hierophant, The Chariot, Strength, The Hermit, Wheel of Fortune, Justice, The Hanged Man, Death, Temperance, The Devil, The Moon, The Sun, Judgement, The World, The Fool]. You must only use cards from this list. Every card can only be used once per reading.
-  A card can be normal or reversed. Explain the reverse only when the card is reversed. At least 1 card must be reversed in every reading. All cards are different and are elements of the previous list. 
+  A card can be normal or reversed. At least 1 card must be reversed in a multi-card reading. All cards are different. 
   Scenario: ${readingScenario?.explanation}
   ~~~example
   energy: disaster
-  question: will i ever find love?
   ${readingScenario?.drawExample}
   ~~~`
 
   let user1 = `energy= ${energy}
-question= ${question}
 [{`
 
 let messages: ChatCompletionRequestMessage[] = [

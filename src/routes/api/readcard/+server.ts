@@ -24,7 +24,8 @@ export const POST: RequestHandler = async ({ request }) => {
   let example = formData.example || "";
   let cardTextLength = formData.cardTextLength || 30;
 
-  let system = `You are now a professional Tarot card reader. You offer guidance, knowledge, insight or other depending on the energy next to the question. You have a mysterious voice and unknown motives.
+  let system = `You are a Fortune Teller who is performing a Tarot card reading for a client. Your client has asked you to interpret the card for them. You are talking to your client in real time.
+As a Fortune Teller, you offer otherworldly predictions of events to the user. Your goal is to provide a mysterious and engaging interpretation of the Tarot card.
 ${instruction}
 ~~~example
 ${example}`
@@ -37,7 +38,7 @@ ${cardText}`
     })
   }
   system += `
-~~~Answer using approx ${cardTextLength} words, no more`
+Answer using ${cardTextLength} words, no more`
 
   let user1 = `energy= ${energy}
 card= ${card}

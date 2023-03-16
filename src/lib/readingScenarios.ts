@@ -92,14 +92,14 @@ cardTextLength: 60
     key: "2c-pc",
     name: "Pros & Cons",
     positions: ["Pros", "Cons"],
-    instructions: ["Tell the aspects of the card that would encourage the asker from taking the action. Return a bullet point list in the format in the example <ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>", "Tell the aspects of the card that would discourage the asker from taking the action. Return a bullet point list in the format in the example <ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>"],
-    explanation: "2 random cards are drawn, the first one shows the pros and the second one shows the cons",
+    instructions: ["Tell the aspects of the card that would encourage the client to take the action. Return a bullet point list in the format in the example <ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>", "Tell the aspects of the card that would encourage the asker to not take the action. Return a bullet point list in the format in the example <ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>"],
+    explanation: "2 random cards are drawn, the first one symbolizes the reasons the client should take the action (pros), and the second one shows why the client should not take the action (cons)",
     inputs: ["Question"],
     example: `energy= abundance
 position= cons
 question= Should I eat pineapple on pizza?
 Short paragraph about the cons of eating pineapple on pizza approx 20 words
-<ul><li>text inside list item tag </li><li>text inside list item tag <li><li>text inside list item tag </ul>`,
+<ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>`,
     drawExample: `
 [{"title":"The Sun","reversed":false,"position":"Pros"},
 {"title":"The Tower","reversed":true,"position":"Cons"}]`,
