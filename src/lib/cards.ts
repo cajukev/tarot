@@ -1,3 +1,9 @@
+export type CollectionCard = {
+    name: string;
+    meaning: string;
+    reversedMeaning: string;
+};
+
 export default  new Map<string, any>([
   ["Major Arcana", [
       {

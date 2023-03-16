@@ -29,14 +29,6 @@ As a Fortune Teller, you offer otherworldly predictions of events to the user. Y
 ${instruction}
 ~~~example
 ${example}`
-  if (cardTexts.length > 0) {
-    system += `
-~~~card texts`
-    cardTexts.forEach((cardText) => {
-      system += `
-${cardText}`
-    })
-  }
   system += `
 Answer using ${cardTextLength} words, no more`
 
@@ -59,7 +51,7 @@ question= ${question}
     messages: messages,
     max_tokens: 2048,
     temperature: 1,
-    stop: "}",
+    stop: ["}", "</ul>"],
     stream: true
   },
   { responseType: "stream" })

@@ -3,9 +3,17 @@
 	import readingScenarios from '$lib/readingScenarios';
 	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
-	import { readingStore, conclusionStore, timeVariableStore, settingStore } from '../stores';
+	import {
+		readingStore,
+		conclusionStore,
+		timeVariableStore,
+		settingStore,
+		flippedCardsStore,
+		flippedCardStore
+	} from '../stores';
 
 	export let state: number;
+	$: console.log('state', state);
 	export let energy = '';
 	export let error = '';
 
@@ -20,11 +28,35 @@
 	let cards: Card[] = [];
 	let question = '';
 	let conclusion = '';
+
 	$: {
-		console.log(cards, question, conclusion);
 		$readingStore.cards = cards;
 		$readingStore.question = question;
 	}
+
+	$: {
+		console.log($flippedCardsStore);
+		cardFlip();
+	}
+
+	$: {
+		console.log($flippedCardStore);
+		if ($flippedCardStore !== -1) readCard($flippedCardStore);
+	}
+
+	let cardFlip = () => {
+		let cardNb = 0;
+		if ($flippedCardsStore) {
+			$flippedCardsStore.forEach((value, key) => {
+				if (value) {
+					cardNb++;
+				}
+			});
+			if (cardNb > 0) {
+				readcards($readingStore.cards.slice(cardNb - 1, $flippedCardsStore.length));
+			}
+		}
+	};
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {
@@ -59,7 +91,11 @@
 		state = 2; // loading
 		innerState = 1;
 		energy = energies[pressedSegment - 1][$timeVariableStore];
-		$readingStore.conclusion = "";
+		$readingStore.conclusion = '';
+		$readingStore.cards = [];
+		flippedCardStore.set(-1)
+		$flippedCardsStore = readingScenarios.get(setting)?.positions.map(() => false) || [];
+
 		fetch('/api/draw', {
 			method: 'POST',
 			headers: {
@@ -68,7 +104,7 @@
 			body: JSON.stringify({
 				question: question,
 				energy: energy,
-				setting: setting,
+				setting: setting
 			})
 		})
 			.then((res) => res.json())
@@ -91,10 +127,72 @@
 						cards = body.cards;
 						cards = [...cards];
 						state = 3; // reading
-						readcards(cards);
+						//readcards(cards);
 					}
 				}
 			);
+	};
+
+	let readCard = (index: number) => {
+		let card = $readingStore.cards[index];
+		console.log(card);
+		fetch('/api/readcard', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				question: $readingStore.question,
+				instruction: readingScenarios.get(setting)?.instructions[index],
+				example: readingScenarios.get(setting)?.example,
+				cardTextLength: readingScenarios.get(setting)?.cardTextLength,
+				energy: $readingStore.energy,
+				setting: $readingStore.setting,
+				card: card.title,
+				reversed: card.reversed,
+				position: card.position
+			})
+		}).then(async (res) => {
+			const reader = res.body?.getReader();
+
+			while (true && reader) {
+				const { done, value } = await reader.read();
+				console.log(done, value);
+				const text = new TextDecoder('utf-8').decode(value);
+				if (text) {
+					card.reading = text;
+					cards[index] = card;
+					cards = [...cards];
+				}
+				if (done) {
+					let cardReadings = cards.map((card) => card.reading).filter((reading) => reading);
+					if (cardReadings.length === cards.length && readingScenarios.get(setting)?.conclusion) {
+						fetch('/api/conclusion', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify({
+								readings: cardReadings,
+								question: question,
+								energy: energy
+							})
+						}).then(async (res) => {
+							const reader = res.body?.getReader();
+
+							while (true && reader) {
+								const { done, value } = await reader.read();
+								console.log(done, value);
+								const text = new TextDecoder('utf-8').decode(value);
+								if (text) $readingStore.conclusion = text;
+								if (done) break;
+							}
+						});
+					}
+					break;
+				}
+			}
+		});
 	};
 
 	let readcards = (cardsToRead: Card[]) => {
@@ -108,27 +206,27 @@
 				body: JSON.stringify({
 					readings: cardTexts,
 					question: question,
-					energy: energy,
+					energy: energy
 				})
-			})
-			.then(async (res) => {
+			}).then(async (res) => {
 				const reader = res.body?.getReader();
-				
+
 				while (true && reader) {
 					const { done, value } = await reader.read();
 					console.log(done, value);
-					const text = new TextDecoder("utf-8").decode(value);
+					const text = new TextDecoder('utf-8').decode(value);
 					if (text) $readingStore.conclusion = text;
 					if (done) break;
 				}
-			})
-		}else{
-			if(cardsToRead.length === 0){
+			});
+		} else {
+			if (cardsToRead.length === 0) {
 				console.log('no conclusion');
 				return;
 			}
 			let card = cardsToRead[0];
 			let index = cards.indexOf(card);
+			console.log('reading card', index);
 			fetch('/api/readcard', {
 				method: 'POST',
 				headers: {
@@ -143,78 +241,31 @@
 					setting: setting,
 					card: card.title,
 					reversed: card.reversed,
-					position: card.position,
-					cardTexts: cardTexts
+					position: card.position
 				})
-			})
-			.then(async (res) => {
+			}).then(async (res) => {
 				const reader = res.body?.getReader();
-				
+
 				while (true && reader) {
 					const { done, value } = await reader.read();
 					console.log(done, value);
-					const text = new TextDecoder("utf-8").decode(value);
-					if (text){
+					const text = new TextDecoder('utf-8').decode(value);
+					if (text) {
 						card.reading = text;
 						cards[index] = card;
 						cards = [...cards];
 					}
-					if (done){
-						readcards(cardsToRead.slice(1));
+					if (done) {
+						if (cardsToRead.length === 1) {
+							// Conclusion
+							readcards(cardsToRead.slice(1));
+						}
 						break;
 					}
 				}
-			})
-				// .then((res) => res.json())
-				// .then((data) => data.body)
-				// .then((body: { reading: string }) => {
-				// 	cardTexts.push(body.reading);
-				// 	console.log(body.reading);
-				// 	cards[index].reading = body.reading;
-				// 	cards = [...cards];
-				// 	readcards(cardsToRead.slice(1));
-				// });
+			});
 		}
 	};
-
-	// let handleSubmit = () => {
-	// 	state = 2; // loading
-	// 	innerState = 1;
-	// 	energy = energies[pressedSegment - 1][$timeVariableStore];
-	// 	reading = {
-	// 		energy: energy,
-	// 		question: question,
-	// 		cards: [],
-	// 		conclusion: '',
-	// 		setting: setting
-	// 	};
-	// 	reading.setting = setting;
-	// 	fetch('/api/tarotreading', {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify({
-	// 			reading
-	// 		})
-	// 	})
-	// 		.then((res) => res.json())
-	// 		.then((data) => data.body)
-	// 		.then((body: { conclusion?: string; reading?: ReadingType }) => {
-	// 			if (body.conclusion) {
-	// 				console.log(body.conclusion);
-	// 				state = 4; // conclusion
-	// 				error = body.conclusion;
-	// 				conclusionStore.set(body.conclusion);
-	// 			}
-	// 			if (body.reading) {
-	// 				console.log(body.reading);
-	// 				state = 3; // reading / inaccuracies
-	// 				reading = body.reading;
-	// 				readingStore.set(reading);
-	// 			}
-	// 		});
-	// };
 </script>
 
 <div class="stacked container">

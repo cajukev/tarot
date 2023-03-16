@@ -1,16 +1,25 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { settingStore } from '../stores';
-	import { readingStore } from '../stores';
+	import { settingStore, readingStore, flippedCardsStore, flippedCardStore } from '../stores';
 	export let state: number;
 
 	let readingScenario = readingScenarios.get($settingStore);
 	let positions = readingScenario?.positions;
+	let flippedCards = new Array(positions?.length).fill(false);
 	$: {
 		readingScenario = readingScenarios.get($settingStore)
 		positions = readingScenario?.positions;
+		flippedCards = new Array(positions?.length).fill(false);
 	};
 
+	$: {
+		flippedCards = $flippedCardsStore;
+	}
+
+	let flipCard = (index: number) => {
+		flippedCards[index] = !flippedCards[index];
+		flippedCardStore.set(index)
+	}
 
 	let correctTitle = (title: string) => {
 		return title
@@ -37,23 +46,26 @@
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
 							<div
-								class={'card ' + ($readingStore.cards[i].reading ? 'cardhidden' : 'ready')}
+								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + (i === 0 || flippedCards[i-1]  ? 'ready' : '')}
 							>
 								<img
 									src="/cards/cardback.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
+									on:click={() => {
+										flipCard(i)
+									}}
 								/>
 							</div>
 
-							<div class={'card ' + ($readingStore.cards[i].reading ? '' : 'cardhidden')}>
+							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
 								<img
 									src="/cards/{correctTitle($readingStore.cards[i].title)}-400.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 								/>
 								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " | reversed" : ""}</span></h3>
-								<p>{@html ($readingStore.cards[i].reading)?.trim()}</p>
+								<p>{@html ($readingStore.cards[i].reading)?.trim() || ""}</p>
 							</div>
 						</div>
 					{:else}
