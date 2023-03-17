@@ -42,17 +42,10 @@
 	>
 		{#each majorArcana as card}
 			<div
-				on:mouseenter={(e) => {
-					hoverBoxAppear(e, card);
-				}}
 				on:mousemove={(e) => {
 					hoverBoxAppear(e, card);
 				}}
 				on:mouseleave={(e) => {
-					isHovering = false;
-					hoverBox.classList.remove('visible');
-				}}
-				on:pointerleave={(e) => {
 					isHovering = false;
 					hoverBox.classList.remove('visible');
 				}}
