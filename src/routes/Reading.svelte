@@ -63,7 +63,7 @@
 								<img
 									src="/cards/{correctTitle($readingStore.cards[i].title)}-400.webp"
 									alt=""
-									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
+									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
 								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " | reversed" : ""}</span></h3>
 								<p>{@html ($readingStore.cards[i].reading)?.trim() || ""}</p>
@@ -124,8 +124,11 @@
 					width: 100%;
 					max-width: min(80vw,400px);;
 					border-radius: 20px;
-					border: 0.5rem solid #fff;
+					border: 0.5rem solid #000;
 					transition: all 0.75s ease;
+					&.white {
+						border: 2px solid #fff;
+					}
 				}
 				&.ready img {
 					border: 0.5rem solid #000;

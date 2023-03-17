@@ -15,19 +15,19 @@
 		console.log('hoverBoxAppear');
 		if ($deviceStore.hasMouse) {
 			isHovering = true;
-			mousePosition.x = e.clientX;
-			mousePosition.y = e.clientY;
+			// mousePosition.x = e.clientX;
+			// mousePosition.y = e.clientY;
 
-			hoverBox.style.left =
-				Math.min(
-					Math.max(mousePosition.x - hoverBox.offsetWidth / 2, 0),
-					window.innerWidth - hoverBox.offsetWidth
-				) + 'px';
-			hoverBox.style.top =
-				Math.min(
-					Math.max(mousePosition.y - hoverBox.offsetHeight / 2, 0),
-					window.innerHeight - hoverBox.offsetHeight
-				) + 'px';
+			// hoverBox.style.left =
+			// 	Math.min(
+			// 		Math.max(mousePosition.x - hoverBox.offsetWidth / 2, 0),
+			// 		window.innerWidth - hoverBox.offsetWidth
+			// 	) + 'px';
+			// hoverBox.style.top = 0 + 'px';
+			// 	// Math.min(
+			// 	// 	Math.max(mousePosition.y - hoverBox.offsetHeight / 2, 0),
+			// 	// 	window.innerHeight - hoverBox.offsetHeight
+			// 	// ) + 'px';
 			hoverBox.classList.add('visible');
 			currentCard = card;
 		}
@@ -136,7 +136,8 @@
 
 	.hoverBox {
 		position: fixed;
-		width: 20rem;
+		height: 100%;
+		width: 100%;
 		z-index: 100;
 		pointer-events: none;
 		background-color: rgba($bg, 0.5);
@@ -146,11 +147,11 @@
 		padding-top: 2rem;
 		transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 		text-align: center;
+		top: 0 !important;
+		left: 0 !important;
 		&.hasTouch {
 			width: 100%;
 			height: 100%;
-			top: 0 !important;
-			left: 0 !important;
 			&.visible {
 				pointer-events: all;
 			}
@@ -164,7 +165,8 @@
 				margin-top: 0.5rem;
 			}
 			& img {
-				width: 300px;
+				width: 400px;
+				max-width: 90vw;
 				border-radius: 0.25rem;
 				border: 2px solid white;
 			}
