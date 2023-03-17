@@ -10,6 +10,7 @@ html {
   background-color: $bg;
   overflow-x: hidden;
   font-size: $base-font-size;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -33,6 +34,9 @@ h2 {
   font-size: $subheader-font-size;
   margin: 0;
   font-weight: 300;
+}
+p{
+  line-height: 1.5;
 }
 
 // Breakpoints

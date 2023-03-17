@@ -32,6 +32,7 @@
 
 	let restart = () => {
 		state = 1;
+		document.body.scrollIntoView();
 	};
 
 </script>
@@ -123,10 +124,11 @@
 					width: 100%;
 					max-width: min(80vw,400px);;
 					border-radius: 20px;
-					border: 0.5rem solid #000;
+					border: 0.5rem solid #fff;
 					transition: all 0.75s ease;
 				}
 				&.ready img {
+					border: 0.5rem solid #000;
 					cursor: pointer;
 					filter: drop-shadow(-8px 8px 16px rgba(243, 221, 154, 0.37))
 						drop-shadow(8px -8px 16px rgba(46, 103, 132, 0.6));
