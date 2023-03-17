@@ -3,11 +3,19 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../app.scss';
+	import { deviceStore } from '../stores';
 	import Menu from './Menu.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
 
 	onMount(() => {
+		if (window.matchMedia('(any-pointer: coarse)').matches) {
+			$deviceStore.hasTouch = true;
+		}
+		if (matchMedia('(pointer:fine)').matches) {
+			$deviceStore.hasMouse = true;
+		}
+
 		const {
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {

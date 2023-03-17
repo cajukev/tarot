@@ -1,8 +1,9 @@
 <script lang="ts">
 	import cards, { type CollectionCard } from '$lib/cards';
+	import { deviceStore } from '../stores';
 	let majorArcana: CollectionCard[] = cards.get('Major Arcana');
 	console.log(majorArcana);
-	let currentCard: CollectionCard = majorArcana[0];
+	let currentCard: CollectionCard;
 
 	// Hoverbox follows mouse position
 	let hoverBox: HTMLDivElement;
@@ -11,69 +12,96 @@
 	let isHovering = false;
 
 	let hoverBoxAppear = (e: MouseEvent, card: CollectionCard) => {
-		isHovering = true;
-		mousePosition.x = e.clientX;
-		mousePosition.y = e.clientY;
-		hoverBox.style.top = mousePosition.y - hoverBox.offsetHeight / 2 + 'px';
-		console.log(
-			0,
-			mousePosition.x - hoverBox.offsetWidth / 2,
-			window.innerWidth - hoverBox.offsetWidth
-		);
-		hoverBox.style.left =
-			Math.min(
-				Math.max(mousePosition.x - hoverBox.offsetWidth / 2, 0),
-				window.innerWidth - hoverBox.offsetWidth
-			) + 'px';
-		hoverBox.classList.add('visible');
-		currentCard = card;
+		console.log('hoverBoxAppear');
+		if ($deviceStore.hasMouse) {
+			isHovering = true;
+			mousePosition.x = e.clientX;
+			mousePosition.y = e.clientY;
+
+			hoverBox.style.left =
+				Math.min(
+					Math.max(mousePosition.x - hoverBox.offsetWidth / 2, 0),
+					window.innerWidth - hoverBox.offsetWidth
+				) + 'px';
+			hoverBox.style.top =
+				Math.min(
+					Math.max(mousePosition.y - hoverBox.offsetHeight / 2, 0),
+					window.innerHeight - hoverBox.offsetHeight
+				) + 'px';
+			hoverBox.classList.add('visible');
+			currentCard = card;
+		}
+		if ($deviceStore.hasTouch) {
+			hoverBox.classList.add('visible');
+			currentCard = card;
+		}
+	};
+
+	let hoverBoxHide = () => {
+		console.log('hoverBoxHide');
+		if ($deviceStore.hasMouse) {
+			isHovering = false;
+			hoverBox.classList.remove('visible');
+		}
+		if ($deviceStore.hasTouch) {
+			hoverBox.classList.remove('visible');
+		}
 	};
 </script>
 
 <div class="container">
-
 	<h2>Major Arcana</h2>
-	<div
-		on:mouseleave={(e) => {
-			isHovering = false;
-			hoverBox.classList.remove('visible');
-		}}
-		class="pack MA"
-	>
+	<div class="pack MA">
 		{#each majorArcana as card}
 			<div
 				on:mousemove={(e) => {
-					hoverBoxAppear(e, card);
+					if ($deviceStore.hasMouse) {
+						hoverBoxAppear(e, card);
+					}
+				}}
+				on:pointerup={(e) => {
+					if ($deviceStore.hasTouch) {
+						hoverBoxAppear(e, card);
+					}
 				}}
 				on:mouseleave={(e) => {
-					isHovering = false;
-					hoverBox.classList.remove('visible');
+					if ($deviceStore.hasMouse) {
+						hoverBoxHide();
+					}
 				}}
 				class="card"
 			>
-				<img src="/cards/{card.name}-400.webp" alt="" />
+				<img src="/cards/{card?.name}-400.webp" alt="" />
 			</div>
 		{/each}
 	</div>
-	
-	<div bind:this={hoverBox} class="hoverBox">
+
+	<div
+		bind:this={hoverBox}
+		class={'hoverBox ' +
+			($deviceStore.hasMouse ? 'hasMouse ' : '') +
+			($deviceStore.hasTouch ? 'hasTouch ' : '')}
+		on:pointerdown={(e) => {
+			hoverBoxHide();
+		}}
+	>
 		<div class="hoverBoxContent">
-			<img src="/cards/{currentCard.name}-400.webp" alt="" />
-			<h3>{currentCard.name}</h3>
+			<img src="/cards/{currentCard?.name}-400.webp" alt="" />
+			<h3>{currentCard?.name}</h3>
 			<p>
 				<br /><b>Meaning:</b>
-				<br />{currentCard.meaning}
+				<br />{currentCard?.meaning}
 			</p>
 			<p>
 				<br /><b>Reversed Meaning:</b>
-				<br />{currentCard.reversedMeaning}
+				<br />{currentCard?.reversedMeaning}
 			</p>
 		</div>
 	</div>
 </div>
 
 <style lang="scss">
-	.container{
+	.container {
 		padding-bottom: 300px;
 	}
 	h2 {
@@ -118,6 +146,15 @@
 		padding-top: 2rem;
 		transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 		text-align: center;
+		&.hasTouch {
+			width: 100%;
+			height: 100%;
+			top: 0 !important;
+			left: 0 !important;
+			&.visible {
+				pointer-events: all;
+			}
+		}
 		.hoverBoxContent {
 			display: flex;
 			flex-direction: column;
