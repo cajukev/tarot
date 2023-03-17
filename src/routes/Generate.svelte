@@ -9,7 +9,8 @@
 		timeVariableStore,
 		settingStore,
 		flippedCardsStore,
-		flippedCardStore
+		flippedCardStore,
+		flipLockStore
 	} from '../stores';
 
 	export let state: number;
@@ -165,6 +166,7 @@
 					cards = [...cards];
 				}
 				if (done) {
+					flipLockStore.set(false);
 					let cardReadings = cards.map((card) => card.reading).filter((reading) => reading);
 					if (cardReadings.length === cards.length && readingScenarios.get(setting)?.conclusion) {
 						fetch('/api/conclusion', {

@@ -1,11 +1,15 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { settingStore, readingStore, flippedCardsStore, flippedCardStore } from '../stores';
+	import { settingStore, readingStore, flippedCardsStore, flippedCardStore, flipLockStore } from '../stores';
 	export let state: number;
 
 	let readingScenario = readingScenarios.get($settingStore);
 	let positions = readingScenario?.positions;
 	let flippedCards = new Array(positions?.length).fill(false);
+	let flipLock = false;
+	$: {
+		flipLock = $flipLockStore;
+	}
 	$: {
 		readingScenario = readingScenarios.get($settingStore)
 		positions = readingScenario?.positions;
@@ -19,6 +23,7 @@
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
 		flippedCardStore.set(index)
+		$flipLockStore = true;
 	}
 
 	let correctTitle = (title: string) => {
@@ -47,14 +52,17 @@
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
 							<div
-								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + (i === 0 || flippedCards[i-1]  ? 'ready' : '')}
+								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + (!$flipLockStore  ? 'ready' : 'notready')}
 							>
 								<img
 									src="/cards/cardback.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
-										flipCard(i)
+										if(!$flipLockStore){
+
+											flipCard(i)
+										}
 									}}
 								/>
 							</div>
@@ -135,6 +143,10 @@
 					cursor: pointer;
 					filter: drop-shadow(-8px 8px 16px rgba(243, 221, 154, 0.37))
 						drop-shadow(8px -8px 16px rgba(46, 103, 132, 0.6));
+				}
+				&.notready{
+					cursor: not-allowed;
+					pointer-events: none;
 				}
 				& h3{
 					margin-bottom: 1rem;

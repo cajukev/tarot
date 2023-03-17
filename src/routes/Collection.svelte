@@ -81,7 +81,7 @@
 		class={'hoverBox ' +
 			($deviceStore.hasMouse ? 'hasMouse ' : '') +
 			($deviceStore.hasTouch ? 'hasTouch ' : '')}
-		on:pointerdown={(e) => {
+		on:pointerup={(e) => {
 			hoverBoxHide();
 		}}
 	>
@@ -150,8 +150,7 @@
 		top: 0 !important;
 		left: 0 !important;
 		&.hasTouch {
-			width: 100%;
-			height: 100%;
+			overflow: scroll;
 			&.visible {
 				pointer-events: all;
 			}
