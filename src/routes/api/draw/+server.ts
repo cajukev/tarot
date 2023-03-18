@@ -38,6 +38,7 @@ export const POST: RequestHandler = async ({request}) => {
   ~~~`
 
   let user1 = `energy= ${energy}
+question= ${question}
 [{`
 
 let messages: ChatCompletionRequestMessage[] = [
@@ -89,6 +90,7 @@ let trimQuestion = async (question: string) => {
       {
         role: ChatCompletionRequestMessageRoleEnum.User, 'content': `Read the following {input} from begining to end. Return only first the question.
 If impossible or if questions go against terms of service, return 'false' and a non-technical explanation.
+The question can be in any language.
 ~~~example
 Input= Will my crush ask me out? I am very silly
 Will my crush ask me out?.

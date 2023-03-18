@@ -115,7 +115,7 @@
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				transition: all 0.75s ease;
+				transition: all 1s ease;
 				max-width: min(80vw,400px);;
 				justify-self: center;
 				& p {
@@ -132,7 +132,7 @@
 					max-width: min(80vw,400px);;
 					border-radius: 20px;
 					border: 0.5rem solid #000;
-					transition: all 0.75s ease;
+					transition: all 1s ease;
 					&.white {
 						border: 2px solid #fff;
 					}
