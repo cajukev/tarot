@@ -1,6 +1,6 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { settingStore, readingStore, flippedCardsStore, flippedCardStore, flipLockStore } from '../stores';
+	import { settingStore, readingStore, flippedCardsStore, cardFlipStore, flipLockStore } from '../stores';
 	export let state: number;
 
 	let readingScenario = readingScenarios.get($settingStore);
@@ -22,7 +22,7 @@
 
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
-		flippedCardStore.set(index)
+		cardFlipStore.set(index)
 		$flipLockStore = true;
 	}
 
@@ -60,7 +60,6 @@
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
 										if(!$flipLockStore){
-
 											flipCard(i)
 										}
 									}}

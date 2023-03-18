@@ -5,11 +5,10 @@
 	import { onMount } from 'svelte';
 	import {
 		readingStore,
-		conclusionStore,
 		timeVariableStore,
 		settingStore,
 		flippedCardsStore,
-		flippedCardStore,
+		cardFlipStore,
 		flipLockStore
 	} from '../stores';
 
@@ -23,8 +22,10 @@
 	let generateButtonWrapper: HTMLDivElement;
 	let pressedSegment = 0;
 
-	let setting = '1c';
+	let setting = 'qa';
 	$: settingStore.set(setting);
+	settingStore.set(setting);
+	console.log($settingStore);
 
 	let cards: Card[] = [];
 	let question = '';
@@ -41,8 +42,8 @@
 	}
 
 	$: {
-		console.log($flippedCardStore);
-		if ($flippedCardStore !== -1) readCard($flippedCardStore);
+		console.log($cardFlipStore);
+		if ($cardFlipStore !== -1) readCard($cardFlipStore);
 	}
 
 	let cardFlip = () => {
@@ -94,7 +95,7 @@
 		energy = energies[pressedSegment - 1][$timeVariableStore];
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		flippedCardStore.set(-1)
+		cardFlipStore.set(-1)
 		$flippedCardsStore = readingScenarios.get(setting)?.positions.map(() => false) || [];
 
 		fetch('/api/draw', {
@@ -268,15 +269,27 @@
 			});
 		}
 	};
+
+	let selectOption = (option: string) => {
+		setting = option;
+	}
 </script>
 
-<div class="stacked container">
+<div class="container">
 	<div class={'input ' + (innerState !== 1 ? 'hidden' : '')}>
-		<select name="type" id="type" bind:value={setting}>
+		<div class="optionSelect">
 			{#each Array.from(readingScenarios).map(([name, setting]) => ({ name, setting })) as scenario}
-				<option value={scenario.name}>{scenario.setting.name}</option>
+			<div class="option" on:click={()=> selectOption(scenario.name)}>
+				<div class={"imgWrapper " + ($settingStore === scenario.name ? "active" : "")}>
+					<img src="/options/{scenario.name}.png" alt="">
+				</div>
+				<div class="optionText">
+					<p>{scenario.setting.name}</p>
+				</div>
+			</div>
+
 			{/each}
-		</select>
+		</div>
 		<input bind:value={question} type="text" name="question" id="question" />
 		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
@@ -319,9 +332,45 @@
 </div>
 
 <style lang="scss">
-	.stacked.container {
+	.container {
 		margin-top: 2rem;
 		text-align: center;
+	}
+	.optionSelect{
+		align-items: start;
+		display: flex;
+		gap: 1rem;
+		padding: 0 1rem;
+		margin-bottom: 2rem;
+		align-items: center;
+		overflow-x: scroll;
+		max-width: calc(100vw);
+		&::-webkit-scrollbar {
+			display: none;
+		}
+		.option{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			.imgWrapper{
+				width: 8rem;
+				height: 8rem;
+				overflow: hidden;
+				border-radius: 100vw;
+				border: 1px solid #ffffff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				&.active{
+					border: 3px solid #ffffff;
+				}
+				img{
+					max-height: 80%;
+					object-fit: contain;
+					padding: 0.5rem;
+				}
+			}
+		}
 	}
 	.input {
 		display: flex;

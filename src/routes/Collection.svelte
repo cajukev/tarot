@@ -34,6 +34,7 @@
 		if ($deviceStore.hasTouch) {
 			hoverBox.classList.add('visible');
 			currentCard = card;
+			hoverBox.scrollTop = 0;
 		}
 	};
 
@@ -49,7 +50,7 @@
 	};
 </script>
 
-<div class="container">
+<div class="container sidePadding">
 	<h2>Major Arcana</h2>
 	<div class="pack MA">
 		{#each majorArcana as card}

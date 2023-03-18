@@ -80,25 +80,25 @@
 		clearInterval(timeVarInterval);
 		timeVarInterval = setInterval(() => {
 			timeVariableStore.set(($timeVariableStore + 1) % 4);
-		}, 1500);
+		}, 1000);
 	});
 	
 </script>
 
 <div class="container">
-	<h1><span class={$timeVariableStore === 0 || $timeVariableStore === 3 ? "illuminated" : ""}>Call upon</span> <span class={$timeVariableStore === 1 || $timeVariableStore === 3 ? "illuminated" : ""}>the power</span> <span class={$timeVariableStore === 2 || $timeVariableStore === 3 ? "illuminated" : ""}>of Tarot</span></h1>
+	<h1 class="sidePadding"><span class={$timeVariableStore === 0 || $timeVariableStore === 3 ? "illuminated" : ""}>Call upon</span> <span class={$timeVariableStore === 1 || $timeVariableStore === 3 ? "illuminated" : ""}>the power</span> <span class={$timeVariableStore === 2 || $timeVariableStore === 3 ? "illuminated" : ""}>of Tarot</span></h1>
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
 			<Generate bind:state bind:energy bind:error />
 			<Collection></Collection>
 		</div>
 	
-		<div class={'loading ' + (state !== 2 ? 'hidden' : '')}>
+		<div class={'loading sidePadding ' + (state !== 2 ? 'hidden' : '')}>
 			<p class="energy">Your energy, <span>it is..</span> <span>{energy}</span></p>
 			<p class="loading">Let us see what the cards have in store...</p>
 		</div>
 	
-		<div class={state !== 3 ? 'hidden' : ''}>
+		<div class={'sidePadding ' + (state !== 3 ? 'hidden' : '')}>
 			{#if $readingStore}
 				<Reading bind:state ></Reading>
 	
@@ -108,7 +108,7 @@
 			{/if}
 			<!-- Restart button -->
 		</div>
-		<div class={state !== 4 ? 'hidden error' : 'error'}>
+		<div class={'error sidePadding ' + (state !== 4 ? 'hidden ' : '')}>
 			<!-- Restart button -->
 			{error}
 			<button on:click={() => state = 1}>Restart</button>

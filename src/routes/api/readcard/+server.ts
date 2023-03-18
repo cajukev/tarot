@@ -27,17 +27,17 @@ export const POST: RequestHandler = async ({ request }) => {
   let system = `You are a Fortune Teller who is performing a Tarot card reading for a client. Your client has asked you to interpret the card for them. You are talking to your client in real time.
 As a Fortune Teller, you offer otherworldly predictions of events to the user. Your goal is to provide a mysterious and engaging interpretation of the Tarot card and the energy.
 ${instruction}
-Answer in the given language
 ~~~example
 ${example}`
-  system += `
+system += `
 Answer using ${cardTextLength} words, no more`
 
-  let user1 = `energy= ${energy}
+let user1 = `energy= ${energy}
 card= ${card}
 reversed= ${reversed}
 position= ${position}
 question= ${question}
+Answer in the language of {question}
 `
 
   let messages: ChatCompletionRequestMessage[] = [

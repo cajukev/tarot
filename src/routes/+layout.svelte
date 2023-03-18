@@ -48,7 +48,7 @@
 <style lang="scss">
 	.app {
 		min-height: 101vh;
-		padding: 1rem 0.5rem 0;
+		padding: 1rem 0;
 		@media screen and (min-width: $breakpoint-1) {
 			padding-left: clamp(1rem, 5vw, 8rem);
 			padding-right: clamp(1rem, 5vw, 8rem);
