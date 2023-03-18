@@ -353,8 +353,8 @@
 			flex-direction: column;
 			align-items: center;
 			.imgWrapper{
-				width: 8rem;
-				height: 8rem;
+				width: 10rem;
+				height: 10rem;
 				overflow: hidden;
 				border-radius: 100vw;
 				border: 1px solid #ffffff;
@@ -362,12 +362,12 @@
 				align-items: center;
 				justify-content: center;
 				&.active{
-					border: 3px solid #ffffff;
+					border: 5px solid #ffffff;
+					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 90%, #FFFFFF 100%);
 				}
 				img{
-					max-height: 80%;
+					max-height: 1000%;
 					object-fit: contain;
-					padding: 0.5rem;
 				}
 			}
 		}

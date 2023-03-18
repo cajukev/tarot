@@ -37,7 +37,6 @@ card= ${card}
 reversed= ${reversed}
 position= ${position}
 question= ${question}
-Answer in the language of {question}
 `
 
   let messages: ChatCompletionRequestMessage[] = [

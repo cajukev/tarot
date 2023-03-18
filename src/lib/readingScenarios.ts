@@ -81,7 +81,7 @@ Short paragraph about the cons of eating pineapple on pizza approx 20 words
   }],
   ["ppf", {
     key: "ppf",
-    name: "Past, Present, Future",
+    name: "Past, Present & Future",
     positions: ["Past", "Present", "Future"],
     instructions: [
       // "Draw any card in any orientation and tell the aspects of it that relate to the past of the situation presented in the question.",

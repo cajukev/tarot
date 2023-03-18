@@ -94,7 +94,7 @@
 		</div>
 	
 		<div class={'loading sidePadding ' + (state !== 2 ? 'hidden' : '')}>
-			<p class="energy">Your energy, <span>it is..</span> <span>{energy}</span></p>
+			<p class="energy">Your energy, <span>it reads..</span> <span>{energy}</span></p>
 			<p class="loading">Let us see what the cards have in store...</p>
 		</div>
 	

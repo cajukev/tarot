@@ -91,11 +91,8 @@
 			<h3>{currentCard?.name}</h3>
 			<p>
 				<br /><b>Meaning:</b>
-				<br />{currentCard?.meaning}
-			</p>
-			<p>
-				<br /><b>Reversed Meaning:</b>
-				<br />{currentCard?.reversedMeaning}
+				<br />{@html currentCard?.meaning}
+				<span class="dummy energy"></span>
 			</p>
 		</div>
 	</div>
@@ -103,7 +100,6 @@
 
 <style lang="scss">
 	.container {
-		padding-bottom: 300px;
 	}
 	h2 {
 		margin-top: 2rem;
@@ -142,7 +138,7 @@
 		z-index: 100;
 		pointer-events: none;
 		background-color: rgba($bg, 0.5);
-		backdrop-filter: blur(5px);
+		backdrop-filter: blur(5px) brightness(0.25);
 		border-radius: 5px;
 		padding: 0.5rem;
 		padding-top: 2rem;
@@ -161,6 +157,7 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
+			padding-bottom: 2rem;
 			h3 {
 				margin-top: 0.5rem;
 			}
@@ -172,6 +169,7 @@
 			}
 			p {
 				margin: 0;
+				
 			}
 		}
 		&:not(.visible) {

@@ -20,7 +20,6 @@ If you mention a card, please use the following format:
 <b>Card name</b>
 energy = ${energy}
 question = ${question}
-Answer in the language of {question}
 ~~~readings`
   readings.forEach(reading => {
     system += `
