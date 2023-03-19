@@ -75,7 +75,7 @@ question= Should I eat pineapple on pizza?
 Short paragraph about the cons of eating pineapple on pizza approx 20 words
 <ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>`,
     drawExample: `
-[{"title":"The Sun","reversed":false,"position":"Pros"},
+[{"title":"Five of Swords","reversed":false,"position":"Pros"},
 {"title":"The Tower","reversed":true,"position":"Cons"}]`,
     cardTextLength: 30
   }],

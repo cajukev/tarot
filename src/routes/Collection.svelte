@@ -1,98 +1,89 @@
 <script lang="ts">
 	import { cards, type CollectionCard } from '$lib/cards';
+	import { fade } from 'svelte/transition';
 	import { deviceStore } from '../stores';
-	let majorArcana: CollectionCard[] = cards.get('Major Arcana');
-	console.log(majorArcana);
+	let majorArcana: CollectionCard[] | undefined = cards.get('Major Arcana');
 	let currentCard: CollectionCard;
 
-	// Hoverbox follows mouse position
-	let hoverBox: HTMLDivElement;
-	let mousePosition = { x: 0, y: 0 };
-	let offset = { x: 10, y: 10 };
-	let isHovering = false;
+	// InfoBox follows mouse position
+	let infoBox: HTMLDivElement;
+	let isShown = false;
 
-	let hoverBoxAppear = (e: MouseEvent, card: CollectionCard) => {
-		console.log('hoverBoxAppear');
-		if ($deviceStore.hasMouse) {
-			isHovering = true;
-			// mousePosition.x = e.clientX;
-			// mousePosition.y = e.clientY;
-
-			// hoverBox.style.left =
-			// 	Math.min(
-			// 		Math.max(mousePosition.x - hoverBox.offsetWidth / 2, 0),
-			// 		window.innerWidth - hoverBox.offsetWidth
-			// 	) + 'px';
-			// hoverBox.style.top = 0 + 'px';
-			// 	// Math.min(
-			// 	// 	Math.max(mousePosition.y - hoverBox.offsetHeight / 2, 0),
-			// 	// 	window.innerHeight - hoverBox.offsetHeight
-			// 	// ) + 'px';
-			hoverBox.classList.add('visible');
-			currentCard = card;
-		}
-		if ($deviceStore.hasTouch) {
-			hoverBox.classList.add('visible');
-			currentCard = card;
-			hoverBox.scrollTop = 0;
-		}
+	let infoBoxAppear = (e: MouseEvent, card: CollectionCard) => {
+		console.log('infoBoxAppear');
+		isShown = true;
+		infoBox.classList.add('visible');
+		infoBox.scrollTop = 0;
+		currentCard = card;
 	};
 
-	let hoverBoxHide = () => {
-		console.log('hoverBoxHide');
-		if ($deviceStore.hasMouse) {
-			isHovering = false;
-			hoverBox.classList.remove('visible');
-		}
-		if ($deviceStore.hasTouch) {
-			hoverBox.classList.remove('visible');
-		}
+	let infoBoxHide = () => {
+		console.log('infoBoxHide');
+		isShown = false;
+		infoBox.classList.remove('visible');
 	};
 </script>
 
 <div class="container sidePadding">
 	<h2>Major Arcana</h2>
 	<div class="pack MA">
-		{#each majorArcana as card}
-			<div
-				on:mousemove={(e) => {
-					if ($deviceStore.hasMouse) {
-						hoverBoxAppear(e, card);
-					}
-				}}
-				on:pointerup={(e) => {
-					if ($deviceStore.hasTouch) {
-						hoverBoxAppear(e, card);
-					}
-				}}
-				on:mouseleave={(e) => {
-					if ($deviceStore.hasMouse) {
-						hoverBoxHide();
-					}
-				}}
-				class="card"
-			>
-				<img src="/cards/{card?.name}-400.webp" alt="" />
-			</div>
-		{/each}
+		{#if majorArcana !== undefined}
+			{#each majorArcana as card}
+				<div
+					on:click={(e) => {
+						infoBoxAppear(e, card);
+					}}
+					class="card"
+				>
+					<img src="/cards/{card?.name}-100.webp" alt="" />
+				</div>
+			{/each}
+		{/if}
 	</div>
 
 	<div
-		bind:this={hoverBox}
-		class={'hoverBox ' +
-			($deviceStore.hasMouse ? 'hasMouse ' : '') +
-			($deviceStore.hasTouch ? 'hasTouch ' : '')}
-		on:pointerup={(e) => {
-			hoverBoxHide();
+		bind:this={infoBox}
+		class={'infoBox '}
+		on:click={(e) => {
+			infoBoxHide();
+		}}
+		on:keydown={(e) => {
+			if (e.key === 'Escape') {
+				infoBoxHide();
+			}
 		}}
 	>
-		<div class="hoverBoxContent">
-			<img src="/cards/{currentCard?.name}-400.webp" alt="" />
+		<div class="infoBoxContent">
+			<img
+				on:click={(e) => {
+					e.stopPropagation();
+					currentCard.reversed = !currentCard.reversed;
+				}}
+				on:keydown={(e) => {
+					if (e.key === 'Enter') {
+						e.stopPropagation();
+						currentCard.reversed = !currentCard.reversed;
+					}
+				}}
+				class={currentCard?.reversed ? 'reversed' : ''}
+				src="/cards/{currentCard?.name}-400.webp"
+				alt=""
+			/>
 			<h3>{currentCard?.name}</h3>
-			<p>
-				{@html currentCard?.meaning}
-				<span class="dummy energy"></span>
-			</p>
+			{#if currentCard?.reversed}
+				<h4 in:fade>Reversed</h4>
+			{/if}
+			{#if currentCard?.reversed === false}
+				<p in:fade>
+					{@html currentCard?.meaning}
+					<span class="dummy energy" />
+				</p>
+			{:else if currentCard?.reversed === true}
+				<p in:fade>
+					{@html currentCard?.reversedMeaning}
+					<span class="dummy energy" />
+				</p>
+			{/if}
 		</div>
 	</div>
 </div>
@@ -130,12 +121,11 @@
 		}
 	}
 
-	.hoverBox {
+	.infoBox {
 		position: fixed;
 		height: 100%;
 		width: 100%;
 		z-index: 100;
-		pointer-events: none;
 		background-color: rgba($bg, 0.5);
 		backdrop-filter: blur(5px) brightness(0.25);
 		border-radius: 5px;
@@ -145,13 +135,8 @@
 		text-align: center;
 		top: 0 !important;
 		left: 0 !important;
-		&.hasTouch {
-			overflow: scroll;
-			&.visible {
-				pointer-events: all;
-			}
-		}
-		.hoverBoxContent {
+		overflow: auto;
+		.infoBoxContent {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
@@ -165,10 +150,24 @@
 				max-width: 90vw;
 				border-radius: 0.25rem;
 				border: 2px solid white;
+				box-shadow:inset 0px 0px 0px 4px #f00;
+				transition: all 1s cubic-bezier(0.21, 0.96, 0.49, 0.96);
+				&.reversed {
+					transform: rotatex(180deg) rotateY(180deg);
+				}
 			}
 			p {
 				margin-top: 1rem;
 				max-width: 30rem;
+			}
+			& h3 {
+				font-family: $header-font;
+			}
+			& h4 {
+				font-family: $header-font;
+				font-size: $base-font-size;
+				opacity: 0.8;
+				font-weight: 100;
 			}
 		}
 		&:not(.visible) {

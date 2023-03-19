@@ -31,7 +31,23 @@
 			.replace('The Justice', 'Justice')
 			.replace('The Death', 'Death')
 			.replace('The Wheel of Fortune', 'Wheel of Fortune')
-			.replace('The Judgement', 'Judgement');
+			.replace('The Judgment', 'Judgement')
+			.replace('The King', 'King')
+			.replace('The Queen', 'Queen')
+			.replace('The Knight', 'Knight')
+			.replace('The Page', 'Page')
+			.replace('The One', 'One')
+			.replace('The Two', 'Two')
+			.replace('The Three', 'Three')
+			.replace('The Four', 'Four')
+			.replace('The Five', 'Five')
+			.replace('The Six', 'Six')
+			.replace('The Seven', 'Seven')
+			.replace('The Eight', 'Eight')
+			.replace('The Nine', 'Nine')
+			.replace('The Ten', 'Ten')
+			
+
 	};
 
 
@@ -72,7 +88,7 @@
 									alt=""
 									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
-								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " | reversed" : ""}</span></h3>
+								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " reversed" : ""}</span></h3>
 								<p>{@html ($readingStore.cards[i].reading)?.trim() || ""}</p>
 							</div>
 						</div>
@@ -115,7 +131,7 @@
 				display: flex;
 				flex-direction: column;
 				align-items: center;
-				transition: all 1s ease;
+				transition: all 1s ease, opacity 0 0.5s ease;
 				max-width: min(80vw,400px);;
 				justify-self: center;
 				& p {
@@ -130,7 +146,7 @@
 					margin: 1rem 0rem;
 					width: 100%;
 					max-width: min(80vw,400px);;
-					border-radius: 20px;
+					border-radius: 0.25rem;
 					border: 0.5rem solid #000;
 					transition: all 1s ease;
 					&.white {
@@ -166,14 +182,14 @@
 	}
 
 	.cardhidden {
-		transition: opacity 0s;
+		z-index: 0;
 		rotate: y 180deg;
 		opacity: 0;
 		pointer-events: none;
 	}
 
 	.cardhiddenReversed {
-		transition: opacity 0s;
+		z-index: 0;
 		rotate: y 180deg z 180deg;
 		opacity: 0;
 		pointer-events: none;

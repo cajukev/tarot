@@ -37,28 +37,9 @@
 	}
 
 	$: {
-		console.log($flippedCardsStore);
-		cardFlip();
-	}
-
-	$: {
 		console.log($cardFlipStore);
 		if ($cardFlipStore !== -1) readCard($cardFlipStore);
 	}
-
-	let cardFlip = () => {
-		let cardNb = 0;
-		if ($flippedCardsStore) {
-			$flippedCardsStore.forEach((value, key) => {
-				if (value) {
-					cardNb++;
-				}
-			});
-			if (cardNb > 0) {
-				readcards($readingStore.cards.slice(cardNb - 1, $flippedCardsStore.length));
-			}
-		}
-	};
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {
@@ -226,78 +207,6 @@
 		});
 	};
 
-	let readcards = (cardsToRead: Card[]) => {
-		let cardTexts = cards.map((card) => card.reading).filter((reading) => reading);
-		if (cardsToRead.length === 0 && cards.length > 1 && readingScenarios.get(setting)?.conclusion) {
-			fetch('/api/conclusion', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					readings: cardTexts,
-					question: question,
-					energy: energy
-				})
-			}).then(async (res) => {
-				const reader = res.body?.getReader();
-
-				while (true && reader) {
-					const { done, value } = await reader.read();
-					console.log(done, value);
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) $readingStore.conclusion = text;
-					if (done) break;
-				}
-			});
-		} else {
-			if (cardsToRead.length === 0) {
-				console.log('no conclusion');
-				return;
-			}
-			let card = cardsToRead[0];
-			let index = cards.indexOf(card);
-			console.log('reading card', index);
-			fetch('/api/readcard', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					question: question,
-					instruction: readingScenarios.get(setting)?.instructions[index],
-					example: readingScenarios.get(setting)?.example,
-					cardTextLength: readingScenarios.get(setting)?.cardTextLength,
-					energy: energy,
-					setting: setting,
-					card: card.title,
-					reversed: card.reversed,
-					position: card.position
-				})
-			}).then(async (res) => {
-				const reader = res.body?.getReader();
-
-				while (true && reader) {
-					const { done, value } = await reader.read();
-					console.log(done, value);
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) {
-						card.reading = text;
-						cards[index] = card;
-						cards = [...cards];
-					}
-					if (done) {
-						if (cardsToRead.length === 1) {
-							// Conclusion
-							readcards(cardsToRead.slice(1));
-						}
-						break;
-					}
-				}
-			});
-		}
-	};
-
 	let selectOption = (option: string) => {
 		setting = option;
 	}
@@ -418,7 +327,6 @@
 		gap: 1rem;
 		padding: 0 1rem;
 		margin-bottom: 2rem;
-		align-items: center;
 		overflow-x: scroll;
 		max-width: calc(100vw);
 		&::-webkit-scrollbar {
@@ -429,8 +337,8 @@
 			flex-direction: column;
 			align-items: center;
 			.imgWrapper{
-				width: 10rem;
-				height: 10rem;
+				width: min(30vw, 6rem);
+				aspect-ratio: 1/1;
 				overflow: hidden;
 				border-radius: 100vw;
 				border: 1px solid #ffffff;
@@ -439,14 +347,12 @@
 				justify-content: center;
 				transition: border 0.25s ease;
 				&.active{
-					border: 5px solid #ffffff;
-					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 90%, #FFFFFF 100%);
+					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 80%, #FFFFFF 100%);
 					& img{
 						transform: scale(1.1);
 					}
 				}
 				&:hover{
-					border: 5px solid #ffffff;
 					& img{
 						transform: scale(1.1);
 					}
@@ -454,6 +360,8 @@
 				img{
 					transition: all 1s ease;
 					object-fit: contain;
+					max-height: 80%;
+					max-width: 90%;
 				}
 			}
 		}

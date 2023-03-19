@@ -1,14 +1,17 @@
 export type CollectionCard = {
     name: string;
+    reversed: boolean;
     energy: string[];
     meaning: string;
+    reversedMeaning: string;
 };
 
-export const cards = new Map<string, any>([
+export const cards = new Map<string, CollectionCard[]>([
     ["Major Arcana",
         [
             {
                 "name": "The Fool",
+                "reversed": false,
                 "energy": [
                     "Beginnings",
                     "Adventure",
@@ -19,6 +22,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Magician",
+                "reversed": false,
                 "energy": [
                     "Creativity",
                     "Communication",
@@ -29,6 +33,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The High Priestess",
+                "reversed": false,
                 "energy": [
                     "Communication",
                     "Intuition",
@@ -40,6 +45,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Empress",
+                "reversed": false,
                 "energy": [
                     "Creativity",
                     "Nurturing",
@@ -51,6 +57,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Emperor",
+                "reversed": false,
                 "energy": [
                     "Authority",
                     "Stability",
@@ -61,6 +68,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Hierophant",
+                "reversed": false,
                 "energy": [
                     "Authority",
                     "Tradition",
@@ -72,6 +80,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Lovers",
+                "reversed": false,
                 "energy": [
                     "Relationships",
                     "Harmony",
@@ -84,6 +93,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Chariot",
+                "reversed": false,
                 "energy": [
                     "Determination",
                     "Progress",
@@ -94,6 +104,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "Strength",
+                "reversed": false,
                 "energy": [
                     "Intuition",
                     "Nurturing",
@@ -105,6 +116,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Hermit",
+                "reversed": false,
                 "energy": [
                     "Tradition",
                     "Guidance",
@@ -116,7 +128,8 @@ export const cards = new Map<string, any>([
                 "reversedMeaning": "The Hermit reversed implies isolation, withdrawal, or denial, highlighting the importance of finding balance between solitude and social connections."
             },
             {
-                "name": "The Wheel of Fortune",
+                "name": "Wheel of Fortune",
+                "reversed": false,
                 "energy": [
                     "Progress",
                     "Cycles",
@@ -124,11 +137,12 @@ export const cards = new Map<string, any>([
                     "Transition",
                     "Upheaval"
                 ],
-                "meaning": "Embrace the inevitability of <span class='energy'>cycles</span>, <span class='energy'>destiny</span>, and <span class='energy'>progress</span> with The Wheel of Fortune, navigating life's transitions and upheavals with resilience and adaptability.",
-                "reversedMeaning": "In its reversed position, The Wheel of Fortune cautions against stagnation, resistance to change, and a feeling of being stuck in life's cycles."
+                "meaning": "Embrace the inevitability of <span class='energy'>cycles</span>, <span class='energy'>destiny</span>, and <span class='energy'>progress</span> with the Wheel of Fortune, navigating life's transitions and upheavals with resilience and adaptability.",
+                "reversedMeaning": "In its reversed position, the Wheel of Fortune cautions against stagnation, resistance to change, and a feeling of being stuck in life's cycles."
             },
             {
                 "name": "Justice",
+                "reversed": false,
                 "energy": [
                     "Balance",
                     "Fairness",
@@ -139,6 +153,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Hanged Man",
+                "reversed": false,
                 "energy": [
                     "Choice",
                     "Courage",
@@ -152,6 +167,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "Death",
+                "reversed": false,
                 "energy": [
                     "Beginnings",
                     "Transformation",
@@ -162,16 +178,18 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "Temperance",
+                "reversed": false,
                 "energy": [
                     "Balance",
                     "Harmony",
                     "Moderation"
                 ],
-                "meaning": "Find span class='energy'>balance</span> with Temperance, span class='energy'>harmonizing</span> opposing forces and promoting <span class='energy'>moderation</span> to create a balanced, peaceful existence.",
+                "meaning": "Find <span class='energy'>balance</span> with Temperance, <span class='energy'>harmonizing</span> opposing forces and promoting <span class='energy'>moderation</span> to create a balanced, peaceful existence.",
                 "reversedMeaning": "When reversed, Temperance signifies imbalance, excess, and a lack of moderation, calling for self-reflection and the restoration of equilibrium."
             },
             {
                 "name": "The Devil",
+                "reversed": false,
                 "energy": [
                     "Temptation",
                     "Obsession",
@@ -182,6 +200,7 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Tower",
+                "reversed": false,
                 "energy": [
                     "Surrender",
                     "Transformation",
@@ -192,16 +211,18 @@ export const cards = new Map<string, any>([
             },
             {
                 "name": "The Star",
+                "reversed": false,
                 "energy": [
                     "Guidance",
                     "Hope",
                     "Inspiration"
                 ],
-                "meaning": "Let The Star's energy span class='energy'>guide</span> you with <span class='energy'>hope</span> and <span class='energy'>inspiration</span>, illuminating your path and sparking a renewed sense of purpose and direction.",
+                "meaning": "Let The Star's energy <span class='energy'>guide</span> you with <span class='energy'>hope</span> and <span class='energy'>inspiration</span>, illuminating your path and sparking a renewed sense of purpose and direction.",
                 "reversedMeaning": "The Star reversed warns of despair, loss of faith, or disillusionment, urging you to reignite hope and inspiration within yourself."
             },
             {
                 "name": "The Moon",
+                "reversed": false,
                 "energy": [
                     "Mystery",
                     "Intuition",
@@ -210,11 +231,12 @@ export const cards = new Map<string, any>([
                     "Truth",
                     "Obsession"
                 ],
-                "meaning": "Explore the realm of <span class='energy'>mystery</span>, <span class='energy'>intuition</span>, and <span class='energy'>reflection</span> with The Moon, unveiling hidden span class='energy'>truths</span> and confronting obsessions to find clarity and span class='energy'>wisdom</span>.",
+                "meaning": "Explore the realm of <span class='energy'>mystery</span>, <span class='energy'>intuition</span>, and <span class='energy'>reflection</span> with The Moon, unveiling hidden <span class='energy'>truths</span> and confronting obsessions to find clarity and <span class='energy'>wisdom</span>.",
                 "reversedMeaning": "When reversed, The Moon represents confusion, deception, or repressed emotions, inviting you to confront hidden truths and trust your intuition."
             },
             {
                 "name": "The Sun",
+                "reversed": false,
                 "energy": [
                     "Creativity",
                     "Hope",
@@ -224,17 +246,19 @@ export const cards = new Map<string, any>([
                 "reversedMeaning": "The Sun reversed indicates blocked creativity, pessimism, or diminished confidence, encouraging you to rediscover your inner light and renew your sense of purpose."
             },
             {
-                "name": "Judgment",
+                "name": "Judgement",
+                "reversed": false,
                 "energy": [
                     "Destiny",
                     "Renewal",
                     "Redemption"
                 ],
-                "meaning": "The call of Judgment brings <span class='energy'>destiny</span>, <span class='energy'>renewal</span>, and <span class='energy'>redemption</span>, urging you to embrace transformative change and make peace with the past.",
-                "reversedMeaning": "Judgment reversed cautions against self-doubt, indecision, or denial, reminding you to heed the call of renewal and embrace transformative change."
+                "meaning": "The call of Judgement brings <span class='energy'>destiny</span>, <span class='energy'>renewal</span>, and <span class='energy'>redemption</span>, urging you to embrace transformative change and make peace with the past.",
+                "reversedMeaning": "Judgement reversed cautions against self-doubt, indecision, or denial, reminding you to heed the call of renewal and embrace transformative change."
             },
             {
                 "name": "The World",
+                "reversed": false,
                 "energy": [
                     "Adventure",
                     "Abundance",
@@ -247,3 +271,4 @@ export const cards = new Map<string, any>([
             }
         ]]
 ]);
+
