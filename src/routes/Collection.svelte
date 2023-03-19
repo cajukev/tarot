@@ -35,7 +35,7 @@
 					}}
 					class="card"
 				>
-					<img src="/cards/{card?.name}-100.webp" alt="" />
+					<img src="/cards/{card?.name}-200.webp" alt="" />
 				</div>
 			{/each}
 		{/if}
