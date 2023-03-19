@@ -167,7 +167,7 @@ export const cards = new Map<string, any>([
                     "Harmony",
                     "Moderation"
                 ],
-                "meaning": "Find equilibrium with Temperance, harmonizing opposing forces and promoting <span class='energy'>moderation</span> to create a balanced, peaceful existence.",
+                "meaning": "Find span class='energy'>balance</span> with Temperance, span class='energy'>harmonizing</span> opposing forces and promoting <span class='energy'>moderation</span> to create a balanced, peaceful existence.",
                 "reversedMeaning": "When reversed, Temperance signifies imbalance, excess, and a lack of moderation, calling for self-reflection and the restoration of equilibrium."
             },
             {
@@ -197,7 +197,7 @@ export const cards = new Map<string, any>([
                     "Hope",
                     "Inspiration"
                 ],
-                "meaning": "Let The Star's energy guide you with <span class='energy'>hope</span> and <span class='energy'>inspiration</span>, illuminating your path and sparking a renewed sense of purpose and direction.",
+                "meaning": "Let The Star's energy span class='energy'>guide</span> you with <span class='energy'>hope</span> and <span class='energy'>inspiration</span>, illuminating your path and sparking a renewed sense of purpose and direction.",
                 "reversedMeaning": "The Star reversed warns of despair, loss of faith, or disillusionment, urging you to reignite hope and inspiration within yourself."
             },
             {
@@ -210,7 +210,7 @@ export const cards = new Map<string, any>([
                     "Truth",
                     "Obsession"
                 ],
-                "meaning": "Explore the realm of <span class='energy'>mystery</span>, <span class='energy'>intuition</span>, and <span class='energy'>reflection</span> with The Moon, unveiling hidden truths and confronting obsessions to find clarity and wisdom.",
+                "meaning": "Explore the realm of <span class='energy'>mystery</span>, <span class='energy'>intuition</span>, and <span class='energy'>reflection</span> with The Moon, unveiling hidden span class='energy'>truths</span> and confronting obsessions to find clarity and span class='energy'>wisdom</span>.",
                 "reversedMeaning": "When reversed, The Moon represents confusion, deception, or repressed emotions, inviting you to confront hidden truths and trust your intuition."
             },
             {
