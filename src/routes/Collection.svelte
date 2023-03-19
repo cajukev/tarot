@@ -1,5 +1,5 @@
 <script lang="ts">
-	import cards, { type CollectionCard } from '$lib/cards';
+	import { cards, type CollectionCard } from '$lib/cards';
 	import { deviceStore } from '../stores';
 	let majorArcana: CollectionCard[] = cards.get('Major Arcana');
 	console.log(majorArcana);
@@ -90,8 +90,7 @@
 			<img src="/cards/{currentCard?.name}-400.webp" alt="" />
 			<h3>{currentCard?.name}</h3>
 			<p>
-				<br /><b>Meaning:</b>
-				<br />{@html currentCard?.meaning}
+				{@html currentCard?.meaning}
 				<span class="dummy energy"></span>
 			</p>
 		</div>
@@ -168,8 +167,8 @@
 				border: 2px solid white;
 			}
 			p {
-				margin: 0;
-				
+				margin-top: 1rem;
+				max-width: 30rem;
 			}
 		}
 		&:not(.visible) {

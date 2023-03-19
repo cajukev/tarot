@@ -2,6 +2,7 @@ import { openai } from "$lib/openai";
 import readingScenarios from "$lib/readingScenarios";
 import type { RequestHandler } from "@sveltejs/kit";
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
+import { cards, type CollectionCard } from "$lib/cards";
 
 export const POST: RequestHandler = async ({request}) => {
   const formData: {
@@ -27,7 +28,17 @@ export const POST: RequestHandler = async ({request}) => {
     }
   
   let energy = formData.energy || "";
-
+  let energyCardNames: string[] = [];
+  // Get cards for the energy
+  let allPacks = cards.values();
+  for (let pack of allPacks) {
+    pack.forEach((card: CollectionCard) => {
+      if (card.energy.includes(energy)) {
+        energyCardNames.push(card.name);
+      }
+    })
+    console.log('energyCardNames', energyCardNames)
+  }
   let system = `You are now a professional Tarot card reader. You draw cards that tell a story, based on the value of {energy}.
   Here are the possible cards: [The Magician, The High Priestess, The Empress, The Emperor, The Hierophant, The Chariot, Strength, The Hermit, Wheel of Fortune, Justice, The Hanged Man, Death, Temperance, The Devil, The Moon, The Sun, Judgement, The World, The Fool]. You must only use cards from this list. Every card can only be used once per reading.
   A card can be normal or reversed. At least 1 card must be reversed in a multi-card reading. All cards are different. 
@@ -38,6 +49,7 @@ export const POST: RequestHandler = async ({request}) => {
   ~~~`
 
   let user1 = `energy= ${energy}
+Cards with this energy: ${energyCardNames} You should use at least one of these cards in your reading, in any order and orientation.
 question= ${question}
 [{`
 
@@ -53,7 +65,7 @@ let messages: ChatCompletionRequestMessage[] = [
     temperature: 1,
     stop:`]`
   })
-
+  console.log(messages)
   console.log('openAIresponseCards', openAIresponseCards.data.choices[0].message?.content, openAIresponseCards.data.usage?.total_tokens)
 
   try {

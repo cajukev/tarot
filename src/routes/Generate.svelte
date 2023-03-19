@@ -1,5 +1,5 @@
 <script lang="ts">
-	import energies from '$lib/energies';
+	import {energies, energyList} from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
 	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
@@ -64,20 +64,47 @@
 		switch (segment) {
 			case 1:
 				generateButtonWrapper.style.transform =
-					'rotatey(10deg) rotatex(-10deg) translateX(-0.5rem)';
+					'rotatey(10deg) rotatex(-15deg) translateX(-0.5rem)';
 				break;
 			case 2:
 				generateButtonWrapper.style.transform =
-					'rotatey(3deg) rotatex(-10deg) translateX(-0.25rem)';
+					'rotatey(3deg) rotatex(-15deg) translateX(-0.25rem)';
 				break;
 			case 3:
 				generateButtonWrapper.style.transform =
-					'rotatey(-3deg) rotatex(-10deg) translateX(0.25rem)';
+					'rotatey(0) rotatex(-15deg) translateX(0rem)';
 				break;
 			case 4:
 				generateButtonWrapper.style.transform =
-					'rotatey(-10deg) rotatex(-10deg) translateX(0.5rem)';
+					'rotatey(-3deg) rotatex(-15deg) translateX(0.25rem)';
 				break;
+			case 5:
+				generateButtonWrapper.style.transform =
+					'rotatey(-10deg) rotatex(-15deg) translateX(0.5rem)';
+				break;
+				case 6:
+					generateButtonWrapper.style.transform =
+						'rotatey(10deg) rotatex(15deg) translateX(-0.5rem)';
+					break;
+				case 7:
+					generateButtonWrapper.style.transform =
+						'rotatey(3deg) rotatex(15deg) translateX(-0.25rem)';
+					break;
+				case 8:
+					generateButtonWrapper.style.transform =
+						'rotatey(0) rotatex(15deg) translateX(0rem)';
+					break;
+				case 9:
+					generateButtonWrapper.style.transform =
+						'rotatey(-3deg) rotatex(15deg) translateX(0.25rem)';
+					break;
+				case 10:
+					generateButtonWrapper.style.transform =
+						'rotatey(-10deg) rotatex(15deg) translateX(0.5rem)';
+					break;
+
+
+
 		}
 	};
 	let mouseExit = () => {
@@ -92,7 +119,8 @@
 	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
-		energy = energies[pressedSegment - 1][$timeVariableStore];
+		energy = energyList[(pressedSegment - 1) + 10 * $timeVariableStore];
+		console.log(energy, pressedSegment, $timeVariableStore);
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		cardFlipStore.set(-1)
@@ -325,6 +353,54 @@
 					on:touchmove={() => mouseoverSegment(4)}
 					on:click={() => clickSegment(4)}
 				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(5)}
+					on:focus={() => mouseoverSegment(5)}
+					on:touchstart={() => mouseoverSegment(5)}
+					on:touchmove={() => mouseoverSegment(5)}
+					on:click={() => clickSegment(5)}
+				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(6)}
+					on:focus={() => mouseoverSegment(6)}
+					on:touchstart={() => mouseoverSegment(6)}
+					on:touchmove={() => mouseoverSegment(6)}
+					on:click={() => clickSegment(6)}
+				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(7)}
+					on:focus={() => mouseoverSegment(7)}
+					on:touchstart={() => mouseoverSegment(7)}
+					on:touchmove={() => mouseoverSegment(7)}
+					on:click={() => clickSegment(7)}
+				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(8)}
+					on:focus={() => mouseoverSegment(8)}
+					on:touchstart={() => mouseoverSegment(8)}
+					on:touchmove={() => mouseoverSegment(8)}
+					on:click={() => clickSegment(8)}
+				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(9)}
+					on:focus={() => mouseoverSegment(9)}
+					on:touchstart={() => mouseoverSegment(9)}
+					on:touchmove={() => mouseoverSegment(9)}
+					on:click={() => clickSegment(9)}
+				/>
+				<button
+					type="button"
+					on:mouseover={() => mouseoverSegment(10)}
+					on:focus={() => mouseoverSegment(10)}
+					on:touchstart={() => mouseoverSegment(10)}
+					on:touchmove={() => mouseoverSegment(10)}
+					on:click={() => clickSegment(10)}
+				/>
 			</div>
 			<p>Tell me my fortune</p>
 		</div>
@@ -361,12 +437,22 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				transition: border 0.25s ease;
 				&.active{
 					border: 5px solid #ffffff;
 					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 90%, #FFFFFF 100%);
+					& img{
+						transform: scale(1.1);
+					}
+				}
+				&:hover{
+					border: 5px solid #ffffff;
+					& img{
+						transform: scale(1.1);
+					}
 				}
 				img{
-					max-height: 1000%;
+					transition: all 1s ease;
 					object-fit: contain;
 				}
 			}
@@ -389,7 +475,8 @@
 		perspective: 100px;
 		.generateButton {
 			display: grid;
-			grid-template-columns: repeat(4, 1fr);
+			grid-template-columns: repeat(5, 1fr);
+			grid-template-rows: repeat(2, 1fr);
 			width: 16rem;
 			height: 5rem;
 			& button {

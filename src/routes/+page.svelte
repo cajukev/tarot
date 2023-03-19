@@ -1,5 +1,5 @@
 <script lang="ts">
-	import energies from '$lib/energies';
+	import { energies } from '$lib/energies';
 	import Generate from './Generate.svelte';
 	import readingScenarios from '$lib/readingScenarios';
 	import { fade, fly } from 'svelte/transition';
@@ -8,7 +8,6 @@
 	import { onMount } from 'svelte';
 	import Collection from './Collection.svelte';
 
-	$: console.log($timeVariableStore);
 	// App state
 	// state 1: question
 	// state 1.1: confirm-question
@@ -31,48 +30,6 @@
 	$: {
 		readingScenario = readingScenarios.get($readingStore?.setting);
 	}
-	let positions = readingScenario?.positions;
-
-	let handleSubmitInformation = () => {
-		fetch('/api/information', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				information: information
-			})
-		})
-			.then((res) => res.json())
-			.then((data) => console.log(data.body));
-	};
-
-	let generateNext$readingStore = () => {
-		fetch('/api/tarot$readingStore', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				$readingStore
-			})
-		})
-			.then((res) => res.json())
-			.then((data) => data.body)
-			.then((body: { conclusion?: string; $readingStore?: ReadingType }) => {
-				if (body.conclusion) {
-					console.log(body.conclusion);
-					state = 4; // conclusion
-					error = body.conclusion;
-				}
-				if (body.$readingStore) {
-					console.log(body.$readingStore);
-					state = 3; // $readingStore / inaccuracies
-					$readingStore = body.$readingStore;
-				}
-			});
-	};
-
 
 	let timeVarInterval: NodeJS.Timeout;
 	onMount(() => {
