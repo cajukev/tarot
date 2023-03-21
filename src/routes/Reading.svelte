@@ -32,6 +32,8 @@
 			.replace('The Death', 'Death')
 			.replace('The Wheel of Fortune', 'Wheel of Fortune')
 			.replace('The Judgement', 'Judgment')
+			.replace('The Judgment', 'Judgment')
+			.replace('Judgment', 'Judgement')
 			.replace('The King', 'King')
 			.replace('The Queen', 'Queen')
 			.replace('The Knight', 'Knight')
@@ -71,7 +73,7 @@
 								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + (!$flipLockStore  ? 'ready' : 'notready')}
 							>
 								<img
-									src="/cards/cardback.webp"
+									src="/cards/cardback-400.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
@@ -95,7 +97,7 @@
 					{:else}
 						<div class="stacked">
 							<div class={'card cardmissing'}>
-								<img src="/cards/cardback.webp" alt="" />
+								<img src="/cards/cardback-400.webp" alt="" />
 							</div>
 						</div>
 					{/if}

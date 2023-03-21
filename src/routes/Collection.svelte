@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
+	import { openai } from '$lib/openai';
+	import type { ChatCompletionRequestMessage } from 'openai';
+	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { deviceStore } from '../stores';
 	let majorArcana: CollectionCard[] | undefined = cards.get('Major Arcana');

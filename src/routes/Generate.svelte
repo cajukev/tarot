@@ -103,6 +103,36 @@
 		cardFlipStore.set(-1)
 		$flippedCardsStore = readingScenarios.get(setting)?.positions.map(() => false) || [];
 
+
+
+
+		/**
+		 * 
+		 * NEW READING PARADIGM
+		 * IMPLEMENT MEANING INTO GPT4 AND READING
+		 * 
+		 * MINIMIZES API CALLS
+		 * LEVERAGES GPT4
+		 * DRAW ALL CARDS THEN GIVE GPT4 READING
+		 * INJECT CARD TEXT INTO GPT4
+		 * GPT4 RETURNS READING AS STREAM
+		 * 
+		 * MEANING IS DISPLAYED TO USER
+		 * 
+		 * 2 CALLS INSTEAD OF 2 / 3 / 5
+		 * HIGHER QUALITY RESPONSES
+		 * 
+		 * API 15X COST OF 3.5-TURBO
+		 * 
+		 * 
+		*/
+
+
+
+
+
+
+
 		fetch('/api/draw', {
 			method: 'POST',
 			headers: {

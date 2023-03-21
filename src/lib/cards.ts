@@ -215,14 +215,14 @@ export const cards = new Map<string, CollectionCard[]>([
                 "reversedMeaning": "In reverse, The Sun signifies <b>Negativity</b> and <b>Depression</b>, indicating a lack of enthusiasm or feelings of sadness."
             },
             {
-                "name": "Judgment",
+                "name": "Judgement",
                 "reversed": false,
                 "energy": {
                     "upright": ["Renewal", "Redemption"],
                     "reversed": ["Regret", "Denial"]
                 },
-                "meaning": "Judgment represents <b>Renewal</b> and <b>Redemption</b>, symbolizing the need for self-evaluation and spiritual awakening.",
-                "reversedMeaning": "In reverse, Judgment signifies <b>Regret</b> and <b>Denial</b>, indicating a refusal to accept responsibility or face the consequences of one's actions."
+                "meaning": "Judgement represents <b>Renewal</b> and <b>Redemption</b>, symbolizing the need for self-evaluation and spiritual awakening.",
+                "reversedMeaning": "In reverse, Judgement signifies <b>Regret</b> and <b>Denial</b>, indicating a refusal to accept responsibility or face the consequences of one's actions."
             },
             {
                 "name": "The World",
