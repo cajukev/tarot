@@ -17,11 +17,14 @@
 	let infoBox: HTMLDivElement;
 	let isShown = false;
 
-	let infoBoxAppear = (e: MouseEvent, card: CollectionCard) => {
+	let infoBoxAppear = (card: CollectionCard) => {
 		isShown = true;
 		infoBox.classList.add('visible');
 		infoBox.scrollTop = 0;
 		currentCard = card;
+		setTimeout(() => {
+			currentCard = card;
+		}, 250);
 	};
 
 	let infoBoxHide = () => {
@@ -32,6 +35,10 @@
 			currentCard = undefined;
 		}, 250);
 	};
+
+	let _getCardImgName = (card: CollectionCard) => {
+		return card.name.replace(/ /g, '_').replace(/'/g, '');
+	};
 </script>
 
 <div class="container sidePadding">
@@ -41,12 +48,23 @@
 			<div class="deck">
 				{#each deck.cards as card}
 					<div
-						on:click={(e) => {
-							infoBoxAppear(e, card);
+						on:click={() => {
+							infoBoxAppear(card);
+						}}
+						on:keydown={(e) => {
+							if (e.key === 'Enter') {
+								infoBoxAppear(card);
+							}
 						}}
 						class="card"
 					>
-						<img src="/cards/{card?.name}-200.webp" alt="" />
+						<img
+							src="/cards/{_getCardImgName(card)}-120.webp"
+							srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
+								card
+							)}-200.webp 200w`}
+							alt={card?.name}
+						/>
 					</div>
 				{/each}
 			</div>
@@ -83,7 +101,7 @@
 						}
 					}}
 					class={currentCard?.reversed ? 'reversed' : ''}
-					src="/cards/{currentCard?.name}-400.webp"
+					src="/cards/{_getCardImgName(currentCard)}-400.webp"
 					alt=""
 				/>
 			{/if}
@@ -123,16 +141,16 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
-		gap: 0rem;
+		gap: 0.25rem;
 		.card {
 			width: max(80px, 9.0909%);
-			padding-right: 0.25rem;
 			img {
 				border-radius: 0.25rem;
 				border: 2px solid white;
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
+				margin-top: -0.25rem;
 			}
 		}
 	}
@@ -153,6 +171,7 @@
 		left: 0 !important;
 		overflow: auto;
 		.infoBoxContent {
+			min-height: 100%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;

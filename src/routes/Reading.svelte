@@ -57,7 +57,9 @@
 		state = 1;
 		document.body.scrollIntoView();
 	};
-
+	let _getCardImgName = (name: string) => {
+		return name.replace(/ /g, '_').replace(/'/g, '');
+	};
 </script>
 
 <div class="reading">
@@ -86,7 +88,7 @@
 
 							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{correctTitle($readingStore.cards[i].title)}-400.webp"
+									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].title))}-400.webp"
 									alt=""
 									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
@@ -150,14 +152,14 @@
 					width: 100%;
 					max-width: min(80vw,400px);;
 					border-radius: 0.25rem;
-					border: 0.5rem solid #000;
+					border: 0.25rem solid #000;
 					transition: all 1s ease;
 					&.white {
-						border: 2px solid #fff;
+						border: 0.25rem solid #fff;
 					}
 				}
 				&.ready img {
-					border: 0.5rem solid #000;
+					border: 4px solid #000;
 					cursor: pointer;
 					filter: drop-shadow(-8px 8px 16px rgba(243, 221, 154, 0.37))
 						drop-shadow(8px -8px 16px rgba(46, 103, 132, 0.6));
