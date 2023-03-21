@@ -73,7 +73,7 @@ cardTextLength: 60
 position= cons
 question= Should I eat pineapple on pizza?
 Short paragraph about the cons of eating pineapple on pizza approx 20 words
-<ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>`,
+<ul><li>Bullet point approx 10 words</li><li>Bullet point approx 10 words<li><li>Bullet point approx 10 words</ul>`,
     drawExample: `
 [{"title":"Five of Swords","reversed":false,"position":"Pros"},
 {"title":"The Tower","reversed":true,"position":"Cons"}]`,

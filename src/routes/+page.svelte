@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { energies } from '$lib/energies';
 	import Generate from './Generate.svelte';
 	import readingScenarios from '$lib/readingScenarios';
 	import { fade, fly } from 'svelte/transition';
@@ -33,17 +32,23 @@
 
 	let timeVarInterval: NodeJS.Timeout;
 	onMount(() => {
-		console.log("onMount")
 		clearInterval(timeVarInterval);
 		timeVarInterval = setInterval(() => {
-			timeVariableStore.set(($timeVariableStore + 1) % 4);
-		}, 1000);
+			timeVariableStore.set(($timeVariableStore + 1) % 11);
+		}, 500);
 	});
 	
 </script>
 
 <div class="container">
-	<h1 class="sidePadding"><span class={$timeVariableStore === 0 || $timeVariableStore === 3 ? "illuminated" : ""}>Call upon</span> <span class={$timeVariableStore === 1 || $timeVariableStore === 3 ? "illuminated" : ""}>the power</span> <span class={$timeVariableStore === 2 || $timeVariableStore === 3 ? "illuminated" : ""}>of Tarot</span></h1>
+	<h1 class="sidePadding">
+		<span class={$timeVariableStore === 0 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>Call </span>
+		<span class={$timeVariableStore === 1 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>upon </span>
+		<span class={$timeVariableStore === 2 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>the </span>
+		<span class={$timeVariableStore === 3 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>power </span>
+		<span class={$timeVariableStore === 4 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>of </span>
+		<span class={$timeVariableStore === 5 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>Tarot</span>
+	</h1>
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
 			<Generate bind:state bind:energy bind:error />
@@ -63,7 +68,6 @@
 				<input type="text" name="information" id="information" bind:value={information} />
 				<button on:click={handleSubmitInformation}>+ Add</button> -->
 			{/if}
-			<!-- Restart button -->
 		</div>
 		<div class={'error sidePadding ' + (state !== 4 ? 'hidden ' : '')}>
 			<!-- Restart button -->

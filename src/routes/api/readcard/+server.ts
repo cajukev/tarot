@@ -48,7 +48,7 @@ question= ${question}
 
   let openAIresponseReading = await openai.createChatCompletion({
     // model: 'gpt-4',
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-3.5-turbo-0301',
     messages: messages,
     max_tokens: 2048,
     temperature: 1,

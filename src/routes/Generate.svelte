@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {energies, energyList} from '$lib/energies';
+	import {energyList, energyGrid} from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
 	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
@@ -13,7 +13,6 @@
 	} from '../stores';
 
 	export let state: number;
-	$: console.log('state', state);
 	export let energy = '';
 	export let error = '';
 
@@ -25,7 +24,6 @@
 	let setting = 'qa';
 	$: settingStore.set(setting);
 	settingStore.set(setting);
-	console.log($settingStore);
 
 	let cards: Card[] = [];
 	let question = '';
@@ -37,7 +35,6 @@
 	}
 
 	$: {
-		console.log($cardFlipStore);
 		if ($cardFlipStore !== -1) readCard($cardFlipStore);
 	}
 
@@ -100,8 +97,7 @@
 	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
-		energy = energyList[(pressedSegment - 1) + 10 * $timeVariableStore];
-		console.log(energy, pressedSegment, $timeVariableStore);
+		energy = energyList[energyGrid[pressedSegment - 1][(window.scrollY === 0 ? 0 : 1)][($timeVariableStore)]];
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		cardFlipStore.set(-1)
@@ -125,10 +121,10 @@
 					cards?: { title: string; reversed: boolean; position: string }[];
 					error?: string;
 				}) => {
-					console.log(body);
 					if (body.error) {
 						state = 4;
 						error = body.error;
+						console.log(error);
 						return;
 					}
 					if (body.cards) {
@@ -146,7 +142,6 @@
 
 	let readCard = (index: number) => {
 		let card = $readingStore.cards[index];
-		console.log(card);
 		fetch('/api/readcard', {
 			method: 'POST',
 			headers: {
@@ -168,7 +163,6 @@
 
 			while (true && reader) {
 				const { done, value } = await reader.read();
-				console.log(done, value);
 				const text = new TextDecoder('utf-8').decode(value);
 				if (text) {
 					card.reading = text;
@@ -194,7 +188,6 @@
 
 							while (true && reader) {
 								const { done, value } = await reader.read();
-								console.log(done, value);
 								const text = new TextDecoder('utf-8').decode(value);
 								if (text) $readingStore.conclusion = text;
 								if (done) break;
@@ -210,6 +203,8 @@
 	let selectOption = (option: string) => {
 		setting = option;
 	}
+
+	
 </script>
 
 <div class="container">

@@ -31,7 +31,7 @@
 			.replace('The Justice', 'Justice')
 			.replace('The Death', 'Death')
 			.replace('The Wheel of Fortune', 'Wheel of Fortune')
-			.replace('The Judgment', 'Judgement')
+			.replace('The Judgement', 'Judgment')
 			.replace('The King', 'King')
 			.replace('The Queen', 'Queen')
 			.replace('The Knight', 'Knight')
@@ -134,6 +134,7 @@
 				transition: all 1s ease, opacity 0 0.5s ease;
 				max-width: min(80vw,400px);;
 				justify-self: center;
+				perspective: 1200px;
 				& p {
 					width: 100%;
 					text-align: center;
@@ -221,11 +222,11 @@
 	@keyframes cardGrowAnimReversed {
 		0% {
 			opacity: 0.2;
-			transform: scale(0.75) rotate(0deg);
+			transform: scale(0.75) rotatex(0deg) rotateY(0deg);;
 		}
 		100% {
 			opacity: 1;
-			transform: scale(1) rotate(180deg);
+			transform: scale(1) rotatex(180deg) rotateY(180deg);;
 		}
 	}
 </style>

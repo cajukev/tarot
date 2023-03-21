@@ -30,7 +30,7 @@ ${reading}`
   console.log(system)
   let openAIresponseConclusion = await openai.createChatCompletion({
     // model: 'gpt-4',
-    model: 'gpt-3.5-turbo',
+    model: 'gpt-4',
     messages: [{ role: 'system', 'content': system }],
     max_tokens: 2048,
     temperature: 1,
@@ -50,7 +50,6 @@ ${reading}`
             streamingText += messageString
             controller.enqueue(streamingText);
           }
-          console.log(streamingText)
         } catch (error) {
           //console.error("Could not JSON parse stream message", message, error);
         }

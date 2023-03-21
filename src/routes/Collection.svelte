@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { cards, type CollectionCard } from '$lib/cards';
+	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
 	import { fade } from 'svelte/transition';
 	import { deviceStore } from '../stores';
 	let majorArcana: CollectionCard[] | undefined = cards.get('Major Arcana');
-	let currentCard: CollectionCard;
 
-	// InfoBox follows mouse position
+	let decks: CollectionDeck[] = [];
+	for (let [key, value] of cards.entries()) {
+		decks.push({ name: key, cards: value });
+	}
+
+	let currentCard: CollectionCard | undefined = undefined;
+
 	let infoBox: HTMLDivElement;
 	let isShown = false;
 
 	let infoBoxAppear = (e: MouseEvent, card: CollectionCard) => {
-		console.log('infoBoxAppear');
 		isShown = true;
 		infoBox.classList.add('visible');
 		infoBox.scrollTop = 0;
@@ -18,27 +22,32 @@
 	};
 
 	let infoBoxHide = () => {
-		console.log('infoBoxHide');
 		isShown = false;
 		infoBox.classList.remove('visible');
+		setTimeout(() => {
+			currentCard?.reversed && (currentCard.reversed = false);
+			currentCard = undefined;
+		}, 250);
 	};
 </script>
 
 <div class="container sidePadding">
-	<h2>Major Arcana</h2>
-	<div class="pack MA">
-		{#if majorArcana !== undefined}
-			{#each majorArcana as card}
-				<div
-					on:click={(e) => {
-						infoBoxAppear(e, card);
-					}}
-					class="card"
-				>
-					<img src="/cards/{card?.name}-200.webp" alt="" />
-				</div>
-			{/each}
-		{/if}
+	<div class="">
+		{#each decks as deck}
+			<h2>{deck.name}</h2>
+			<div class="deck">
+				{#each deck.cards as card}
+					<div
+						on:click={(e) => {
+							infoBoxAppear(e, card);
+						}}
+						class="card"
+					>
+						<img src="/cards/{card?.name}-200.webp" alt="" />
+					</div>
+				{/each}
+			</div>
+		{/each}
 	</div>
 
 	<div
@@ -54,21 +63,27 @@
 		}}
 	>
 		<div class="infoBoxContent">
-			<img
-				on:click={(e) => {
-					e.stopPropagation();
-					currentCard.reversed = !currentCard.reversed;
-				}}
-				on:keydown={(e) => {
-					if (e.key === 'Enter') {
+			{#if currentCard}
+				<img
+					on:click={(e) => {
 						e.stopPropagation();
-						currentCard.reversed = !currentCard.reversed;
-					}
-				}}
-				class={currentCard?.reversed ? 'reversed' : ''}
-				src="/cards/{currentCard?.name}-400.webp"
-				alt=""
-			/>
+						if (currentCard) {
+							currentCard.reversed = !currentCard?.reversed;
+						}
+					}}
+					on:keydown={(e) => {
+						if (e.key === 'Enter') {
+							e.stopPropagation();
+							if (currentCard) {
+								currentCard.reversed = !currentCard?.reversed;
+							}
+						}
+					}}
+					class={currentCard?.reversed ? 'reversed' : ''}
+					src="/cards/{currentCard?.name}-400.webp"
+					alt=""
+				/>
+			{/if}
 			<h3>{currentCard?.name}</h3>
 			{#if currentCard?.reversed}
 				<h4 in:fade>Reversed</h4>
@@ -94,14 +109,12 @@
 	h2 {
 		margin-top: 2rem;
 		font-family: $header-font;
-		@media screen and (max-width: 997px) {
-			text-align: center;
-		}
+		text-align: center;
 	}
 	h3 {
 		font-family: $header-font;
 	}
-	.pack {
+	.deck {
 		margin-top: 1rem;
 		display: flex;
 		flex-wrap: wrap;
@@ -142,6 +155,7 @@
 			justify-content: center;
 			align-items: center;
 			padding-bottom: 2rem;
+			perspective: 1200px;
 			h3 {
 				margin-top: 0.5rem;
 			}
@@ -150,7 +164,7 @@
 				max-width: 90vw;
 				border-radius: 0.25rem;
 				border: 2px solid white;
-				box-shadow:inset 0px 0px 0px 4px #f00;
+				box-shadow: inset 0px 0px 0px 4px #f00;
 				transition: all 1s cubic-bezier(0.21, 0.96, 0.49, 0.96);
 				&.reversed {
 					transform: rotatex(180deg) rotateY(180deg);
