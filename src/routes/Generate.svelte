@@ -1,5 +1,7 @@
 <script lang="ts">
-	import {energyList, energyGrid} from '$lib/energies';
+	import type { CollectionCard } from '$lib/cards';
+	import { cards } from '$lib/cards';
+	import { energyList, energyGrid } from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
 	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
@@ -25,18 +27,51 @@
 	$: settingStore.set(setting);
 	settingStore.set(setting);
 
-	let cards: Card[] = [];
+	let drawnCards: CollectionCard[] = [];
 	let question = '';
 	let conclusion = '';
 
 	$: {
-		$readingStore.cards = cards;
+		$readingStore.cards = drawnCards;
 		$readingStore.question = question;
 	}
 
 	$: {
-		if ($cardFlipStore !== -1) readCard($cardFlipStore);
+		// if ($cardFlipStore !== -1) readCard($cardFlipStore);
 	}
+
+	$: {
+		console.log('flippedCardsStore', $flippedCardsStore);
+		cardFlipped();
+	}
+
+	let cardFlipped = () => {
+		if ($flippedCardsStore?.filter((card) => card).length === $flippedCardsStore?.length && $readingStore.cards.length > 0) {
+			console.log('all cards flipped', $flippedCardsStore?.filter((card) => card).length, $readingStore.cards);
+			getReading();
+		}
+	};
+
+	let getReading = () => {
+		fetch('/api/tarotreading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore
+			})
+		}).then(async (res) => {
+			const reader = res.body?.getReader();
+
+			while (true && reader) {
+				const { done, value } = await reader.read();
+				const text = new TextDecoder('utf-8').decode(value);
+				if (text) $readingStore.conclusion = text;
+				if (done) break;
+			}
+		});
+	};
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {
@@ -49,8 +84,7 @@
 					'rotatey(3deg) rotatex(-15deg) translateX(-0.25rem)';
 				break;
 			case 3:
-				generateButtonWrapper.style.transform =
-					'rotatey(0) rotatex(-15deg) translateX(0rem)';
+				generateButtonWrapper.style.transform = 'rotatey(0) rotatex(-15deg) translateX(0rem)';
 				break;
 			case 4:
 				generateButtonWrapper.style.transform =
@@ -60,29 +94,21 @@
 				generateButtonWrapper.style.transform =
 					'rotatey(-10deg) rotatex(-15deg) translateX(0.5rem)';
 				break;
-				case 6:
-					generateButtonWrapper.style.transform =
-						'rotatey(10deg) rotatex(15deg) translateX(-0.5rem)';
-					break;
-				case 7:
-					generateButtonWrapper.style.transform =
-						'rotatey(3deg) rotatex(15deg) translateX(-0.25rem)';
-					break;
-				case 8:
-					generateButtonWrapper.style.transform =
-						'rotatey(0) rotatex(15deg) translateX(0rem)';
-					break;
-				case 9:
-					generateButtonWrapper.style.transform =
-						'rotatey(-3deg) rotatex(15deg) translateX(0.25rem)';
-					break;
-				case 10:
-					generateButtonWrapper.style.transform =
-						'rotatey(-10deg) rotatex(15deg) translateX(0.5rem)';
-					break;
-
-
-
+			case 6:
+				generateButtonWrapper.style.transform = 'rotatey(10deg) rotatex(15deg) translateX(-0.5rem)';
+				break;
+			case 7:
+				generateButtonWrapper.style.transform = 'rotatey(3deg) rotatex(15deg) translateX(-0.25rem)';
+				break;
+			case 8:
+				generateButtonWrapper.style.transform = 'rotatey(0) rotatex(15deg) translateX(0rem)';
+				break;
+			case 9:
+				generateButtonWrapper.style.transform = 'rotatey(-3deg) rotatex(15deg) translateX(0.25rem)';
+				break;
+			case 10:
+				generateButtonWrapper.style.transform = 'rotatey(-10deg) rotatex(15deg) translateX(0.5rem)';
+				break;
 		}
 	};
 	let mouseExit = () => {
@@ -97,41 +123,33 @@
 	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
-		energy = energyList[energyGrid[pressedSegment - 1][(window.scrollY === 0 ? 0 : 1)][($timeVariableStore)]];
+		energy =
+			energyList[energyGrid[pressedSegment - 1][window.scrollY === 0 ? 0 : 1][$timeVariableStore]];
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		cardFlipStore.set(-1)
+		cardFlipStore.set(-1);
 		$flippedCardsStore = readingScenarios.get(setting)?.positions.map(() => false) || [];
 
-
-
-
 		/**
-		 * 
+		 *
 		 * NEW READING PARADIGM
 		 * IMPLEMENT MEANING INTO GPT4 AND READING
-		 * 
+		 *
 		 * MINIMIZES API CALLS
 		 * LEVERAGES GPT4
 		 * DRAW ALL CARDS THEN GIVE GPT4 READING
 		 * INJECT CARD TEXT INTO GPT4
 		 * GPT4 RETURNS READING AS STREAM
-		 * 
+		 *
 		 * MEANING IS DISPLAYED TO USER
-		 * 
+		 *
 		 * 2 CALLS INSTEAD OF 2 / 3 / 5
 		 * HIGHER QUALITY RESPONSES
-		 * 
+		 *
 		 * API 15X COST OF 3.5-TURBO
-		 * 
-		 * 
-		*/
-
-
-
-
-
-
+		 *
+		 *
+		 */
 
 		fetch('/api/draw', {
 			method: 'POST',
@@ -148,7 +166,7 @@
 			.then((data) => data.body)
 			.then(
 				(body: {
-					cards?: { title: string; reversed: boolean; position: string }[];
+					cards?: { name: string; reversed: boolean; position: string }[];
 					error?: string;
 				}) => {
 					if (body.error) {
@@ -161,95 +179,110 @@
 						$readingStore.energy = energy;
 						$readingStore.setting = setting;
 						conclusion = '';
-						cards = body.cards;
-						cards = [...cards];
-						state = 3; // reading
-						//readcards(cards);
+						let drawnCards = body.cards;
+						console.log(drawnCards);
+						let returnCards: CollectionCard[] = [];
+						drawnCards.forEach((drawnCard) => {
+							for (let [key, value] of cards.entries()) {
+								value.forEach((card) => {
+									console.log(card.name === drawnCard.name);
+									if (drawnCard.name === card.name) {
+										card.reversed = drawnCard.reversed;
+										returnCards.push(card);
+										console.log(card);
+									}
+								});
+							}
+						});
+						console.log(returnCards);
+						$readingStore.cards = returnCards;
+						state = 3;
 					}
 				}
 			);
 	};
 
-	let readCard = (index: number) => {
-		let card = $readingStore.cards[index];
-		fetch('/api/readcard', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				question: $readingStore.question,
-				instruction: readingScenarios.get(setting)?.instructions[index],
-				example: readingScenarios.get(setting)?.example,
-				cardTextLength: readingScenarios.get(setting)?.cardTextLength,
-				energy: $readingStore.energy,
-				setting: $readingStore.setting,
-				card: card.title,
-				reversed: card.reversed,
-				position: card.position
-			})
-		}).then(async (res) => {
-			const reader = res.body?.getReader();
-
-			while (true && reader) {
-				const { done, value } = await reader.read();
-				const text = new TextDecoder('utf-8').decode(value);
-				if (text) {
-					card.reading = text;
-					cards[index] = card;
-					cards = [...cards];
-				}
-				if (done) {
-					flipLockStore.set(false);
-					let cardReadings = cards.map((card) => card.reading).filter((reading) => reading);
-					if (cardReadings.length === cards.length && readingScenarios.get(setting)?.conclusion) {
-						fetch('/api/conclusion', {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify({
-								readings: cardReadings,
-								question: question,
-								energy: energy
-							})
-						}).then(async (res) => {
-							const reader = res.body?.getReader();
-
-							while (true && reader) {
-								const { done, value } = await reader.read();
-								const text = new TextDecoder('utf-8').decode(value);
-								if (text) $readingStore.conclusion = text;
-								if (done) break;
-							}
-						});
-					}
-					break;
-				}
-			}
-		});
+	let readCards = () => {
+		fetch('/api/tarotreading');
 	};
+
+	// let readCard = (index: number) => {
+	// 	let card = $readingStore.cards[index];
+	// 	fetch('/api/readcard', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			question: $readingStore.question,
+	// 			instruction: readingScenarios.get(setting)?.instructions[index],
+	// 			example: readingScenarios.get(setting)?.example,
+	// 			cardTextLength: readingScenarios.get(setting)?.cardTextLength,
+	// 			energy: $readingStore.energy,
+	// 			setting: $readingStore.setting,
+	// 			card: card.name,
+	// 			reversed: card.reversed,
+	// 			position: card.position
+	// 		})
+	// 	}).then(async (res) => {
+	// 		const reader = res.body?.getReader();
+
+	// 		while (true && reader) {
+	// 			const { done, value } = await reader.read();
+	// 			const text = new TextDecoder('utf-8').decode(value);
+	// 			if (text) {
+	// 				card.reading = text;
+	// 				cards[index] = card;
+	// 				cards = [...cards];
+	// 			}
+	// 			if (done) {
+	// 				flipLockStore.set(false);
+	// 				let cardReadings = cards.map((card) => card.reading).filter((reading) => reading);
+	// 				if (cardReadings.length === cards.length && readingScenarios.get(setting)?.conclusion) {
+	// 					fetch('/api/conclusion', {
+	// 						method: 'POST',
+	// 						headers: {
+	// 							'Content-Type': 'application/json'
+	// 						},
+	// 						body: JSON.stringify({
+	// 							readings: cardReadings,
+	// 							question: question,
+	// 							energy: energy
+	// 						})
+	// 					}).then(async (res) => {
+	// 						const reader = res.body?.getReader();
+
+	// 						while (true && reader) {
+	// 							const { done, value } = await reader.read();
+	// 							const text = new TextDecoder('utf-8').decode(value);
+	// 							if (text) $readingStore.conclusion = text;
+	// 							if (done) break;
+	// 						}
+	// 					});
+	// 				}
+	// 				break;
+	// 			}
+	// 		}
+	// 	});
+	// };
 
 	let selectOption = (option: string) => {
 		setting = option;
-	}
-
-	
+	};
 </script>
 
 <div class="container">
 	<div class={'input ' + (innerState !== 1 ? 'hidden' : '')}>
 		<div class="optionSelect">
 			{#each Array.from(readingScenarios).map(([name, setting]) => ({ name, setting })) as scenario}
-			<div class="option" on:click={()=> selectOption(scenario.name)}>
-				<div class={"imgWrapper " + ($settingStore === scenario.name ? "active" : "")}>
-					<img src="/options/{scenario.name}.png" alt="">
+				<div class="option" on:click={() => selectOption(scenario.name)}>
+					<div class={'imgWrapper ' + ($settingStore === scenario.name ? 'active' : '')}>
+						<img src="/options/{scenario.name}.png" alt="" />
+					</div>
+					<div class="optionText">
+						<p>{scenario.setting.name}</p>
+					</div>
 				</div>
-				<div class="optionText">
-					<p>{scenario.setting.name}</p>
-				</div>
-			</div>
-
 			{/each}
 		</div>
 		<input bind:value={question} type="text" name="question" id="question" />
@@ -346,7 +379,7 @@
 		margin-top: 2rem;
 		text-align: center;
 	}
-	.optionSelect{
+	.optionSelect {
 		align-items: start;
 		display: flex;
 		gap: 1rem;
@@ -357,11 +390,11 @@
 		&::-webkit-scrollbar {
 			display: none;
 		}
-		.option{
+		.option {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			.imgWrapper{
+			.imgWrapper {
 				width: min(30vw, 6rem);
 				aspect-ratio: 1/1;
 				overflow: hidden;
@@ -371,18 +404,18 @@
 				align-items: center;
 				justify-content: center;
 				transition: border 0.25s ease;
-				&.active{
-					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 80%, #FFFFFF 100%);
-					& img{
+				&.active {
+					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 80%, #ffffff 100%);
+					& img {
 						transform: scale(1.1);
 					}
 				}
-				&:hover{
-					& img{
+				&:hover {
+					& img {
 						transform: scale(1.1);
 					}
 				}
-				img{
+				img {
 					transition: all 1s ease;
 					object-fit: contain;
 					max-height: 80%;

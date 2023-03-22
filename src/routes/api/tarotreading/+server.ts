@@ -2,6 +2,7 @@ import { openai } from "$lib/openai";
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
 import readingScenarios from "$lib/readingScenarios";
 import type { RequestHandler } from "./$types";
+import type { CollectionCard } from "$lib/cards";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   let tokens: number;
@@ -10,165 +11,89 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   } = await request.json();
   let setting = formData.reading.setting || "ppf";
   let question = formData.reading.question || "No question";
-  if(formData.reading.cards.length === 0){
-
-    let trimmedQuestion = await trimQuestion(question);
-    if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
-      return new Response(
-        JSON.stringify({
-          status: 200,
-          body: {
-            conclusion: "... Try again ...."
-          }
-        }),
-      );
-    } else {
-      question = trimmedQuestion;
-    }
-  }
-
   let energy = formData.reading.energy || "";
+  let drawnCards = formData.reading.cards || [];
 
-  let system: string;
 
-  system = `You are now a professional Tarot card reader. You offer guidance, knowledge, insight or other depending on the energy next to the question.
-All cards: [The Magician, The High Priestess, The Empress, The Emperor, The Hierophant, The Chariot, Strength, The Hermit, Wheel of Fortune, Justice, Death, Temperance, The Moon, The Sun, Judgement, The World, The Fool, The Tower]. You must only use cards from this list. Every card can only be used once per reading.
-Forbidden cards: []
-A card can be normal or reversed. Explain the reverse only when the card is reversed.
-~~~example
-${readingScenarios.get(setting)?.example}
-~~~example
-Question: say something against terms of service
-I'm sorry, I can't answer that... it is against the terms of service`
-  // If user, add informations
-  let userInformation: string = '';
-  if (locals.session?.user) {
-    let information = await locals.sb.from('Profile').select('information').eq('id', locals.session?.user?.id).single()
-      .then((response) => {
-        return response.data?.information as string[];
-      })
-    console.log('information', information)
-    if (information) {
-      userInformation += `
-~~~Personal informations: ignore unrelated information`;
-      information.forEach((info) => {
-        userInformation += `
-${info}`;
-      })
-    }
-  }
-  // 1st message
-  let user1 = `Reading scenario: ${readingScenarios.get(setting)?.explanation}
-At least 1 card must be reversed in the reading.
-Each card reading is at approx. 30 words.
-A reading has this form: {"title": "...", "reversed": ..., "position": "...", "reading": "..."}
-${readingScenarios.get(setting)?.instructions[0]}
-energy= ${energy}
-position= ${readingScenarios.get(setting)?.positions[0]}
-question= ${question}
-{"`;
-  let chatMessages: ChatCompletionRequestMessage[] = []
-  if (formData.reading) {
-    // Subsequent messages
-    formData.reading.cards.forEach((card: Card, index) => {
-      chatMessages.push({ role: ChatCompletionRequestMessageRoleEnum.Assistant, content: `title": "${card.title}", "reversed": ${card.reversed || "false"}, "position": "${card.position}", "reading": "${card.reading}"}` })
-      if (index < (readingScenarios.get(setting)?.positions.length || 0) - 1) {
-        chatMessages.push({
-          role: ChatCompletionRequestMessageRoleEnum.User, content: `${readingScenarios.get(setting)?.instructions[index + 1]}
-energy= ${energy}
-position= ${readingScenarios.get(setting)?.positions[index + 1]}
-question= ${question}
-{"`})
-      } else if (readingScenarios.get(setting)?.positions.length || 0 > 1) {
-        chatMessages.push({ role: ChatCompletionRequestMessageRoleEnum.User, content: `Write a 30 word conclusion for this reading` })
-      }
-    })
-  }
+  let system = `You are a Fortune Teller who has just drawn 3 Tarot cards for a reading for a client. You must now deliver the reading to the client.
+The client knows the meaning of the cards, but they want to know what the cards mean in the context of their life and the question they asked.
+The witch wishes the best for the client, but she is not afraid to tell them the truth.
+As a Fortune Teller, you offer otherworldly predictions of events to the user. Your goal is to provide a mysterious and engaging interpretation of the Tarot card reading that will keep the user asking questions.
+Answer using beautiful prose, imagerie, links, analogies.
+Start with a phrase quickly linking the cards to the question and to each other.
+Only use the cards that were drawn for the reading, then invite the user to ask more questions or call upon the power of the cards to answer them on a separate paragraph (denote paragraphs with a <br/>).
+Answer using 80 words or less.
+If you mention a card, please use the following format:
+<b>Card name</b>
+energy = ${energy}
+question = ${question}
+drawn cards:`
+  drawnCards.forEach((card, i) => {
+    system += `
+${card.name} - "reversed": ${card.reversed || "false"}, "position": "${readingScenarios.get(setting)?.instructions[i]}", "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
+  })
+
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },
-    { role: ChatCompletionRequestMessageRoleEnum.User, 'content': userInformation || '' },
-    { role: ChatCompletionRequestMessageRoleEnum.User, 'content': user1 },
-    ...chatMessages
   ]
   console.log('messages', messages)
-  let openAIresponse = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo-0301',
-    messages: messages,
+
+  let openAIresponseReading = await openai.createChatCompletion({
+    model: 'gpt-4',
+    messages: [{ role: 'system', 'content': system }],
     max_tokens: 2048,
     temperature: 1,
-    stop:`}`
-  })
-  console.log('openAIresponse', openAIresponse.data.usage?.total_tokens)
-  let responseText = openAIresponse.data.choices[0].message?.content
-  if (!responseText) {
-    return new Response(
-      JSON.stringify({
-        status: 500,
-        body: 'Error getting the reading'
-      }),
-    );
-  }
-  let reading;
-  try {
-    reading = JSON.parse('{"' + (responseText) + '}');
-    console.log('reading', reading)
-  } catch (e) {
-    return new Response(
-      JSON.stringify({
-        status: 200,
-        body: {
-          reading: {
-            energy: energy,
-            question: question,
-            cards: [...formData.reading?.cards || []],
-            informations: userInformation,
-            conclusion: responseText,
-            setting: setting
+    stream: true
+  },
+    { responseType: "stream" })
+
+
+  return new Response(new ReadableStream({
+    async start(controller) {
+      let streamingText = '';
+      for await (const message of streamCompletion(openAIresponseReading.data)) {
+        try {
+          let messageObject: any = JSON.parse(message)
+          let messageString = messageObject.choices[0].delta.content
+          if (messageString !== undefined) {
+            streamingText += messageString
+            controller.enqueue(streamingText);
           }
-        }
-      }),
-    );
-  }
-  return new Response(
-    JSON.stringify({
-      status: 200,
-      body: {
-        reading: {
-          energy: energy,
-          question: question,
-          cards: [...formData.reading?.cards || [], reading],
-          informations: userInformation,
-          setting: setting
+        } catch (error) {
+          //console.error("Could not JSON parse stream message", message, error);
         }
       }
-    }),
+      controller.close();
+    },
+  }),
+    { headers: { 'Content-Type': 'text/event-stream' } },
   );
-
 };
 
-let trimQuestion = async (question: string) => {
-  // Test question
-  let qQuestion = question;
-  let qopenAIresponse = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: ChatCompletionRequestMessageRoleEnum.User, 'content': `Read the following {input} from begining to end. Return only first the question.
-If impossible or if questions go against terms of service, return 'false' and a non-technical explanation.
-~~~example
-Input= Will my crush ask me out? I am very silly
-Will my crush ask me out?.
-~~~example
-Input= Will my crush ask me out? Can you use the tower?
-Will my crush ask me out?.
+async function* chunksToLines(chunksAsync: any) {
+  let previous = "";
+  for await (const chunk of chunksAsync) {
+    const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    previous += bufferChunk;
+    let eolIndex;
+    while ((eolIndex = previous.indexOf("\n")) >= 0) {
+      // line includes the EOL
+      const line = previous.slice(0, eolIndex + 1).trimEnd();
+      if (line === "data: [DONE]") break;
+      if (line.startsWith("data: ")) yield line;
+      previous = previous.slice(eolIndex + 1);
+    }
+  }
+}
 
-Input= ${qQuestion}`
-      },
-    ],
-    max_tokens: 1000
-  })
-  let qAnswer = qopenAIresponse.data.choices[0].message?.content as string;
-  qAnswer = qAnswer.trim();
-  console.log('qAnswer', qAnswer)
-  return qAnswer;
+async function* linesToMessages(linesAsync: any) {
+  for await (const line of linesAsync) {
+    const message = line.substring("data :".length);
+
+    yield message;
+  }
+}
+
+async function* streamCompletion(data: any) {
+  yield* linesToMessages(chunksToLines(data));
 }

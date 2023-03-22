@@ -29,9 +29,9 @@ export default new Map<string, ReadingScenarioType>([
 // position= Beginning
 // question= Should I work out tonight?
 // The Hermit reversed in the beginning position`,
-//     drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Beginning"},
-// {"title":"The Hermit","reversed":false,"position":"Middle"},
-// {"title":"The Empress","reversed":true,"position":"End"}]`,
+//     drawExample: `[{"name":"The High Priestess","reversed":false,"position":"Beginning"},
+// {"name":"The Hermit","reversed":false,"position":"Middle"},
+// {"name":"The Empress","reversed":true,"position":"End"}]`,
 // cardTextLength: 20
 //   }],
   ["qa", {
@@ -47,7 +47,7 @@ reversed= true
 position= answer
 question= Should I work out tonight?
 The Hermit reversed tells me that... `,
-drawExample: `[{"title":"The Sun","reversed":false,"position":"Answer"}]`,
+drawExample: `[{"name":"The Sun","reversed":false,"position":"Answer"}]`,
 cardTextLength: 60
   }],
   // ["2c-options", {
@@ -60,7 +60,7 @@ cardTextLength: 60
   //   example: `energy= "insightful"
   // position= "present"
   // question= Should I work out tonight?
-  // {"title": "The Hermit", "reversed": true, "position": "Pros", "reading": "..."}`
+  // {"name": "The Hermit", "reversed": true, "position": "Pros", "reading": "..."}`
   // }],
   ["pc", {
     key: "pc",
@@ -75,8 +75,8 @@ question= Should I eat pineapple on pizza?
 Short paragraph about the cons of eating pineapple on pizza approx 20 words
 <ul><li>Bullet point approx 10 words</li><li>Bullet point approx 10 words<li><li>Bullet point approx 10 words</ul>`,
     drawExample: `
-[{"title":"Five of Swords","reversed":false,"position":"Pros"},
-{"title":"The Tower","reversed":true,"position":"Cons"}]`,
+[{ "name":"Five of Swords", "reversed":false, "position":"Pros" },
+{ "name":"The Tower", "reversed":true, "position":"Cons" }]`,
     cardTextLength: 30
   }],
   ["ppf", {
@@ -99,9 +99,9 @@ reversed= true
 position= present
 question= Should I work out tonight?
 The Hermit reversed in the present position ... `,
-    drawExample: `[{"title":"The High Priestess","reversed":false,"position":"Past"},
-{"title":"The Hermit","reversed":false,"position":"Present"},
-{"title":"The Empress","reversed":true,"position":"Future"}]`,
+    drawExample: `[{"name":"The High Priestess","reversed":false,"position":"Past"},
+{"name":"The Hermit","reversed":false,"position":"Present"},
+{"name":"The Empress","reversed":true,"position":"Future"}]`,
     conclusion: true,
     cardTextLength: 20
   }]

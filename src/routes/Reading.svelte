@@ -6,10 +6,10 @@
 	let readingScenario = readingScenarios.get($settingStore);
 	let positions = readingScenario?.positions;
 	let flippedCards = new Array(positions?.length).fill(false);
-	let flipLock = false;
-	$: {
-		flipLock = $flipLockStore;
-	}
+	// let flipLock = false;
+	// $: {
+	// 	flipLock = $flipLockStore;
+	// }
 	$: {
 		readingScenario = readingScenarios.get($settingStore)
 		positions = readingScenario?.positions;
@@ -22,8 +22,9 @@
 
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
+		flippedCardsStore.set(flippedCards);
 		cardFlipStore.set(index)
-		$flipLockStore = true;
+		// $flipLockStore = true;
 	}
 
 	let correctTitle = (title: string) => {
@@ -72,28 +73,28 @@
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
 							<div
-								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + (!$flipLockStore  ? 'ready' : 'notready')}
+								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}
 							>
 								<img
 									src="/cards/cardback-400.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
-										if(!$flipLockStore){
+										// if(!$flipLockStore){
 											flipCard(i)
-										}
+										// }
 									}}
 								/>
 							</div>
 
 							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].title))}-400.webp"
+									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-400.webp"
 									alt=""
 									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
-								<h3>{correctTitle($readingStore.cards[i].title)}<span>{$readingStore.cards[i].reversed ? " reversed" : ""}</span></h3>
-								<p>{@html ($readingStore.cards[i].reading)?.trim() || ""}</p>
+								<h3>{correctTitle($readingStore.cards[i].name)}<span>{$readingStore.cards[i].reversed ? " reversed" : ""}</span></h3>
+								<p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p>
 							</div>
 						</div>
 					{:else}

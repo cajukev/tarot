@@ -1,5 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+import type { CollectionCard } from "$lib/cards";
 import type { TypedSupabaseClient } from "@supabase/auth-helpers-sveltekit/dist/types";
 
 declare global {
@@ -18,14 +19,14 @@ declare global {
 		// interface Platform {}
 	}
 	type Card = {
-		title: string
+		name: string
 		reversed: boolean
 		position: string
 		reading?: string
 	}
 
 	type ReadingType = {
-		cards: Card[],
+		cards: CollectionCard[],
 		conclusion: string,
 		question: string,
 		energy: string,
