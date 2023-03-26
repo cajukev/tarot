@@ -28,7 +28,7 @@
 	$: settingStore.set(setting);
 	settingStore.set(setting);
 
-	let character = 'Brother Oak';
+	let character = 'Kevin the novice';
 
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
@@ -39,7 +39,7 @@
 	let oldScroll = 0;
 	onMount(() => {
 		window.onscroll = function () {
-			scrollVar = oldScroll > scrollY ? 1 : 2;
+			scrollVar = oldScroll > scrollY ? 0 : 1;
 			oldScroll = scrollY;
 		};
 	});
@@ -47,10 +47,6 @@
 	$: {
 		$readingStore.cards = drawnCards;
 		$readingStore.question = question;
-	}
-
-	$: {
-		// if ($cardFlipStore !== -1) readCard($cardFlipStore);
 	}
 
 	$: {
@@ -229,70 +225,6 @@
 		});
 	};
 
-	let readCards = () => {
-		fetch('/api/tarotreading');
-	};
-
-	// let readCard = (index: number) => {
-	// 	let card = $readingStore.cards[index];
-	// 	fetch('/api/readcard', {
-	// 		method: 'POST',
-	// 		headers: {
-	// 			'Content-Type': 'application/json'
-	// 		},
-	// 		body: JSON.stringify({
-	// 			question: $readingStore.question,
-	// 			instruction: readingScenarios.get(setting)?.instructions[index],
-	// 			example: readingScenarios.get(setting)?.example,
-	// 			cardTextLength: readingScenarios.get(setting)?.cardTextLength,
-	// 			energy: $readingStore.energy,
-	// 			setting: $readingStore.setting,
-	// 			card: card.name,
-	// 			reversed: card.reversed,
-	// 			position: card.position
-	// 		})
-	// 	}).then(async (res) => {
-	// 		const reader = res.body?.getReader();
-
-	// 		while (true && reader) {
-	// 			const { done, value } = await reader.read();
-	// 			const text = new TextDecoder('utf-8').decode(value);
-	// 			if (text) {
-	// 				card.reading = text;
-	// 				cards[index] = card;
-	// 				cards = [...cards];
-	// 			}
-	// 			if (done) {
-	// 				flipLockStore.set(false);
-	// 				let cardReadings = cards.map((card) => card.reading).filter((reading) => reading);
-	// 				if (cardReadings.length === cards.length && readingScenarios.get(setting)?.conclusion) {
-	// 					fetch('/api/conclusion', {
-	// 						method: 'POST',
-	// 						headers: {
-	// 							'Content-Type': 'application/json'
-	// 						},
-	// 						body: JSON.stringify({
-	// 							readings: cardReadings,
-	// 							question: question,
-	// 							energy: energy
-	// 						})
-	// 					}).then(async (res) => {
-	// 						const reader = res.body?.getReader();
-
-	// 						while (true && reader) {
-	// 							const { done, value } = await reader.read();
-	// 							const text = new TextDecoder('utf-8').decode(value);
-	// 							if (text) $readingStore.conclusion = text;
-	// 							if (done) break;
-	// 						}
-	// 					});
-	// 				}
-	// 				break;
-	// 			}
-	// 		}
-	// 	});
-	// };
-
 	let selectOption = (option: string) => {
 		setting = option;
 	};
@@ -325,11 +257,11 @@
 		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
 				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
-				'transform: translatey('+(scrollVar===2?'-100%':'-70%')+');' +
+				'transform: translatey('+(scrollVar===1?'-100%':'-70%')+');' +
 				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
 				</div>
 				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
-				'transform: scale(-1) translatey('+(scrollVar===2?'-70%':'-100%')+');' +
+				'transform: scale(-1) translatey('+(scrollVar===1?'-70%':'-100%')+');' +
 				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
 				</div>
 				<button
@@ -502,6 +434,7 @@
 				}
 			}
 			& .timeVarIndicator{
+				pointer-events: none;
 				background: radial-gradient(50% 100% at 50% 0%, rgba(255, 255, 255, 0.47) 0%, rgba(217, 217, 217, 0) 100%);
 				height: 100%;
 				width: 30%;

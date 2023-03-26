@@ -64,7 +64,10 @@
 </script>
 
 <div class="reading">
-	<h2>"{$readingStore.question}"</h2>
+	<div class="header">
+		<h2>"{$readingStore.question}"</h2>
+		<p>Energy: ({$readingStore.energy})</p>
+	</div>
 	<div class="cards">
 		{#each new Array(readingScenario?.positions.length) as card, i}
 			<div>
@@ -118,7 +121,11 @@
 		margin-top: 2rem;
 		text-align: center;
 		& h2 {
-			margin-bottom: 2rem;
+			margin-bottom: 0.5rem ;
+			&~p{
+				font-size: $mini-font-size;
+				margin-bottom: 2rem;
+			}
 		}
 		.cards {
 			// display: grid;
