@@ -30,6 +30,7 @@ declare global {
 		conclusion: string,
 		question: string,
 		energy: string,
-		setting: string
+		setting: string,
+		character: string,
 	}
 }

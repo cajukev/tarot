@@ -94,7 +94,7 @@
 									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
 								<h3>{correctTitle($readingStore.cards[i].name)}<span>{$readingStore.cards[i].reversed ? " reversed" : ""}</span></h3>
-								<p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p>
+								<!-- <p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p> -->
 							</div>
 						</div>
 					{:else}

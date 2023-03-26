@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
+	import { energyGroups, energyList, energyMap } from '$lib/energies';
 	import { openai } from '$lib/openai';
 	import type { ChatCompletionRequestMessage } from 'openai';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { deviceStore } from '../stores';
-	let majorArcana: CollectionCard[] | undefined = cards.get('Major Arcana');
 
 	let decks: CollectionDeck[] = [];
 	for (let [key, value] of cards.entries()) {
@@ -38,6 +38,24 @@
 
 	let _getCardImgName = (card: CollectionCard) => {
 		return card.name.replace(/ /g, '_').replace(/'/g, '');
+	};
+
+	let addColorsToMeaningText = (text: string) => {
+		let newText = text;
+		energyList.forEach((energy) => {
+			newText = newText.replace(
+				`<b>${energy}</b>`,
+				`<b><span style="color: ${_getEnergyColor(
+					energy
+				)}; text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25), 0px 0px 8px rgba(255, 255, 255, 0.35);">${energy}</span></b>`
+			);
+		});
+		return newText;
+	};
+
+	let _getEnergyColor = (energy: string) => {
+		console.log(energy, energyMap.get(energyList.indexOf(energy) + 1)?.group);
+		return energyGroups.get(energyMap.get(energyList.indexOf(energy) + 1)?.group || 0)?.color;
 	};
 </script>
 
@@ -111,18 +129,32 @@
 			{/if}
 			{#if currentCard?.reversed === false}
 				<p in:fade>
-					{@html currentCard?.meaning}
+					{@html addColorsToMeaningText(currentCard?.meaning)}
 					<span class="dummy energy" />
 				</p>
 			{:else if currentCard?.reversed === true}
 				<p in:fade>
-					{@html currentCard?.reversedMeaning}
+					{@html addColorsToMeaningText(currentCard?.reversedMeaning)}
 					<span class="dummy energy" />
 				</p>
 			{/if}
 		</div>
 	</div>
 </div>
+<!-- <div>
+	{#each [...energyGroups.values()] as group, i}
+		<div class="energyGroup">
+			<h3>{addColorsToMeaningText(group.title)}</h3>
+			{#each [...energyMap.values()]
+				.sort((a, b) => a.value.localeCompare(b.value))
+				.filter((e) => e.group === i + 1) as energy}
+				<div class="">
+					<div class="energyName">{energy.value}</div>
+				</div>
+			{/each}
+		</div>
+	{/each}
+</div> -->
 
 <style lang="scss">
 	.container {
@@ -141,7 +173,7 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
-		gap: 0.25rem;
+		gap: 0.75rem;
 		.card {
 			width: max(80px, 9.0909%);
 			img {
@@ -151,6 +183,12 @@
 				height: 100%;
 				object-fit: cover;
 				margin-top: -0.25rem;
+				box-shadow: 0 0.5rem 1rem rgba(black, 0.5);
+				transition: all 0.1s ease;
+				&:hover {
+					cursor: pointer;
+					transform: translateY(-0.25rem);
+				}
 			}
 		}
 	}

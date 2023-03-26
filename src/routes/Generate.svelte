@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { CollectionCard } from '$lib/cards';
 	import { cards } from '$lib/cards';
-	import { energyList, energyGrid } from '$lib/energies';
+	import { energyList, energyGrid, energyMap } from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
 	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
+	import characters from '$lib/characters';
 	import {
 		readingStore,
 		timeVariableStore,
@@ -27,9 +28,21 @@
 	$: settingStore.set(setting);
 	settingStore.set(setting);
 
+	let character = 'Brother Oak';
+
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
+
 	let conclusion = '';
+
+	let scrollVar = 1;
+	let oldScroll = 0;
+	onMount(() => {
+		window.onscroll = function () {
+			scrollVar = oldScroll > scrollY ? 1 : 2;
+			oldScroll = scrollY;
+		};
+	});
 
 	$: {
 		$readingStore.cards = drawnCards;
@@ -46,31 +59,17 @@
 	}
 
 	let cardFlipped = () => {
-		if ($flippedCardsStore?.filter((card) => card).length === $flippedCardsStore?.length && $readingStore.cards.length > 0) {
-			console.log('all cards flipped', $flippedCardsStore?.filter((card) => card).length, $readingStore.cards);
+		if (
+			$flippedCardsStore?.filter((card) => card).length === $flippedCardsStore?.length &&
+			$readingStore.cards.length > 0
+		) {
+			console.log(
+				'all cards flipped',
+				$flippedCardsStore?.filter((card) => card).length,
+				$readingStore.cards
+			);
 			getReading();
 		}
-	};
-
-	let getReading = () => {
-		fetch('/api/tarotreading', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				reading: $readingStore
-			})
-		}).then(async (res) => {
-			const reader = res.body?.getReader();
-
-			while (true && reader) {
-				const { done, value } = await reader.read();
-				const text = new TextDecoder('utf-8').decode(value);
-				if (text) $readingStore.conclusion = text;
-				if (done) break;
-			}
-		});
 	};
 
 	let mouseoverSegment = (segment: number) => {
@@ -123,8 +122,14 @@
 	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
+		conclusion = '';
+		console.log(
+			energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1
+		);
 		energy =
-			energyList[energyGrid[pressedSegment - 1][window.scrollY === 0 ? 0 : 1][$timeVariableStore]];
+			energyMap.get(
+				energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1
+			)?.value || '';
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		cardFlipStore.set(-1);
@@ -200,6 +205,28 @@
 					}
 				}
 			);
+	};
+
+	let getReading = () => {
+		$readingStore.character = character;
+		fetch('/api/tarotreading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore
+			})
+		}).then(async (res) => {
+			const reader = res.body?.getReader();
+
+			while (true && reader) {
+				const { done, value } = await reader.read();
+				const text = new TextDecoder('utf-8').decode(value);
+				if (text) $readingStore.conclusion = text;
+				if (done) break;
+			}
+		});
 	};
 
 	let readCards = () => {
@@ -285,9 +312,26 @@
 				</div>
 			{/each}
 		</div>
+		<!-- Character Select - regular select element with the characters as options -->
+		<div class="characterSelect">
+			<select bind:value={character}>
+				{#each [...characters] as character}
+					<option value={character[0]}>{character[0]}</option>
+				{/each}
+			</select>
+		</div>
+
 		<input bind:value={question} type="text" name="question" id="question" />
 		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
+				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
+				'transform: translatey('+(scrollVar===2?'-100%':'-70%')+');' +
+				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
+				</div>
+				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
+				'transform: scale(-1) translatey('+(scrollVar===2?'-70%':'-100%')+');' +
+				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
+				</div>
 				<button
 					type="button"
 					on:mouseover|preventDefault={() => mouseoverSegment(1)}
@@ -445,6 +489,9 @@
 			grid-template-rows: repeat(2, 1fr);
 			width: 16rem;
 			height: 5rem;
+			position: relative;
+			overflow-x: hidden;
+			overflow-y: hidden;
 			& button {
 				width: 100%;
 				height: 100%;
@@ -453,6 +500,13 @@
 				&:hover {
 					// background-color: rgb(14, 13, 13);
 				}
+			}
+			& .timeVarIndicator{
+				background: radial-gradient(50% 100% at 50% 0%, rgba(255, 255, 255, 0.47) 0%, rgba(217, 217, 217, 0) 100%);
+				height: 100%;
+				width: 30%;
+				transition: all 0.5s ease-out;
+				position: absolute;
 			}
 		}
 		& p {
