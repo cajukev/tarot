@@ -1,39 +1,25 @@
 <script lang="ts">
 	import type { CollectionCard } from '$lib/cards';
 	import { cards } from '$lib/cards';
-	import { energyList, energyGrid, energyMap } from '$lib/energies';
+	import { energyGrid, energyMap } from '$lib/energies';
 	import readingScenarios from '$lib/readingScenarios';
-	import type { ChatCompletionResponseMessage } from 'openai';
 	import { onMount } from 'svelte';
 	import characters from '$lib/characters';
-	import {
-		readingStore,
-		timeVariableStore,
-		settingStore,
-		flippedCardsStore,
-		cardFlipStore,
-		flipLockStore
-	} from '../stores';
-
+	import { readingStore, timeVariableStore, flippedCardsStore, collectionStore } from '../stores';
 	export let state: number;
 	export let energy = '';
 	export let error = '';
-
 	let innerState = 1;
 
 	let generateButtonWrapper: HTMLDivElement;
 	let pressedSegment = 0;
 
-	let setting = 'qa';
-	$: settingStore.set(setting);
-	settingStore.set(setting);
+	$readingStore.setting = 'qa';
+	$readingStore.character = 'Kevin The Novice';
 
-	let character = 'Kevin the novice';
 
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
-
-	let conclusion = '';
 
 	let scrollVar = 1;
 	let oldScroll = 0;
@@ -118,19 +104,12 @@
 	let handleSubmit2 = () => {
 		state = 2; // loading
 		innerState = 1;
-		conclusion = '';
-		console.log(
-			energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1
-		);
-		energy =
-			energyMap.get(
-				energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1
-			)?.value || '';
+		$readingStore.conclusion = '';
+		$readingStore.energy =
+			energyMap.get(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)?.value || '';
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		cardFlipStore.set(-1);
-		$flippedCardsStore = readingScenarios.get(setting)?.positions.map(() => false) || [];
-
+		$flippedCardsStore = readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
 		/**
 		 *
 		 * NEW READING PARADIGM
@@ -158,9 +137,8 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				question: question,
-				energy: energy,
-				setting: setting
+				reading: $readingStore,
+				collectionDecks: $collectionStore
 			})
 		})
 			.then((res) => res.json())
@@ -177,11 +155,7 @@
 						return;
 					}
 					if (body.cards) {
-						$readingStore.energy = energy;
-						$readingStore.setting = setting;
-						conclusion = '';
 						let drawnCards = body.cards;
-						console.log(drawnCards);
 						let returnCards: CollectionCard[] = [];
 						drawnCards.forEach((drawnCard) => {
 							for (let [key, value] of cards.entries()) {
@@ -204,7 +178,6 @@
 	};
 
 	let getReading = () => {
-		$readingStore.character = character;
 		fetch('/api/tarotreading', {
 			method: 'POST',
 			headers: {
@@ -226,44 +199,90 @@
 	};
 
 	let selectOption = (option: string) => {
-		setting = option;
+		$readingStore.setting = option;
+		$flippedCardsStore = readingScenarios.get(option)?.positions.map(() => false) || [];
+	};
+
+	let selectCharacter = (character: string) => {
+		$readingStore.character = character;
 	};
 </script>
 
 <div class="container">
 	<div class={'input ' + (innerState !== 1 ? 'hidden' : '')}>
-		<div class="optionSelect">
-			{#each Array.from(readingScenarios).map(([name, setting]) => ({ name, setting })) as scenario}
-				<div class="option" on:click={() => selectOption(scenario.name)}>
-					<div class={'imgWrapper ' + ($settingStore === scenario.name ? 'active' : '')}>
-						<img src="/options/{scenario.name}.png" alt="" />
-					</div>
-					<div class="optionText">
-						<p>{scenario.setting.name}</p>
-					</div>
+		<div class="setup">
+			<div class="optionSelectContainer">
+				<p>Step 1</p>
+				<p>Choose a reader</p>
+				<div class="optionSelect character">
+					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
+						<button
+							class={'option ' + ($readingStore?.character === character.name ? 'active' : '')}
+							on:click={() => selectCharacter(character.name)}
+							on:keydown={(event) => {
+								if (event.key === 'Enter') selectOption(character.name);
+							}}
+						>
+							<div class="imgWrapper">
+								<img src="/options/{character.character.name}-300.webp" alt="" />
+							</div>
+							<div class="optionText">
+								<p>{character.character.name}</p>
+								<p>{character.character.title}</p>
+							</div>
+						</button>
+					{/each}
 				</div>
-			{/each}
-		</div>
-		<!-- Character Select - regular select element with the characters as options -->
-		<div class="characterSelect">
-			<select bind:value={character}>
-				{#each [...characters] as character}
-					<option value={character[0]}>{character[0]}</option>
-				{/each}
-			</select>
+				<p>Step 2</p>
+				<p>Choose a scenario</p>
+				<div class="optionSelect scenario">
+					{#each Array.from(readingScenarios).map( ([name, setting]) => ({ name, setting }) ) as scenario}
+						<button
+							class={"option " + ($readingStore?.setting === scenario.name ? 'active' : '')}
+							on:click={() => selectOption(scenario.name)}
+							on:keydown={(event) => {
+								if (event.key === 'Enter') selectOption(scenario.name);
+							}}
+						>
+							<div
+								class="imgWrapper"
+							>
+								<img src="/options/{scenario.name}.png" alt="" />
+							</div>
+							<div class="optionText">
+								<p>{scenario.setting.name}</p>
+							</div>
+						</button>
+					{/each}
+				</div>
+			</div>
 		</div>
 
 		<input bind:value={question} type="text" name="question" id="question" />
 		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
-				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
-				'transform: translatey('+(scrollVar===1?'-100%':'-70%')+');' +
-				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
-				</div>
-				<div class="timeVarIndicator" style={'left:'+(($timeVariableStore-1)/11*100)+'%; ' + 
-				'transform: scale(-1) translatey('+(scrollVar===1?'-70%':'-100%')+');' +
-				'opacity:'+($timeVariableStore===0 || $timeVariableStore===10 ? '0' : '1')}>
-				</div>
+				<div
+					class="timeVarIndicator"
+					style={'left:' +
+						(($timeVariableStore - 1) / 11) * 100 +
+						'%; ' +
+						'transform: translatey(' +
+						(scrollVar === 1 ? '-100%' : '-70%') +
+						');' +
+						'opacity:' +
+						($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
+				/>
+				<div
+					class="timeVarIndicator"
+					style={'left:' +
+						(($timeVariableStore - 1) / 11) * 100 +
+						'%; ' +
+						'transform: scale(-1) translatey(' +
+						(scrollVar === 1 ? '-70%' : '-100%') +
+						');' +
+						'opacity:' +
+						($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
+				/>
 				<button
 					type="button"
 					on:mouseover|preventDefault={() => mouseoverSegment(1)}
@@ -355,47 +374,78 @@
 		margin-top: 2rem;
 		text-align: center;
 	}
-	.optionSelect {
-		align-items: start;
-		display: flex;
-		gap: 1rem;
-		padding: 0 1rem;
-		margin-bottom: 2rem;
-		overflow-x: scroll;
-		max-width: calc(100vw);
-		&::-webkit-scrollbar {
-			display: none;
-		}
-		.option {
+	.optionSelectContainer {
+		& .optionSelect {
 			display: flex;
-			flex-direction: column;
-			align-items: center;
-			.imgWrapper {
-				width: min(30vw, 6rem);
-				aspect-ratio: 1/1;
-				overflow: hidden;
-				border-radius: 100vw;
-				border: 1px solid #ffffff;
+			align-items: stretch;
+			justify-content: center;
+			gap: 1rem;
+			padding: 1rem 1rem;
+			overflow-x: scroll;
+			max-width: calc(100vw);
+			&::-webkit-scrollbar {
+				display: none;
+			}
+			.option {
+				all: inherit;
 				display: flex;
+				flex-direction: column;
 				align-items: center;
-				justify-content: center;
-				transition: border 0.25s ease;
-				&.active {
-					background: radial-gradient(50% 50% at 50% 50%, rgba(21, 27, 32, 0) 80%, #ffffff 100%);
-					& img {
-						transform: scale(1.1);
+				justify-content: start;
+				width: min-content;
+				background: rgba($color: #000000, $alpha: 0.1);
+				border-radius: 1rem;
+				outline: none;
+				border: none;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				&::-webkit-scrollbar {
+					display: none;
+				}
+				.imgWrapper {
+					width: min(30vw, 6rem);
+					aspect-ratio: 1/1;
+					overflow: hidden;
+					border-radius: 100vw;
+					border: 1px solid #ffffff;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					transition: border 0.25s ease;
+					img {
+						transition: all 1s ease;
 					}
 				}
 				&:hover {
+					background-color: rgba($color: #000000, $alpha: 0.2);
+					& img {
+						transform: scale(1.05);
+					}
+				}
+				&.active {
+					background-color: rgba($color: #000000, $alpha: 0.4);
 					& img {
 						transform: scale(1.1);
 					}
 				}
-				img {
-					transition: all 1s ease;
-					object-fit: contain;
-					max-height: 80%;
-					max-width: 90%;
+			}
+		}
+		& .character {
+			& .option {
+				& .imgWrapper {
+					& img {
+						width: 100%;
+					}
+				}
+			}
+		}
+		& .scenario {
+			& .option {
+				& .imgWrapper {
+					& img {
+						max-height: 80%;
+						max-width: 90%;
+					}
 				}
 			}
 		}
@@ -433,12 +483,16 @@
 					// background-color: rgb(14, 13, 13);
 				}
 			}
-			& .timeVarIndicator{
+			& .timeVarIndicator {
 				pointer-events: none;
-				background: radial-gradient(50% 100% at 50% 0%, rgba(255, 255, 255, 0.47) 0%, rgba(217, 217, 217, 0) 100%);
+				background: radial-gradient(
+					50% 100% at 50% 0%,
+					rgba(255, 255, 255, 0.47) 0%,
+					rgba(217, 217, 217, 0) 100%
+				);
 				height: 100%;
 				width: 30%;
-				transition: all 0.5s ease-out;
+				transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
 				position: absolute;
 			}
 		}

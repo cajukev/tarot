@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
 	import { energyGroups, energyList, energyMap } from '$lib/energies';
-	import { openai } from '$lib/openai';
-	import type { ChatCompletionRequestMessage } from 'openai';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { deviceStore } from '../stores';
+	import { collectionStore } from '../stores';
 
 	let decks: CollectionDeck[] = [];
 	for (let [key, value] of cards.entries()) {
-		decks.push({ name: key, cards: value });
+		decks.push({ name: key, cards: value, available: true });
+	}
+
+	$:{
+		$collectionStore = decks;
 	}
 
 	let currentCard: CollectionCard | undefined = undefined;
@@ -62,7 +63,10 @@
 <div class="container sidePadding">
 	<div class="">
 		{#each decks as deck}
-			<h2>{deck.name}</h2>
+			<div class="header">
+				<h2>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h2>
+				
+			</div>
 			<div class="deck">
 				{#each deck.cards as card}
 					<div
@@ -141,6 +145,7 @@
 		</div>
 	</div>
 </div>
+
 <!-- <div>
 	{#each [...energyGroups.values()] as group, i}
 		<div class="energyGroup">
@@ -155,7 +160,6 @@
 		</div>
 	{/each}
 </div> -->
-
 <style lang="scss">
 	.container {
 	}

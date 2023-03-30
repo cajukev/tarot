@@ -17,11 +17,6 @@
 
 	let state = 1;
 
-	// Form values
-	let question = '';
-	let energy = '';
-	let information = '';
-
 	let error: string;
 
 
@@ -51,12 +46,12 @@
 	</h1>
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
-			<Generate bind:state bind:energy bind:error />
+			<Generate bind:state bind:error />
 			<Collection></Collection>
 		</div>
 	
 		<div class={'loading sidePadding ' + (state !== 2 ? 'hidden' : '')}>
-			<p class="energy">Your energy, <span>it reads..</span> <span>{energy}</span></p>
+			<p class="energy">Your energy, <span>it reads..</span> <span>{$readingStore.energy}</span></p>
 			<p class="loading">Let us see what the cards have in store...</p>
 		</div>
 	

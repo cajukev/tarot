@@ -9,6 +9,7 @@ export type CollectionCard = {
 export type CollectionDeck = {
     name: string;
     cards: CollectionCard[];
+    available: boolean;
 };
 
 export const cards = new Map<string, CollectionCard[]>([
@@ -805,6 +806,38 @@ export const cards = new Map<string, CollectionCard[]>([
             "meaning": "The King of Pentacles represents <b>Stability</b> and <b>Abundance</b>, symbolizing a strong foundation and the ability to create and maintain wealth.",
             "reversedMeaning": "In reverse, the King of Pentacles signifies <b>Greed</b> and <b>Stubbornness</b>, indicating an unhealthy attachment to wealth or an unwillingness to change."
         }
-    ]]
+    ]],
+    ["Suit of Svelte", [
+        {
+            "name": "Simplicity of Svelte",
+            "reversed": false,
+            "energy": {
+                "upright": ["New beginnings", "Inspiration"],
+                "reversed": ["Lack of motivation", "Uninspired"]
+            },
+            "meaning":"The Simplicity of Svelte represents <b>New beginnings</b> and <b>Inspiration</b>, symbolizing the potential for growth and the desire to create something new.",
+            "reversedMeaning":"In reverse, the Simplicity of Svelte signifies <b>Lack of motivation</b> and <b>Uninspired</b>, indicating a lack of enthusiasm or difficulty finding inspiration."
+        },
+        {
+            "name": "Optimization of Svelte",
+            "reversed": false,
+            "energy": {
+                "upright": ["Balance", "Harmony"],
+                "reversed": ["Unbalance", "Disagreement"]
+            },
+            "meaning":"The Two of Svelte represents <b>Balance</b> and <b>Harmony</b>, symbolizing the need for cooperation and the importance of maintaining a healthy lifestyle.",
+            "reversedMeaning":"In reverse, the Two of Svelte signifies <b>Unbalance</b> and <b>Disagreement</b>, indicating a lack of harmony or difficulty maintaining a healthy lifestyle."
+        },
+        {
+            "name": "Reactivity of Svelte",
+            "reversed": false,
+            "energy": {
+                "upright": ["Flexibility", "Adaptability"],
+                "reversed": ["Inflexibility", "Resistance"]
+            },
+            "meaning":"The Three of Svelte represents <b>Flexibility</b> and <b>Adaptability</b>, symbolizing the ability to adapt to changing circumstances and the importance of maintaining an open mind.",
+            "reversedMeaning":"In reverse, the Three of Svelte signifies <b>Inflexibility</b> and <b>Resistance</b>, indicating difficulty adapting to change or an unwillingness to consider new ideas."
+        }]
+    ]
 ]);
 

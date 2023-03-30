@@ -37,8 +37,8 @@ export default new Map<string, ReadingScenarioType>([
   ["qa", {
     key: "qa",
     name: "Question & Answer",
-    positions: ["Answer"],
-    instructions: ["none"],
+    positions: [""],
+    instructions: [""],
     explanation: "A single card reading for the question",
     inputs: ["Question"],
     example: `energy= insightful
@@ -66,7 +66,7 @@ cardTextLength: 60
     key: "pc",
     name: "Pros & Cons",
     positions: ["Pros", "Cons"],
-    instructions: ["Tell the aspects of the card that would encourage the client to take the action. Return a bullet point list in the format in the example <ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>", "Tell the aspects of the card that would discourage the asker from taking the action. Return a bullet point list in the format in the example <ul><li>Bullet point</li><li>Bullet Point<li><li>Bullet Point</ul>"],
+    instructions: ["Tell the aspects of the card that would encourage the client to take the action.", "Tell the aspects of the card that would discourage the asker from taking the action."],
     explanation: "2 random cards are drawn, the first one symbolizes the reasons the client should take the action (pros), and the second one shows why the client should not take the action (cons)",
     inputs: ["Question"],
     example: `energy= abundance
@@ -89,7 +89,7 @@ Short paragraph about the cons of eating pineapple on pizza approx 20 words
       // "Draw any card in any orientation and tell the aspects of it that relate to the future of the situation presented in the question."
       "none",
       "none",
-      "start with a short phrase predicting what the reading will unfold"
+      "start with a short phrase telling the story at a glance"
     ],
     explanation: "A standard 3-card reading for the past, present, and future",
     inputs: ["Question"],

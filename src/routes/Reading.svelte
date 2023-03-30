@@ -1,31 +1,23 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { settingStore, readingStore, flippedCardsStore, cardFlipStore, flipLockStore } from '../stores';
+	import { readingStore, flippedCardsStore } from '../stores';
 	export let state: number;
 
-	let readingScenario = readingScenarios.get($settingStore);
-	let positions = readingScenario?.positions;
-	let flippedCards = new Array(positions?.length).fill(false);
-	// let flipLock = false;
-	// $: {
-	// 	flipLock = $flipLockStore;
-	// }
-	$: {
-		readingScenario = readingScenarios.get($settingStore)
-		positions = readingScenario?.positions;
-		flippedCards = new Array(positions?.length).fill(false);
-	};
+	let flippedCards = new Array(readingScenarios.get($readingStore.setting)?.positions?.length).fill(
+		false
+	);
+
+	$: console.log('readingStore: ', $readingStore);
 
 	$: {
 		flippedCards = $flippedCardsStore;
+		console.log('reading:',flippedCards);
 	}
 
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
 		flippedCardsStore.set(flippedCards);
-		cardFlipStore.set(index)
-		// $flipLockStore = true;
-	}
+	};
 
 	let correctTitle = (title: string) => {
 		return title
@@ -48,11 +40,8 @@
 			.replace('The Seven', 'Seven')
 			.replace('The Eight', 'Eight')
 			.replace('The Nine', 'Nine')
-			.replace('The Ten', 'Ten')
-			
-
+			.replace('The Ten', 'Ten');
 	};
-
 
 	let restart = () => {
 		state = 1;
@@ -66,26 +55,25 @@
 <div class="reading">
 	<div class="header">
 		<h2>"{$readingStore.question}"</h2>
-		<p>Energy: ({$readingStore.energy})</p>
+		<p>Energy: {$readingStore.energy}</p>
 	</div>
 	<div class="cards">
-		{#each new Array(readingScenario?.positions.length) as card, i}
+		{#each new Array(flippedCards?.length) as card, i}
 			<div>
-				<p class="text-center">{positions && positions[i]}</p>
+				<p class="text-center">
+					{readingScenarios.get($readingStore.setting)?.positions &&
+						readingScenarios.get($readingStore.setting)?.positions[i]}
+				</p>
 				<div class="stacked">
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
-							<div
-								class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}
-							>
+							<div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
 									src="/cards/cardback-400.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
-										// if(!$flipLockStore){
-											flipCard(i)
-										// }
+										flipCard(i);
 									}}
 								/>
 							</div>
@@ -94,9 +82,14 @@
 								<img
 									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-400.webp"
 									alt=""
-									class={"white " + ($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
+									class={'white ' +
+										($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
-								<h3>{correctTitle($readingStore.cards[i].name)}<span>{$readingStore.cards[i].reversed ? " reversed" : ""}</span></h3>
+								<h3>
+									{correctTitle($readingStore.cards[i].name)}<span
+										>{$readingStore.cards[i].reversed ? ' reversed' : ''}</span
+									>
+								</h3>
 								<!-- <p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p> -->
 							</div>
 						</div>
@@ -111,7 +104,7 @@
 			</div>
 		{/each}
 	</div>
-	<p class="conclusion">{@html ($readingStore.conclusion).trim() || ""}</p>
+	<p class="conclusion">{@html $readingStore.conclusion.trim() || ''}</p>
 	<!-- Restart button -->
 	<button on:click={() => restart()}>Restart</button>
 </div>
@@ -121,8 +114,8 @@
 		margin-top: 2rem;
 		text-align: center;
 		& h2 {
-			margin-bottom: 0.5rem ;
-			&~p{
+			margin-bottom: 0.5rem;
+			& ~ p {
 				font-size: $mini-font-size;
 				margin-bottom: 2rem;
 			}
@@ -134,7 +127,7 @@
 			flex-wrap: wrap;
 			justify-content: space-evenly;
 			grid-gap: clamp(32px, 3vw, 64px);
-			
+
 			@media screen and (max-width: 600px) {
 				grid-template-columns: repeat(1, 1fr);
 			}
@@ -144,21 +137,21 @@
 				flex-direction: column;
 				align-items: center;
 				transition: all 1s ease, opacity 0 0.5s ease;
-				max-width: min(80vw,400px);;
+				max-width: min(80vw, 400px);
 				justify-self: center;
 				perspective: 1200px;
 				& p {
 					width: 100%;
 					text-align: center;
 					white-space: break-spaces;
-					& li{
+					& li {
 						margin: 0.5rem 0rem;
 					}
 				}
 				& img {
 					margin: 1rem 0rem;
 					width: 100%;
-					max-width: min(80vw,400px);;
+					max-width: min(80vw, 400px);
 					border-radius: 0.25rem;
 					border: 0.25rem solid #000;
 					transition: all 1s ease;
@@ -172,14 +165,14 @@
 					filter: drop-shadow(-8px 8px 16px rgba(243, 221, 154, 0.37))
 						drop-shadow(8px -8px 16px rgba(46, 103, 132, 0.6));
 				}
-				&.notready{
+				&.notready {
 					cursor: not-allowed;
 					pointer-events: none;
 				}
-				& h3{
+				& h3 {
 					margin-bottom: 1rem;
 					font-family: $header-font;
-					& span{
+					& span {
 						font-size: $base-font-size;
 						opacity: 0.8;
 						font-weight: 100;
@@ -234,11 +227,11 @@
 	@keyframes cardGrowAnimReversed {
 		0% {
 			opacity: 0.2;
-			transform: scale(0.75) rotatex(0deg) rotateY(0deg);;
+			transform: scale(0.75) rotatex(0deg) rotateY(0deg);
 		}
 		100% {
 			opacity: 1;
-			transform: scale(1) rotatex(180deg) rotateY(180deg);;
+			transform: scale(1) rotatex(180deg) rotateY(180deg);
 		}
 	}
 </style>
