@@ -48,11 +48,6 @@
 <style lang="scss">
 	.app {
 		min-height: 101vh;
-		padding: 1rem 0;
-		@media screen and (min-width: $breakpoint-1) {
-			padding-left: clamp(1rem, 5vw, 8rem);
-			padding-right: clamp(1rem, 5vw, 8rem);
-		}
 		@media screen and (max-width: $breakpoint-2-1) {
 			flex-direction: column;
 			padding-bottom: $bottom-menu-height;

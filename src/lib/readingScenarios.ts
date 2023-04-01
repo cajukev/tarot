@@ -66,7 +66,7 @@ cardTextLength: 60
     key: "pc",
     name: "Pros & Cons",
     positions: ["Pros", "Cons"],
-    instructions: ["Tell the aspects of the card that would encourage the client to take the action.", "Tell the aspects of the card that would discourage the asker from taking the action."],
+    instructions: ["Write a bullet point list of the positives of the situation", "Write a bullet point list of the negatives of the situation"],
     explanation: "2 random cards are drawn, the first one symbolizes the reasons the client should take the action (pros), and the second one shows why the client should not take the action (cons)",
     inputs: ["Question"],
     example: `energy= abundance

@@ -60,7 +60,7 @@
 	};
 </script>
 
-<div class="container sidePadding">
+<div class="container">
 	<div class="">
 		{#each decks as deck}
 			<div class="header">
@@ -179,7 +179,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		.card {
-			width: max(80px, 9.0909%);
+			width: max(60px, 8%);
 			img {
 				border-radius: 0.25rem;
 				border: 2px solid white;

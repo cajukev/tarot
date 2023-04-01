@@ -35,7 +35,7 @@ h2 {
   margin: 0;
   font-weight: 300;
 }
-p{
+p {
   line-height: 1.5;
 }
 
@@ -82,7 +82,7 @@ p{
 
 // Utilities
 
-.text-center{
+.text-center {
   text-align: center;
 }
 
@@ -112,6 +112,11 @@ p{
   padding-left: 1rem;
 }
 
-.energy{
+.screenPadding {
+  padding-left: clamp(1rem, 5vw, 8rem);
+  padding-right: clamp(1rem, 5vw, 8rem);
+}
+
+.energy {
   font-weight: 700;
 }

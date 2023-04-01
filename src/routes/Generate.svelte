@@ -17,7 +17,6 @@
 	$readingStore.setting = 'qa';
 	$readingStore.character = 'Kevin The Novice';
 
-
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
 
@@ -109,7 +108,8 @@
 			energyMap.get(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)?.value || '';
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		$flippedCardsStore = readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
+		$flippedCardsStore =
+			readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
 		/**
 		 *
 		 * NEW READING PARADIGM
@@ -211,8 +211,7 @@
 <div class="container">
 	<div class={'input ' + (innerState !== 1 ? 'hidden' : '')}>
 		<div class="setup">
-			<div class="optionSelectContainer">
-				<p>Step 1</p>
+			<div class="optionSelectWrapper">
 				<p>Choose a reader</p>
 				<div class="optionSelect character">
 					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
@@ -227,26 +226,26 @@
 								<img src="/options/{character.character.name}-300.webp" alt="" />
 							</div>
 							<div class="optionText">
-								<p>{character.character.name}</p>
-								<p>{character.character.title}</p>
+								<p><b>{character.character.name}</b></p>
+								<p><i>{character.character.title}</i></p>
 							</div>
 						</button>
 					{/each}
 				</div>
-				<p>Step 2</p>
+			</div>
+			<div class="separator" />
+			<div class="optionSelectWrapper">
 				<p>Choose a scenario</p>
 				<div class="optionSelect scenario">
 					{#each Array.from(readingScenarios).map( ([name, setting]) => ({ name, setting }) ) as scenario}
 						<button
-							class={"option " + ($readingStore?.setting === scenario.name ? 'active' : '')}
+							class={'option ' + ($readingStore?.setting === scenario.name ? 'active' : '')}
 							on:click={() => selectOption(scenario.name)}
 							on:keydown={(event) => {
 								if (event.key === 'Enter') selectOption(scenario.name);
 							}}
 						>
-							<div
-								class="imgWrapper"
-							>
+							<div class="imgWrapper">
 								<img src="/options/{scenario.name}.png" alt="" />
 							</div>
 							<div class="optionText">
@@ -257,7 +256,7 @@
 				</div>
 			</div>
 		</div>
-
+		<p>Enter your question</p>
 		<input bind:value={question} type="text" name="question" id="question" />
 		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
@@ -374,58 +373,72 @@
 		margin-top: 2rem;
 		text-align: center;
 	}
-	.optionSelectContainer {
-		& .optionSelect {
-			display: flex;
-			align-items: stretch;
-			justify-content: center;
-			gap: 1rem;
-			padding: 1rem 1rem;
-			overflow-x: scroll;
-			max-width: calc(100vw);
-			&::-webkit-scrollbar {
-				display: none;
+	.setup {
+		display: grid;
+		grid-template-columns: 100%;
+		& .separator {
+			background: white;
+		}
+		& .optionSelectWrapper {
+			>p{
+				font-size: $subheader-font-size;
 			}
-			.option {
-				all: inherit;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: start;
-				width: min-content;
-				background: rgba($color: #000000, $alpha: 0.1);
-				border-radius: 1rem;
-				outline: none;
-				border: none;
-				cursor: pointer;
-				transition: all 0.2s ease;
+			& .optionSelect {
+				max-width: 100vw;
+				overflow: auto;
+				display: inline-flex;
+				gap: 1rem;
+				padding: 1rem;
 				&::-webkit-scrollbar {
 					display: none;
 				}
-				.imgWrapper {
-					width: min(30vw, 6rem);
-					aspect-ratio: 1/1;
-					overflow: hidden;
-					border-radius: 100vw;
-					border: 1px solid #ffffff;
+				.option {
+					color: white;
+					font-size: $base-font-size;
+					font-family: $other-font;
 					display: flex;
+					flex-direction: column;
 					align-items: center;
-					justify-content: center;
-					transition: border 0.25s ease;
-					img {
-						transition: all 1s ease;
+					justify-content: start;
+					padding: 1rem 1rem;
+					width: min-content;
+					background: rgba($color: #000000, $alpha: 0.1);
+					border-radius: 1rem;
+					outline: none;
+					border: none;
+					cursor: pointer;
+					transition: all 0.2s ease;
+					&::-webkit-scrollbar {
+						display: none;
 					}
-				}
-				&:hover {
-					background-color: rgba($color: #000000, $alpha: 0.2);
-					& img {
-						transform: scale(1.05);
+					.imgWrapper {
+						width: min(30vw, 6rem);
+						aspect-ratio: 1/1;
+						overflow: hidden;
+						border-radius: 1rem;
+
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						transition: border 0.25s ease;
+						img {
+							transition: all 1s ease;
+						}
 					}
-				}
-				&.active {
-					background-color: rgba($color: #000000, $alpha: 0.4);
-					& img {
-						transform: scale(1.1);
+					&:hover {
+						background-color: rgba($color: #000000, $alpha: 0.2);
+						& img {
+							transform: scale(1.05);
+						}
+					}
+					&.active {
+						background-color: rgba($color: #000000, $alpha: 0.4);
+						& img {
+							transform: scale(1.1);
+						}
+					}
+					& .optionText {
+						margin-top: 0.5rem;
 					}
 				}
 			}
@@ -433,6 +446,9 @@
 		& .character {
 			& .option {
 				& .imgWrapper {
+					&.active {
+						border: 1px solid #ffffff;
+					}
 					& img {
 						width: 100%;
 					}
