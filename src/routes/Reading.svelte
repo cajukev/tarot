@@ -3,20 +3,8 @@
 	import { readingStore, flippedCardsStore } from '../stores';
 	export let state: number;
 
-	let flippedCards = new Array(readingScenarios.get($readingStore.setting)?.positions?.length).fill(
-		false
-	);
-
-	$: console.log('readingStore: ', $readingStore);
-
-	$: {
-		flippedCards = $flippedCardsStore;
-		console.log('reading:',flippedCards);
-	}
-
 	let flipCard = (index: number) => {
-		flippedCards[index] = !flippedCards[index];
-		flippedCardsStore.set(flippedCards);
+		$flippedCardsStore[index] = !$flippedCardsStore[index];
 	};
 
 	let correctTitle = (title: string) => {
@@ -58,7 +46,7 @@
 		<p>Energy: {$readingStore.energy}</p>
 	</div>
 	<div class="cards">
-		{#each new Array(flippedCards?.length) as card, i}
+		{#each new Array($flippedCardsStore?.length) as card, i}
 			<div>
 				<p class="text-center">
 					{readingScenarios.get($readingStore.setting)?.positions &&
@@ -67,7 +55,7 @@
 				<div class="stacked">
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
-							<div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
+							<div class={'card ' + ($flippedCardsStore[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
 									src="/cards/cardback-400.webp"
 									alt=""
@@ -78,7 +66,7 @@
 								/>
 							</div>
 
-							<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
+							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
 									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-400.webp"
 									alt=""

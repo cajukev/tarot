@@ -819,7 +819,7 @@ export const cards = new Map<string, CollectionCard[]>([
             "reversedMeaning":"In reverse, the Simplicity of Svelte signifies <b>Lack of motivation</b> and <b>Uninspired</b>, indicating a lack of enthusiasm or difficulty finding inspiration."
         },
         {
-            "name": "Optimization of Svelte",
+            "name": "Experience of Svelte",
             "reversed": false,
             "energy": {
                 "upright": ["Balance", "Harmony"],

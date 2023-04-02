@@ -7,7 +7,6 @@
 	import characters from '$lib/characters';
 	import { readingStore, timeVariableStore, flippedCardsStore, collectionStore } from '../stores';
 	export let state: number;
-	export let energy = '';
 	export let error = '';
 	let innerState = 1;
 
@@ -402,10 +401,10 @@
 					justify-content: start;
 					padding: 1rem 1rem;
 					width: min-content;
-					background: rgba($color: #000000, $alpha: 0.1);
+					background: rgba($color: #000000, $alpha: 0.2);
 					border-radius: 1rem;
 					outline: none;
-					border: none;
+					border: 1px solid transparent;
 					cursor: pointer;
 					transition: all 0.2s ease;
 					&::-webkit-scrollbar {
@@ -416,23 +415,22 @@
 						aspect-ratio: 1/1;
 						overflow: hidden;
 						border-radius: 1rem;
-
 						display: flex;
 						align-items: center;
 						justify-content: center;
-						transition: border 0.25s ease;
 						img {
 							transition: all 1s ease;
 						}
 					}
 					&:hover {
-						background-color: rgba($color: #000000, $alpha: 0.2);
+						background-color: rgba($color: #000000, $alpha: 0.4);
 						& img {
 							transform: scale(1.05);
 						}
 					}
 					&.active {
-						background-color: rgba($color: #000000, $alpha: 0.4);
+						background-color: rgba($color: #000000, $alpha: 0.8);
+						border: 1px solid #ffffff2c;
 						& img {
 							transform: scale(1.1);
 						}

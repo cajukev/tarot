@@ -37,8 +37,9 @@
 	/>
 </svelte:head>
 
+<div class="topShadow" />
+<div class="bg"></div>
 <div class="app">
-	<div class="topShadow" />
 	<!-- <Menu /> -->
 	<slot />
 </div>
@@ -50,18 +51,27 @@
 		min-height: 101vh;
 		@media screen and (max-width: $breakpoint-2-1) {
 			flex-direction: column;
-			padding-bottom: $bottom-menu-height;
 			height: auto;
 			position: relative;
 		}
-		.topShadow {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 50vh;
-			background: linear-gradient(180deg, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
-			z-index: -1;
+	}
+	.bg{
+		background-image: url("bg.svg");
+		position: absolute;
+		z-index: -2;
+		width: 100%;
+		height: 100vh;
+		@media screen and (max-width: $breakpoint-2-1) {
+			background-image: none;
 		}
+	}
+	.topShadow {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 50vh;
+		background: linear-gradient(180deg, #050607 0%, rgba(5, 6, 7, 0) 100%);
+		z-index: -1;
 	}
 </style>

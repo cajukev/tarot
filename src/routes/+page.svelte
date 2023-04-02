@@ -122,6 +122,7 @@
 		.contents{
 			background: $bg2;
 			margin-top: 2rem;
+			padding-bottom: 4rem;
 			.contentsMenu{
 				padding-top: 1rem;
 				display: grid;
