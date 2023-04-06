@@ -1,6 +1,6 @@
 import { openai } from "$lib/openai";
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
-import readingScenarios from "$lib/readingScenarios";
+import readingScenarios, { type ReadingScenarioType } from "$lib/readingScenarios";
 import type { RequestHandler } from "./$types";
 import type { CollectionCard } from "$lib/cards";
 import characters from "$lib/characters";
@@ -9,12 +9,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let tokens: number;
   const formData: {
     reading: ReadingType;
+    customScenario: ReadingScenarioType;
   } = await request.json();
   let setting = formData.reading.setting || "ppf";
+  let scenario: ReadingScenarioType;
+  if(formData.customScenario){
+    scenario = formData.customScenario;
+  }else{
+    scenario = readingScenarios.get(setting)!;
+  }
   let question = formData.reading.question || "No question";
   let energy = formData.reading.energy || "";
   let drawnCards = formData.reading.cards || [];
-  console.log(formData.reading)
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
 
@@ -35,16 +41,16 @@ question = ${question}
 drawn card(s):`
   drawnCards.forEach((card, i) => {
     system += `
-  ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${readingScenarios.get(setting)?.positions[i]}", "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}, special instruction: ${readingScenarios.get(setting)?.instructions[i]}`
+  ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${scenario.positions[i]}", "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}, special instruction: ${scenario.instructions[i]}`
   })
   system += `
 Do not use any other card name than the one provided in the list above.
 follow this structure, separate each p with a line break:
 p1: one phrase overview of the reading, start paragraph with an expression, max 20 words
-${readingScenarios.get(setting)?.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain, start with an expression`).join(`
+${scenario.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain, start with an expression`).join(`
 `)}
-p${(readingScenarios.get(setting)?.positions.length || 1) + 2}: conclusion
-p${(readingScenarios.get(setting)?.positions.length || 1) + 3}: invite the user to ask more questions
+p${(scenario.positions.length || 1) + 2}: conclusion
+p${(scenario.positions.length || 1) + 3}: invite the user to ask more questions
 Total between ${40 * drawnCards.length + 80} and ${40 * drawnCards.length + 120} words, no more no less`
 
   const messages = [

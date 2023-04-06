@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Generate from './Generate.svelte';
 	import readingScenarios from '$lib/readingScenarios';
-	import { fade, fly } from 'svelte/transition';
 	import Reading from './Reading.svelte';
-	import { timeVariableStore, readingStore } from '../stores';
+	import { timeVariableStore, readingStore, menuStateStore } from '../stores';
 	import { onMount } from 'svelte';
 	import Collection from './Collection.svelte';
-	import { afterNavigate } from '$app/navigation';
+	import CustomScenarios from './CustomScenarios.svelte';
+	
 
 	// App state
 	// state 1: question
@@ -17,13 +17,17 @@
 	// state 4: error
 	let state = 1;
 
-	// Contents state
+	// $menuStateStore
 	// 0: card collection
 	// 1: guide to energies
 	// 2: Market
 	// 3: Readers
 	// 4: Settings
-	let contentsState = 0;
+	// 5: Tokens
+	$: {
+		if($menuStateStore.change)contents.scrollIntoView();
+	}
+	let contents: HTMLElement;
 
 	let error: string;
 
@@ -54,25 +58,30 @@
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
 			<Generate bind:state bind:error />
-			<div class="contents screenPadding">
+			<div bind:this={contents} class="contents screenPadding">
 				<div class="contentsMenu">
 					<div class="left">
-						<button on:click={() => contentsState = 0} class={contentsState === 0 ? "active" : ""}>Card Collection</button>
-						<button on:click={() => contentsState = 1} class={contentsState === 1 ? "active" : ""}>Guide to Energies</button>
-						<button on:click={() => contentsState = 2} class={contentsState === 2 ? "active" : ""}>Market</button>
+						<button on:click={() => $menuStateStore = {value:0,change:false}} class={$menuStateStore.value === 0 ? "active" : ""}>Card Collection</button>
+						<button on:click={() => $menuStateStore = {value:1,change:false}} class={$menuStateStore.value === 1 ? "active" : ""}>Guide to Energies</button>
+						<button on:click={() => $menuStateStore = {value:2,change:false}} class={$menuStateStore.value === 2 ? "active" : ""}>Market</button>
 					</div>
 					<div class="separator"></div>
 					<div class="right">
-						<button on:click={() => contentsState = 3} class={contentsState === 3 ? "active" : ""}>About Readers</button>
-						<button on:click={() => contentsState = 4} class={contentsState === 4 ? "active" : ""}>About Scenarios</button>
+						<button on:click={() => $menuStateStore = {value:3,change:false}} class={$menuStateStore.value === 3 ? "active" : ""}>About Readers</button>
+						<button on:click={() => $menuStateStore = {value:4,change:false}} class={$menuStateStore.value === 4 ? "active" : ""}>Custom Scenarios</button>
+						<button on:click={() => $menuStateStore = {value:5,change:false}} class={$menuStateStore.value === 5 ? "active" : ""}>About Tokens</button>
 					</div>
 					
 				</div>
-				<h3>{contentsState === 0 ? "Card Collection" : contentsState === 1 ? "Guide to Energies" : contentsState === 2 ? "Market" : contentsState === 3 ? "About Readers" : contentsState === 4 ? "About Scenarios" : ""}</h3>
-				{#if contentsState === 0}
+				<h3>{$menuStateStore.value === 0 ? "Card Collection" : $menuStateStore.value === 1 ? "Guide to Energies" : $menuStateStore.value === 2 ? "Market" : $menuStateStore.value === 3 ? "About Readers" : $menuStateStore.value === 4 ? "Custom Scenarios" : $menuStateStore.value === 5 ? "About Tokens" : ""}</h3>
+				{#if $menuStateStore.value === 0}
 				<Collection></Collection>
 				{/if}
-				{#if contentsState === 1 || contentsState === 2 || contentsState === 3 || contentsState === 4}
+				{#if $menuStateStore.value === 4}
+					<CustomScenarios></CustomScenarios>
+				{/if}
+
+				{#if $menuStateStore.value === 1 || $menuStateStore.value === 2 || $menuStateStore.value === 3 || $menuStateStore.value === 5}
 					coming soon...
 				{/if}
 			</div>

@@ -3,12 +3,17 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../app.scss';
-	import { deviceStore } from '../stores';
+	import { achievementsStore, deviceStore, flippedCardsStore, readingStore } from '../stores';
 	import Menu from './Menu.svelte';
 	import type { PageData } from './$types';
 	export let data: PageData;
+	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import type { Achievement } from '$lib/achievements';
+	import { achievements } from '$lib/achievements';
+	import Reading from './Reading.svelte';
 
 	onMount(() => {
+		console.log(data)
 		if (window.matchMedia('(any-pointer: coarse)').matches) {
 			$deviceStore.hasTouch = true;
 		}
@@ -26,6 +31,52 @@
 			subscription.unsubscribe();
 		};
 	});
+
+	// HANDLE ACHIEVEMENTS
+	// let userAchievements: Map<string, Achievement> = new Map(data.profile?.data?.achievements) || achievements;
+	let userAchievements: Map<string, Achievement> = achievements;
+	
+	let storedQuestion = "This is definitely not a question 1234567890987654321";
+
+	$: {
+		if ($achievementsStore?.value) handleAchievements();
+	}
+	let handleAchievements = () => {
+		let value;
+		switch ($achievementsStore?.action) {
+			case 'CompleteReading':
+				value = $readingStore;
+				// Completed a reading
+				completeAchievement('Beginnings');
+
+				if (!userAchievements.get('NewBeginnings')!.completed) {
+					if (!userAchievements.get('NewBeginnings')!.progress.progess) {
+						userAchievements.get('NewBeginnings')!.progress.progess = [value.setting];
+					} else {
+						userAchievements.get('NewBeginnings')!.progress.progess.push(value.setting);
+					}
+					if (userAchievements.get('NewBeginnings')!.progress.progess?.length >= 3) {
+						completeAchievement('NewBeginnings');
+					}
+				}
+				break;
+				case 'AskQuestion':
+					value = $readingStore.question;
+					if(value !== storedQuestion){
+						storedQuestion = value;
+					}else{
+						completeAchievement('Perseverance')
+					}
+
+		}
+		userAchievements = new Map(userAchievements);
+	};
+	let completeAchievement = (achievement: string) => {
+		if (!userAchievements.get(achievement)!.completed) {
+			userAchievements.get(achievement)!.completed = true;
+			console.log('completeAchievement', achievement);
+		}
+	};
 </script>
 
 <svelte:head>
@@ -37,9 +88,10 @@
 	/>
 </svelte:head>
 
+<SvelteToast />
 <div class="topShadow" />
-<div class="bg"></div>
 <div class="app">
+	<div class="bg" />
 	<!-- <Menu /> -->
 	<slot />
 </div>
@@ -49,18 +101,18 @@
 <style lang="scss">
 	.app {
 		min-height: 101vh;
+		position: relative;
 		@media screen and (max-width: $breakpoint-2-1) {
 			flex-direction: column;
 			height: auto;
-			position: relative;
 		}
 	}
-	.bg{
-		background-image: url("bg.svg");
+	.bg {
+		background-image: url('bg.svg');
 		position: absolute;
 		z-index: -2;
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		@media screen and (max-width: $breakpoint-2-1) {
 			background-image: none;
 		}

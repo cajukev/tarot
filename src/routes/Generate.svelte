@@ -5,7 +5,17 @@
 	import readingScenarios from '$lib/readingScenarios';
 	import { onMount } from 'svelte';
 	import characters from '$lib/characters';
-	import { readingStore, timeVariableStore, flippedCardsStore, collectionStore } from '../stores';
+	import {
+		readingStore,
+		timeVariableStore,
+		flippedCardsStore,
+		collectionStore,
+		menuStateStore,
+		customScenariosStore,
+
+		achievementsStore
+
+	} from '../stores';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -40,6 +50,7 @@
 
 	let cardFlipped = () => {
 		if (
+			$flippedCardsStore?.length > 0 &&
 			$flippedCardsStore?.filter((card) => card).length === $flippedCardsStore?.length &&
 			$readingStore.cards.length > 0
 		) {
@@ -100,6 +111,7 @@
 	};
 
 	let handleSubmit2 = () => {
+		$achievementsStore = {action: 'AskQuestion', value: 'default'};
 		state = 2; // loading
 		innerState = 1;
 		$readingStore.conclusion = '';
@@ -107,28 +119,16 @@
 			energyMap.get(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)?.value || '';
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		$flippedCardsStore =
-			readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
-		/**
-		 *
-		 * NEW READING PARADIGM
-		 * IMPLEMENT MEANING INTO GPT4 AND READING
-		 *
-		 * MINIMIZES API CALLS
-		 * LEVERAGES GPT4
-		 * DRAW ALL CARDS THEN GIVE GPT4 READING
-		 * INJECT CARD TEXT INTO GPT4
-		 * GPT4 RETURNS READING AS STREAM
-		 *
-		 * MEANING IS DISPLAYED TO USER
-		 *
-		 * 2 CALLS INSTEAD OF 2 / 3 / 5
-		 * HIGHER QUALITY RESPONSES
-		 *
-		 * API 15X COST OF 3.5-TURBO
-		 *
-		 *
-		 */
+		// Check if custom scenario
+		const customScenario = $customScenariosStore.find(
+			(scenario) => scenario.name === $readingStore.setting
+		);
+		if (customScenario) {
+			$flippedCardsStore = customScenario.positions.map((pos) => false);
+		} else {
+			$flippedCardsStore =
+				readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
+		}
 
 		fetch('/api/draw', {
 			method: 'POST',
@@ -137,7 +137,10 @@
 			},
 			body: JSON.stringify({
 				reading: $readingStore,
-				collectionDecks: $collectionStore
+				collectionDecks: $collectionStore,
+				customScenario: $customScenariosStore.find(
+					(scenario) => scenario.name === $readingStore.setting
+				)
 			})
 		})
 			.then((res) => res.json())
@@ -183,7 +186,10 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				reading: $readingStore
+				reading: $readingStore,
+				customScenario: $customScenariosStore.find(
+					(scenario) => scenario.name === $readingStore.setting
+				)
 			})
 		}).then(async (res) => {
 			const reader = res.body?.getReader();
@@ -205,6 +211,15 @@
 	let selectCharacter = (character: string) => {
 		$readingStore.character = character;
 	};
+
+	let navigateToCustomScenarios = () => {
+		$menuStateStore = { value: 4, change: true };
+	};
+
+	let deleteCustomScenario = (name: string) => {
+		$customScenariosStore = $customScenariosStore.filter((scenario) => scenario.name !== name);
+	};
+	$: console.log($readingStore);
 </script>
 
 <div class="container">
@@ -218,7 +233,7 @@
 							class={'option ' + ($readingStore?.character === character.name ? 'active' : '')}
 							on:click={() => selectCharacter(character.name)}
 							on:keydown={(event) => {
-								if (event.key === 'Enter') selectOption(character.name);
+								if (event.key === 'Enter') selectCharacter(character.name);
 							}}
 						>
 							<div class="imgWrapper">
@@ -252,6 +267,34 @@
 							</div>
 						</button>
 					{/each}
+					{#each $customScenariosStore as scenario}
+						<button
+							class={'option customOption ' +
+								($readingStore?.setting === scenario.name ? 'active' : '')}
+							on:click={() => selectOption(scenario.name)}
+							on:keydown={(event) => {
+								if (event.key === 'Enter') selectOption(scenario.name);
+							}}
+						>
+							<div class="imgWrapper">
+								<img src="/options/Custom.png" alt="" />
+							</div>
+							<div class="optionText">
+								<p>{scenario.name}</p>
+							</div>
+							<button class="delete" on:click={() => deleteCustomScenario(scenario.name)}>
+								<p>Delete</p>
+							</button>
+						</button>
+					{/each}
+					<button class="option" on:click={() => navigateToCustomScenarios()}>
+						<div class="imgWrapper">
+							<img src="/options/Add.png" alt="" />
+						</div>
+						<div class="optionText">
+							<p>Add Custom Scenarios</p>
+						</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -379,7 +422,7 @@
 			background: white;
 		}
 		& .optionSelectWrapper {
-			>p{
+			> p {
 				font-size: $subheader-font-size;
 			}
 			& .optionSelect {
@@ -435,8 +478,49 @@
 							transform: scale(1.1);
 						}
 					}
+					&:focus {
+						border: 1px solid white;
+					}
 					& .optionText {
 						margin-top: 0.5rem;
+					}
+					&.customOption {
+						position: relative;
+						&:hover {
+							& .delete {
+								opacity: 1;
+								pointer-events: all;
+							}
+						}
+						&:focus {
+							& .delete {
+								opacity: 1;
+								pointer-events: all;
+							}
+						}
+						& .delete {
+							position: absolute;
+							bottom: 0;
+							transform: translateY(50%);
+							width: 100%;
+							background-color: red;
+							border-radius: 0 0 1rem 1rem;
+							border: none;
+							font-family: $other-font;
+							font-size: $base-font-size;
+							opacity: 0;
+							pointer-events: none;
+							transition: all 0.25s ease;
+							&:hover {
+								background-color: #be0000;
+								cursor: pointer;
+							}
+							&:focus {
+								opacity: 1;
+								pointer-events: all;
+								outline: 1px solid white;
+							}
+						}
 					}
 				}
 			}

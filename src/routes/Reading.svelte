@@ -1,6 +1,6 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { readingStore, flippedCardsStore } from '../stores';
+	import { readingStore, flippedCardsStore, customScenariosStore } from '../stores';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -50,7 +50,9 @@
 			<div>
 				<p class="text-center">
 					{readingScenarios.get($readingStore.setting)?.positions &&
-						readingScenarios.get($readingStore.setting)?.positions[i]}
+						readingScenarios.get($readingStore.setting)?.positions[i] || ''}
+					{$customScenariosStore.find((scenario) => scenario.name === $readingStore.setting )
+						?.positions[i] || ''}
 				</p>
 				<div class="stacked">
 					{#if $readingStore.cards[i]}

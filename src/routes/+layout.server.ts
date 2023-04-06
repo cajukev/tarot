@@ -10,7 +10,8 @@ export const load: LayoutServerLoad = async (event) => {
       profile: await event.locals.sb
       .from('Profile')
       .select('*')
-      .eq('id', session.user.id),
+      .eq('id', session.user.id)
+      .single(),
     }
   }
   return {
