@@ -5,8 +5,7 @@ import { dbSecret } from "$lib/db";
 export const POST: RequestHandler = async (event: RequestEvent) => {
   let rawBody = await event.request.text();
   const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY, {
-    // @ts-ignore
-    apiVersion: "2020-08-27",
+    apiVersion: "2022-11-15",
   })
   const sig = event.request.headers.get('stripe-signature');
   let stripeEvent;
