@@ -8,6 +8,7 @@
   {#if $page.data.session}
   <nav>
     <span>Welcome <b>{$page.data.session.user.email?.split('@')[0]}</b></span>
+    <span>Experience: <b>{$page.data.profile.data.experience}</b></span>
     <form method="POST" action="/login?/logout">
       <input type="submit" value="Logout" />
     </form>
@@ -32,6 +33,7 @@
 			background: none;
 			font-weight: 300;
 			cursor: pointer;
+      color: white;
 		}
 	}
 </style>

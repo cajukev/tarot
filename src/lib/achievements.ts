@@ -17,7 +17,7 @@ export const achievements: Map<string, Achievement> = new Map([
     completed: false
   }],
   ["NewBeginnings", {
-    name: "New beginnings",
+    name: "NewBeginnings",
     description: "Completed a reading with all three preset scenarios",
     progress: { progress: []},
     experience: 100,

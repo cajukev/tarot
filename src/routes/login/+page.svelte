@@ -4,6 +4,8 @@
   let loading = false;
 </script>
 <main>
+	<!-- Return -->
+	<a href="/">&larr; Return</a>
   <!-- Login form -->
   <form
 		method="POST"

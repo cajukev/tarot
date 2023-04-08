@@ -12,10 +12,10 @@
 		collectionStore,
 		menuStateStore,
 		customScenariosStore,
-
 		achievementsStore
 
 	} from '../stores';
+	import { goto } from '$app/navigation';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -198,7 +198,10 @@
 				const { done, value } = await reader.read();
 				const text = new TextDecoder('utf-8').decode(value);
 				if (text) $readingStore.conclusion = text;
-				if (done) break;
+				if (done) {
+					$achievementsStore = {action: 'CompleteReading', value: 'default'};
+					break;
+				};
 			}
 		});
 	};
@@ -218,6 +221,18 @@
 
 	let deleteCustomScenario = (name: string) => {
 		$customScenariosStore = $customScenariosStore.filter((scenario) => scenario.name !== name);
+	};
+
+	let goToCheckout = () => {
+		fetch("/api/createCheckoutSession")
+		.then((res) => res.json())
+		.then((response) => {
+			if(response.sessionUrl){
+				goto(response.sessionUrl);
+			}
+		})
+		
+
 	};
 	$: console.log($readingStore);
 </script>
@@ -407,6 +422,7 @@
 			</div>
 			<p>Tell me my fortune</p>
 		</div>
+		<button on:click={()=>goToCheckout()}>goToCheckout</button>
 	</div>
 </div>
 

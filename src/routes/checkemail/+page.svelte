@@ -1,3 +1,4 @@
+<a href="/">&larr; Return</a>
 <p>Go check your email to enter your account.</p>
 
 <style>

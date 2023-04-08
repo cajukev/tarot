@@ -1,17 +1,18 @@
 <script lang="ts">
-	import { db } from '$lib/db';
-	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import '../app.scss';
-	import { achievementsStore, deviceStore, flippedCardsStore, readingStore } from '../stores';
-	import Menu from './Menu.svelte';
+	import { db } from '$lib/db';
+	import { invalidate, invalidateAll } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { achievementsStore, deviceStore, readingStore } from '../stores';
 	import type { PageData } from './$types';
-	export let data: PageData;
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import type { Achievement } from '$lib/achievements';
 	import { achievements } from '$lib/achievements';
-	import Reading from './Reading.svelte';
+	import Menu from './Menu.svelte';
+	import { mapToObj, objToMap } from '$lib/utils';
 
+	export let data: PageData;
+	
 	onMount(() => {
 		console.log(data)
 		if (window.matchMedia('(any-pointer: coarse)').matches) {
@@ -34,7 +35,9 @@
 
 	// HANDLE ACHIEVEMENTS
 	// let userAchievements: Map<string, Achievement> = new Map(data.profile?.data?.achievements) || achievements;
-	let userAchievements: Map<string, Achievement> = achievements;
+	let userAchievements: Map<string, Achievement> = objToMap(data.profile?.data?.achievements) || achievements;
+	console.log('userAchievements', userAchievements);
+	console.log(mapToObj(userAchievements));
 	
 	let storedQuestion = "This is definitely not a question 1234567890987654321";
 
@@ -50,13 +53,16 @@
 				completeAchievement('Beginnings');
 
 				if (!userAchievements.get('NewBeginnings')!.completed) {
-					if (!userAchievements.get('NewBeginnings')!.progress.progess) {
-						userAchievements.get('NewBeginnings')!.progress.progess = [value.setting];
+					if (!userAchievements.get('NewBeginnings')!.progress.progress) {
+						userAchievements.get('NewBeginnings')!.progress.progress = [value.setting];
+						updateAchievements();
 					} else {
-						userAchievements.get('NewBeginnings')!.progress.progess.push(value.setting);
+						userAchievements.get('NewBeginnings')!.progress.progress.push(value.setting);
+						updateAchievements();
 					}
-					if (userAchievements.get('NewBeginnings')!.progress.progess?.length >= 3) {
+					if (userAchievements.get('NewBeginnings')!.progress.progress?.length >= 3) {
 						completeAchievement('NewBeginnings');
+						updateAchievements();
 					}
 				}
 				break;
@@ -66,20 +72,50 @@
 						storedQuestion = value;
 					}else{
 						completeAchievement('Perseverance')
+						updateAchievements();
 					}
 
 		}
 		userAchievements = new Map(userAchievements);
+		console.log('handleAchievements', userAchievements);
 	};
 	let completeAchievement = (achievement: string) => {
 		if (!userAchievements.get(achievement)!.completed) {
 			userAchievements.get(achievement)!.completed = true;
+			addExperience(userAchievements.get(achievement)!.experience);
 			console.log('completeAchievement', achievement);
 		}
 	};
+	let updateAchievements = () => {
+		fetch('/api/updateAchievements', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				achievements: mapToObj(userAchievements)
+			})
+		});
+	}
+	let addExperience = (amount: number) => {
+		let newExperience = data.profile?.data?.experience + amount;
+		console.log('addExperience', newExperience);
+		fetch('/api/addExperience', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				experience: newExperience
+			})
+		})
+		.then(()=> {
+			invalidateAll();
+		})
+	}
 </script>
 
-{data.session?.user.email}
+<Menu />
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
