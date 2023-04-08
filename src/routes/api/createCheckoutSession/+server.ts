@@ -36,8 +36,8 @@ export const GET: RequestHandler = async ({ locals }) => {
       payment_method_types: [
         'card',
       ],
-      success_url: 'https://aitarot.websitle/success',
-      cancel_url: 'https://aitarot.websitle/cancel',
+      success_url: 'https://aitarot.website/success',
+      cancel_url: 'https://aitarot.website/cancel',
     });
 
     return new Response(

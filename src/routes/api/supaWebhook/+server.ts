@@ -52,7 +52,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
 
     // Update profile
-    const { data, error } = await dbSecret.from('profiles').update({ tokens: profileData.data.tokens + 1000, total_paid: profileData.data.total_paid + 1.99 }).eq('id', profileId)
+    const { data, error } = await dbSecret.from('profiles').update({ tokens: profileData.data.tokens + 1000, total_paid: profileData.data.total_paid + 0.50 }).eq('id', profileId)
     if (error) {
       return new Response(
         JSON.stringify({
