@@ -4,10 +4,12 @@ import { dbSecret } from "$lib/db";
 
 export const POST: RequestHandler = async (event: RequestEvent) => {
   let rawBody = await event.request.text();
+  console.log('rawBody', rawBody)
   const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY, {
     apiVersion: "2022-11-15",
   })
   const sig = event.request.headers.get('stripe-signature');
+  console.log('sig', sig)
   let stripeEvent;
   try {
     // @ts-ignore
@@ -42,7 +44,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
           error: 'No profile found',
         }),
         {
-          status: 400,
+          status: 401,
           headers: { 'Content-Type': 'application/json' },
         }
       )
@@ -51,14 +53,14 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
 
     // Update profile
-    const { data, error } = await dbSecret.from('profiles').update({ tokens: profileData.data.tokens + 1000, total_paid: profileData.data.total_paid + 0.50 }).eq('id', profileId)
+    const { data, error } = await dbSecret.from('Profile').update({ tokens: profileData.data.tokens + 1000, total_paid: profileData.data.total_paid + 0.50 }).eq('id', profileId)
     if (error) {
       return new Response(
         JSON.stringify({
           error: error.message,
         }),
         {
-          status: 400,
+          status: 402,
           headers: { 'Content-Type': 'application/json' },
         }
       )
