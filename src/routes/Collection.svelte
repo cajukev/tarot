@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
 	import { energyGroups, energyList, energyMap } from '$lib/energies';
-	import { fade } from 'svelte/transition';
 	import { collectionStore } from '../stores';
+	import { page } from '$app/stores';
+	import { fade } from 'svelte/transition';
+	import { unlocks } from '$lib/unlocks';
+	import { secrets } from '$lib/secrets';
 
 	let decks: CollectionDeck[] = [];
-	for (let [key, value] of cards.entries()) {
-		decks.push({ name: key, cards: value, available: true });
+	for (let [key, deck] of cards.entries()) {
+		deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv) || 0)) && (!secrets.includes(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) )
+		decks.push(deck);
 	}
-
 	$:{
 		$collectionStore = decks;
 	}
@@ -63,33 +66,36 @@
 <div class="container">
 	<div class="">
 		{#each decks as deck}
-			<div class="header">
-				<h2>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h2>
-				
-			</div>
-			<div class="deck">
-				{#each deck.cards as card}
-					<div
-						on:click={() => {
+		{#if (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv) || 0)) && (!secrets.includes(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) ) }
+
+		<div class="header">
+			<h2>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h2>
+			
+		</div>
+		<div class="deck">
+			{#each deck.cards as card}
+				<div
+					on:click={() => {
+						infoBoxAppear(card);
+					}}
+					on:keydown={(e) => {
+						if (e.key === 'Enter') {
 							infoBoxAppear(card);
-						}}
-						on:keydown={(e) => {
-							if (e.key === 'Enter') {
-								infoBoxAppear(card);
-							}
-						}}
-						class="card"
-					>
-						<img
-							src="/cards/{_getCardImgName(card)}-120.webp"
-							srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
-								card
-							)}-200.webp 200w`}
-							alt={card?.name}
-						/>
-					</div>
-				{/each}
-			</div>
+						}
+					}}
+					class="card"
+				>
+					<img
+						src="/cards/{_getCardImgName(card)}-120.webp"
+						srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
+							card
+						)}-200.webp 200w`}
+						alt={card?.name}
+					/>
+				</div>
+			{/each}
+		</div>
+		{/if}
 		{/each}
 	</div>
 

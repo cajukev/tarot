@@ -15,7 +15,8 @@
 		achievementsStore
 
 	} from '../stores';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { page } from '$app/stores';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -161,12 +162,11 @@
 						let returnCards: CollectionCard[] = [];
 						drawnCards.forEach((drawnCard) => {
 							for (let [key, value] of cards.entries()) {
-								value.forEach((card) => {
+								value.cards.forEach((card) => {
 									console.log(card.name === drawnCard.name);
 									if (drawnCard.name === card.name) {
 										card.reversed = drawnCard.reversed;
 										returnCards.push(card);
-										console.log(card);
 									}
 								});
 							}
@@ -234,7 +234,29 @@
 		
 
 	};
-	$: console.log($readingStore);
+	$: if($readingStore) checkForSecret($readingStore.question);
+
+	// Handle Secrets
+	let checkForSecret = (input: string) => {
+		switch(input.toLowerCase()){
+			case "svelte":
+				addSecret("Svelte");
+				break;
+		}
+	}
+
+	let addSecret = (secret: string) => {
+		fetch("/api/addSecret", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				secrets: $page.data.profile.data.secrets.concat(secret)
+			})
+		})
+		invalidateAll();
+	}
 </script>
 
 <div class="container">

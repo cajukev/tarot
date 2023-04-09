@@ -12,6 +12,21 @@ declare global {
 		}
 		interface PageData {
 			session: import('@supabase/supabase-js').Session | null
+			profile: {
+				data:{
+					id: string
+					experience: number
+					secrets: string[]
+					achievements: {
+						name:string
+						completed: boolean
+						progress: { [key: string]: any }
+						description: string
+						experience: number
+					}[]
+					tokens: number
+				}
+			}
 		}
 
 		
