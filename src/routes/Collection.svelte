@@ -9,7 +9,7 @@
 
 	let decks: CollectionDeck[] = [];
 	for (let [key, deck] of cards.entries()) {
-		deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv) || 0)) && (!secrets.includes(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) )
+		deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) )
 		decks.push(deck);
 	}
 	$:{
@@ -66,7 +66,7 @@
 <div class="container">
 	<div class="">
 		{#each decks as deck}
-		{#if (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv) || 0)) && (!secrets.includes(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) ) }
+		{#if (!unlocks.get(deck.abbrv) || $page.data.profile.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile.data.secrets.includes(deck.abbrv) ) }
 
 		<div class="header">
 			<h2>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h2>

@@ -31,7 +31,7 @@ He often uses phrases such as:
       temperature: 0.2
     }
   ],
-  ['Juniper The Grounded',
+  ['Juniper',
     {
       name: 'Juniper',
       title: 'The Grounded',

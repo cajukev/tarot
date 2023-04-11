@@ -13,10 +13,12 @@
 		menuStateStore,
 		customScenariosStore,
 		achievementsStore
-
 	} from '../stores';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { secret as secretToast } from '$lib/toastStubs';
+	import { secrets } from '$lib/secrets';
+	import { unlocks } from '$lib/unlocks';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -112,7 +114,7 @@
 	};
 
 	let handleSubmit2 = () => {
-		$achievementsStore = {action: 'AskQuestion', value: 'default'};
+		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
 		innerState = 1;
 		$readingStore.conclusion = '';
@@ -199,9 +201,9 @@
 				const text = new TextDecoder('utf-8').decode(value);
 				if (text) $readingStore.conclusion = text;
 				if (done) {
-					$achievementsStore = {action: 'CompleteReading', value: 'default'};
+					$achievementsStore = { action: 'CompleteReading', value: 'default' };
 					break;
-				};
+				}
 			}
 		});
 	};
@@ -224,39 +226,52 @@
 	};
 
 	let goToCheckout = () => {
-		fetch("/api/createCheckoutSession")
-		.then((res) => res.json())
-		.then((response) => {
-			if(response.sessionUrl){
-				goto(response.sessionUrl);
-			}
-		})
-		
-
+		fetch('/api/createCheckoutSession')
+			.then((res) => res.json())
+			.then((response) => {
+				if (response.sessionUrl) {
+					goto(response.sessionUrl);
+				}
+			});
 	};
-	$: if($readingStore) checkForSecret($readingStore.question);
+	$: if ($readingStore) checkForSecret($readingStore.question);
 
 	// Handle Secrets
 	let checkForSecret = (input: string) => {
-		switch(input.toLowerCase()){
-			case "svelte":
-				addSecret("Svelte");
+		switch (input.toLowerCase()) {
+			case 'svelte':
+				addSecret('Svelte');
 				break;
 		}
-	}
+	};
 
 	let addSecret = (secret: string) => {
-		fetch("/api/addSecret", {
-			method: "POST",
+		if ($page.data.profile.data.secrets.includes(secret)) return;
+		fetch('/api/addSecret', {
+			method: 'POST',
 			headers: {
-				"Content-Type": "application/json"
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
 				secrets: $page.data.profile.data.secrets.concat(secret)
 			})
-		})
-		invalidateAll();
-	}
+		}).then(() => {
+			secretToast(
+				`<b>Secret Unlocked: ${secrets.get(secret)?.name}</b><br>
+			${secrets.get(secret)?.description}`,
+				{
+					onpop: () => {
+						switch (secrets.get(secret)?.type) {
+							case 'card':
+								$menuStateStore = { value: 0, change: true };
+								break;
+						}
+					}
+				}
+			);
+			invalidateAll();
+		});
+	};
 </script>
 
 <div class="container">
@@ -266,21 +281,39 @@
 				<p>Choose a reader</p>
 				<div class="optionSelect character">
 					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						<button
-							class={'option ' + ($readingStore?.character === character.name ? 'active' : '')}
-							on:click={() => selectCharacter(character.name)}
-							on:keydown={(event) => {
-								if (event.key === 'Enter') selectCharacter(character.name);
-							}}
-						>
-							<div class="imgWrapper">
-								<img src="/options/{character.character.name}-300.webp" alt="" />
-							</div>
-							<div class="optionText">
-								<p><b>{character.character.name}</b></p>
-								<p><i>{character.character.title}</i></p>
-							</div>
-						</button>
+						{#if !unlocks.get(character.character.name) || $page.data.profile.data.experience >= (unlocks.get(character.character.name)?.exp || 0)}
+							<button
+								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
+								on:click={() => selectCharacter(character.character.name)}
+								on:keydown={(event) => {
+									if (event.key === 'Enter') selectCharacter(character.character.name);
+								}}
+							>
+								<div class="imgWrapper">
+									<img src="/options/{character.character.name}-300.webp" alt="" />
+								</div>
+								<div class="optionText">
+									<p><b>{character.character.name}</b></p>
+									<p><i>{character.character.title}</i></p>
+								</div>
+							</button>
+						{:else}
+							<button
+								class="option lockedOption"
+								on:click={() => $menuStateStore = { value: 3, change: true }}
+								on:keydown={(event) => {
+									if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+								}}
+							>
+								<div class="imgWrapper">
+									<img src="/options/Lock.svg" alt="" />
+								</div>
+								<div class="optionText">
+									<p><b>{character.character.name}</b></p>
+									<p><i>{character.character.title}</i></p>
+								</div>
+							</button>
+						{/if}
 					{/each}
 				</div>
 			</div>
@@ -289,20 +322,38 @@
 				<p>Choose a scenario</p>
 				<div class="optionSelect scenario">
 					{#each Array.from(readingScenarios).map( ([name, setting]) => ({ name, setting }) ) as scenario}
-						<button
-							class={'option ' + ($readingStore?.setting === scenario.name ? 'active' : '')}
-							on:click={() => selectOption(scenario.name)}
-							on:keydown={(event) => {
-								if (event.key === 'Enter') selectOption(scenario.name);
-							}}
-						>
-							<div class="imgWrapper">
-								<img src="/options/{scenario.name}.png" alt="" />
-							</div>
-							<div class="optionText">
-								<p>{scenario.setting.name}</p>
-							</div>
-						</button>
+					{#if !unlocks.get(scenario.name) || $page.data.profile.data.experience >= (unlocks.get(scenario.name)?.exp || 0)}
+					<button
+						class={'option ' + ($readingStore?.setting === scenario.name ? 'active' : '')}
+						on:click={() => selectOption(scenario.name)}
+						on:keydown={(event) => {
+							if (event.key === 'Enter') selectOption(scenario.name);
+						}}
+					>
+						<div class="imgWrapper">
+							<img src="/options/{scenario.name}.png" alt="" />
+						</div>
+						<div class="optionText">
+							<p>{scenario.setting.name}</p>
+						</div>
+					</button>
+					{:else}
+					<button
+						class="option lockedOption"
+						on:click={() => $menuStateStore = { value: 3, change: true }}
+						on:keydown={(event) => {
+							if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+						}}
+					>
+						<div class="imgWrapper">
+							<img src="/options/Lock.svg" alt="" />
+						</div>
+						<div class="optionText">
+							<p>{scenario.setting.name}</p>
+						</div>
+					</button>
+
+					{/if}
 					{/each}
 					{#each $customScenariosStore as scenario}
 						<button
@@ -324,14 +375,37 @@
 							</button>
 						</button>
 					{/each}
-					<button class="option" on:click={() => navigateToCustomScenarios()}>
-						<div class="imgWrapper">
-							<img src="/options/Add.png" alt="" />
-						</div>
-						<div class="optionText">
-							<p>Add Custom Scenarios</p>
-						</div>
-					</button>
+					{#if !unlocks.get('custom') || $page.data.profile.data.experience >= (unlocks.get('custom')?.exp || 0)}
+						<button
+							class="option"
+							on:click={() => navigateToCustomScenarios()}
+							on:keydown={(event) => {
+								if (event.key === 'Enter') navigateToCustomScenarios();
+							}}
+						>
+							<div class="imgWrapper">
+								<img src="/options/Add.png" alt="" />
+							</div>
+							<div class="optionText">
+								<p>Add Custom Scenarios</p>
+							</div>
+						</button>
+					{:else}
+						<button
+							class="option lockedOption"
+							on:click={() => $menuStateStore = { value: 3, change: true }}
+							on:keydown={(event) => {
+								if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+							}}
+						>
+							<div class="imgWrapper">
+								<img src="/options/Lock.svg" alt="" />
+							</div>
+							<div class="optionText">
+								<p>Add Custom Scenarios</p>
+							</div>
+						</button>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -444,7 +518,7 @@
 			</div>
 			<p>Tell me my fortune</p>
 		</div>
-		<button on:click={()=>goToCheckout()}>goToCheckout</button>
+		<button on:click={() => goToCheckout()}>goToCheckout</button>
 	</div>
 </div>
 
@@ -561,10 +635,54 @@
 						}
 					}
 				}
+				.lockedOption {
+					color: white;
+					font-size: $base-font-size;
+					font-family: $other-font;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: start;
+					padding: 1rem 1rem;
+					width: min-content;
+					background: rgba($color: #000000, $alpha: 0.2);
+					border-radius: 1rem;
+					outline: none;
+					border: 1px solid transparent;
+					cursor: pointer;
+					transition: all 0.2s ease;
+					&::-webkit-scrollbar {
+						display: none;
+					}
+					.imgWrapper {
+						width: min(30vw, 6rem);
+						aspect-ratio: 1/1;
+						overflow: hidden;
+						border-radius: 0;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						img {
+							transition: all 1s ease;
+						}
+					}
+					&:hover {
+						background-color: rgba($color: #000000, $alpha: 0.4);
+						& img {
+							transform: scale(1.05);
+						}
+					}
+					&:focus {
+						border: 1px solid white;
+					}
+					& .optionText {
+						margin-top: 0.5rem;
+					}
+				}
 			}
 		}
 		& .character {
-			& .option {
+			& .option:not(.lockedOption) {
 				& .imgWrapper {
 					&.active {
 						border: 1px solid #ffffff;
@@ -582,6 +700,13 @@
 						max-height: 80%;
 						max-width: 90%;
 					}
+				}
+			}
+		}
+		& .lockedOption {
+			& .imgWrapper {
+				& img {
+					width: 60%;
 				}
 			}
 		}

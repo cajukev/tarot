@@ -24,9 +24,9 @@
 	// 3: Readers
 	// 4: Settings
 	// 5: Tokens
-	$: {
-		if($menuStateStore.change)contents.scrollIntoView();
-	}
+	$: if($menuStateStore.change) contents.scrollIntoView();;	
+	
+	
 	let contents: HTMLElement;
 
 	let error: string;

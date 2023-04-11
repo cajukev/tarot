@@ -3,18 +3,20 @@
 	import { db } from '$lib/db';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { achievementsStore, deviceStore, readingStore } from '../stores';
+	import { achievementsStore, deviceStore, readingStore, menuStateStore } from '../stores';
 	import type { PageData } from './$types';
-	import { SvelteToast } from '@zerodevx/svelte-toast';
+	import { SvelteToast, toast } from '@zerodevx/svelte-toast';
+	import { achievement as achievementToast, unlock as unlockToast } from '$lib/toastStubs';
 	import type { Achievement } from '$lib/achievements';
 	import { achievements } from '$lib/achievements';
+	import { unlocks } from '$lib/unlocks';
 	import Menu from './Menu.svelte';
 	import { mapToObj, objToMap } from '$lib/utils';
 
 	export let data: PageData;
-	
+
 	onMount(() => {
-		console.log(data)
+		console.log(data);
 		if (window.matchMedia('(any-pointer: coarse)').matches) {
 			$deviceStore.hasTouch = true;
 		}
@@ -35,16 +37,18 @@
 
 	// HANDLE ACHIEVEMENTS
 	// let userAchievements: Map<string, Achievement> = new Map(data.profile?.data?.achievements) || achievements;
-	let userAchievements: Map<string, Achievement> = objToMap(data.profile?.data?.achievements) || achievements;
+	let userAchievements: Map<string, Achievement> =
+		objToMap(data.profile?.data?.achievements) || achievements;
 	console.log('userAchievements', userAchievements);
 	console.log(mapToObj(userAchievements));
-	
-	let storedQuestion = "This is definitely not a question 1234567890987654321";
+
+	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 
 	$: {
 		if ($achievementsStore?.value) handleAchievements();
 	}
 	let handleAchievements = () => {
+		completeAchievement('Beginnings');
 		let value;
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
@@ -62,29 +66,30 @@
 					}
 					if (userAchievements.get('NewBeginnings')!.progress.progress?.length >= 3) {
 						completeAchievement('NewBeginnings');
-						updateAchievements();
 					}
 				}
 				break;
-				case 'AskQuestion':
-					value = $readingStore.question;
-					if(value !== storedQuestion){
-						storedQuestion = value;
-					}else{
-						completeAchievement('Perseverance')
-						updateAchievements();
-					}
-
+			case 'AskQuestion':
+				value = $readingStore.question;
+				if (value !== storedQuestion) {
+					storedQuestion = value;
+				} else {
+					completeAchievement('Perseverance');
+					updateAchievements();
+				}
 		}
 		userAchievements = new Map(userAchievements);
 		console.log('handleAchievements', userAchievements);
 	};
 	let completeAchievement = (achievement: string) => {
-		if (!userAchievements.get(achievement)!.completed) {
-			userAchievements.get(achievement)!.completed = true;
-			addExperience(userAchievements.get(achievement)!.experience);
-			console.log('completeAchievement', achievement);
-		}
+		if (userAchievements.get(achievement)!.completed) return;
+
+		userAchievements.get(achievement)!.completed = true;
+		updateAchievements();
+		addExperience(userAchievements.get(achievement)!.experience);
+		achievementToast(`<b>Achievement Unlocked: ${userAchievements.get(achievement)!.name}</b><br>
+			${userAchievements.get(achievement)!.description}<br>
+			<i>+${userAchievements.get(achievement)!.experience} XP</i>`);
 	};
 	let updateAchievements = () => {
 		fetch('/api/updateAchievements', {
@@ -95,8 +100,11 @@
 			body: JSON.stringify({
 				achievements: mapToObj(userAchievements)
 			})
+		}).then(() => {
+			invalidateAll();
 		});
-	}
+	};
+
 	let addExperience = (amount: number) => {
 		let newExperience = data.profile?.data?.experience + amount;
 		console.log('addExperience', newExperience);
@@ -108,11 +116,31 @@
 			body: JSON.stringify({
 				experience: newExperience
 			})
-		})
-		.then(()=> {
+		}).then(() => {
+			checkUnlocks(data.profile?.data?.experience, newExperience);
 			invalidateAll();
-		})
-	}
+		});
+	};
+
+	let checkUnlocks = (oldExperience: number, newExperience: number) => {
+		unlocks.forEach((data) => {
+			if (oldExperience < data.exp && newExperience >= data.exp) {
+				unlockToast(
+					`<b>Unlocked: ${data.name}</b><br>
+				${data.description}`,
+					{
+						onpop: () => {
+							switch (data.type) {
+								case 'card':
+									$menuStateStore = { value: 0, change: true };
+									break;
+							}
+						}
+					}
+				);
+			}
+		});
+	};
 </script>
 
 <Menu />
@@ -124,8 +152,9 @@
 		rel="stylesheet"
 	/>
 </svelte:head>
-
-<SvelteToast />
+<div class="toastWrapper">
+	<SvelteToast />
+</div>
 <div class="topShadow" />
 <div class="app">
 	<div class="bg" />
@@ -162,5 +191,15 @@
 		height: 50vh;
 		background: linear-gradient(180deg, #050607 0%, rgba(5, 6, 7, 0) 100%);
 		z-index: -1;
+	}
+
+	// Toast
+	.toastWrapper {
+		display: contents;
+		line-height: 150%;
+		--toastWidth: fit-content;
+		--toastColor: #000;
+		--toastBarBackground: #fff;
+		--toastBorderRadius: 0.5rem;
 	}
 </style>
