@@ -1,5 +1,5 @@
 export default new Map([
-  ['Kevin The Novice',
+  ['Kevin',
     {
       name: 'Kevin',
       title: 'The Novice',

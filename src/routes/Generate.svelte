@@ -27,7 +27,7 @@
 	let pressedSegment = 0;
 
 	$readingStore.setting = 'qa';
-	$readingStore.character = 'Kevin The Novice';
+	$readingStore.character = 'Kevin';
 
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
@@ -281,7 +281,7 @@
 				<p>Choose a reader</p>
 				<div class="optionSelect character">
 					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						{#if !unlocks.get(character.character.name) || $page.data.profile.data.experience >= (unlocks.get(character.character.name)?.exp || 0)}
+						{#if !unlocks.get(character.character.name) || $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0)}
 							<button
 								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
 								on:click={() => selectCharacter(character.character.name)}
@@ -322,7 +322,7 @@
 				<p>Choose a scenario</p>
 				<div class="optionSelect scenario">
 					{#each Array.from(readingScenarios).map( ([name, setting]) => ({ name, setting }) ) as scenario}
-					{#if !unlocks.get(scenario.name) || $page.data.profile.data.experience >= (unlocks.get(scenario.name)?.exp || 0)}
+					{#if !unlocks.get(scenario.name) || $page.data.profile?.data.experience >= (unlocks.get(scenario.name)?.exp || 0)}
 					<button
 						class={'option ' + ($readingStore?.setting === scenario.name ? 'active' : '')}
 						on:click={() => selectOption(scenario.name)}
@@ -375,7 +375,7 @@
 							</button>
 						</button>
 					{/each}
-					{#if !unlocks.get('custom') || $page.data.profile.data.experience >= (unlocks.get('custom')?.exp || 0)}
+					{#if !unlocks.get('custom') || $page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)}
 						<button
 							class="option"
 							on:click={() => navigateToCustomScenarios()}
@@ -535,7 +535,7 @@
 		}
 		& .optionSelectWrapper {
 			> p {
-				font-size: $subheader-font-size;
+				font-size: $h4-font-size;
 			}
 			& .optionSelect {
 				max-width: 100vw;
@@ -760,7 +760,7 @@
 		& p {
 			pointer-events: none;
 			place-self: center;
-			font-size: $subheader-font-size;
+			font-size: $h4-font-size;
 			transform: translateZ(0);
 		}
 	}

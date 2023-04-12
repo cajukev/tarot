@@ -26,12 +26,22 @@ main {
 }
 
 h1 {
-  font-size: $header-font-size;
+  font-size: $h1-font-size;
   font-family: $header-font;
   margin: 0;
 }
 h2 {
-  font-size: $subheader-font-size;
+  font-size: $h2-font-size;
+  margin: 0;
+  font-weight: 300;
+}
+h3 {
+  font-size: $h3-font-size;
+  margin: 0;
+  font-weight: 300;
+}
+h4 {
+  font-size: $h4-font-size;
   margin: 0;
   font-weight: 300;
 }

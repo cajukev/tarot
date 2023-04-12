@@ -6,6 +6,8 @@
 	import { onMount } from 'svelte';
 	import Collection from './Collection.svelte';
 	import CustomScenarios from './CustomScenarios.svelte';
+	import { page } from '$app/stores';
+	import Landing from './Landing.svelte';
 	
 
 	// App state
@@ -55,6 +57,7 @@
 		<span class={$timeVariableStore === 4 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>of </span>
 		<span class={$timeVariableStore === 5 || $timeVariableStore === 7 || $timeVariableStore === 9 || $timeVariableStore === 11  ? "illuminated" : ""}>Tarot</span>
 	</h1>
+	{#if $page.data?.profile }
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
 			<Generate bind:state bind:error />
@@ -107,6 +110,9 @@
 			<button on:click={() => state = 1}>Restart</button>
 		</div>
 	</div>
+	{:else}
+	<Landing/>
+	{/if}
 	
 </div>
 
@@ -176,7 +182,7 @@
 			}
 			h3{
 				margin-top: 1rem;
-				font-size: $button-font-size;
+				font-size: $h2-font-size;
 				font-family: $other-font;
 				text-align: center;
 			}

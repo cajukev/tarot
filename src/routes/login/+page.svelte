@@ -35,7 +35,7 @@
   input[type='text'] {
 		display: block;
 		font-family: $other-font;
-		font-size: $button-font-size;
+		font-size: $h2-font-size;
 		text-align: center;
 		width: 20rem;
 		max-width: calc(100vw - 1rem);
@@ -55,7 +55,7 @@
 		margin-top: 1rem;
 		display: block;
 		font-family: $other-font;
-		font-size: $button-font-size;
+		font-size: $h2-font-size;
 		display: inline-block;
 		width: 20rem;
 		max-width: calc(100vw - 1rem);

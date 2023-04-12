@@ -143,22 +143,21 @@
 	};
 </script>
 
-<Menu />
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
-		href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
-		rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
+	rel="stylesheet"
 	/>
 </svelte:head>
+<Menu />
 <div class="toastWrapper">
 	<SvelteToast />
 </div>
 <div class="topShadow" />
 <div class="app">
 	<div class="bg" />
-	<!-- <Menu /> -->
 	<slot />
 </div>
 
