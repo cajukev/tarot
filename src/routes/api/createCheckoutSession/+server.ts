@@ -29,7 +29,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       line_items: [
         {
           price_data: {
-            currency: 'cad',
+            currency: 'usd',
             product_data: {
               name: `${shopItem?.description}`,
             },
