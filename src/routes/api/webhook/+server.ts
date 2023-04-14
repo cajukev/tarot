@@ -54,7 +54,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
     // Update profile
     // @ts-ignore
-    const { data, error } = await dbSecret.from('Profile').update({ tokens: profileData.data.tokens + parseInt(session.metadata.tokenAmount), total_paid: profileData.data.total_paid + session.metadata.amountPaid }).eq('id', profileId)
+    const { data, error } = await dbSecret.from('Profile').update({ tokens: profileData.data.tokens + parseInt(session.metadata.tokenAmount), total_paid: profileData.data.total_paid + parseInt(session.metadata.amountPaid) }).eq('id', profileId)
     if (error) {
       return new Response(
         JSON.stringify({
