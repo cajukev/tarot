@@ -6,11 +6,33 @@ import type { CollectionCard } from "$lib/cards";
 import characters from "$lib/characters";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  let tokens: number;
   const formData: {
     reading: ReadingType;
     customScenario: ReadingScenarioType;
+    tokenCost: number;
   } = await request.json();
+
+  let tokenCost = formData.tokenCost || 999999999;
+
+  // Verify tokens
+  const profileData = await locals.sb.from('Profile')
+    .select('*')
+    .eq('id', locals.session.user.id)
+    .single()
+
+  if (profileData.data!.tokens < tokenCost) {
+    return new Response(
+      JSON.stringify({
+        error: "Not enough tokens",
+      }),
+    );
+  }else{
+    await locals.sb.from('Profile')
+      .update({ tokens: profileData.data!.tokens - tokenCost })
+      .eq('id', locals.session.user.id)
+      .single()
+  }
+
   let setting = formData.reading.setting || "ppf";
   let scenario: ReadingScenarioType;
   if(formData.customScenario){

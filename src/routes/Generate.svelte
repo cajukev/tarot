@@ -206,11 +206,12 @@
 				reading: $readingStore,
 				customScenario: $customScenariosStore.find(
 					(scenario) => scenario.name === $readingStore.setting
-				)
+				),
+				tokenCost: tokenCost
 			})
 		}).then(async (res) => {
 			const reader = res.body?.getReader();
-
+			invalidateAll();
 			while (true && reader) {
 				const { done, value } = await reader.read();
 				const text = new TextDecoder('utf-8').decode(value);
