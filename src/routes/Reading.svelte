@@ -59,7 +59,7 @@
 						<div class="stacked">
 							<div class={'card ' + ($flippedCardsStore[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
-									src="/cards/cardback-400.webp"
+									src="/cards/cardback-200.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									on:click={() => {
@@ -70,7 +70,7 @@
 
 							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-400.webp"
+									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-200.webp"
 									alt=""
 									class={'white ' +
 										($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
@@ -81,12 +81,6 @@
 									>
 								</h3>
 								<!-- <p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p> -->
-							</div>
-						</div>
-					{:else}
-						<div class="stacked">
-							<div class={'card cardmissing'}>
-								<img src="/cards/cardback-400.webp" alt="" />
 							</div>
 						</div>
 					{/if}
@@ -142,7 +136,7 @@
 				& img {
 					margin: 1rem 0rem;
 					width: 100%;
-					max-width: min(80vw, 400px);
+					max-width: min(80vw, 200px);
 					border-radius: 0.25rem;
 					border: 0.25rem solid #000;
 					transition: all 1s ease;
@@ -161,7 +155,6 @@
 					pointer-events: none;
 				}
 				& h3 {
-					margin-bottom: 1rem;
 					font-family: $header-font;
 					& span {
 						font-size: $base-font-size;

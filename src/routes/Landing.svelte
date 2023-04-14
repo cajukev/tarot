@@ -85,7 +85,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 
 </script>
 
-<div class="container">
+<div class="container screenPadding">
   <a href="/login"><button>Login / Sign up</button></a>
   <!-- Landing Reading -->
 
@@ -102,7 +102,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
               <div class="stacked">
                 <div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
                   <img
-                    src="/cards/cardback-400.webp"
+                    src="/cards/cardback-200.webp"
                     alt=""
                     class={landingReading.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
                     on:click={() => {
@@ -113,7 +113,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
   
                 <div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
                   <img
-                    src="/cards/{_getCardImgName(landingReading.cards[i].name)}-400.webp"
+                    src="/cards/{_getCardImgName(landingReading.cards[i].name)}-200.webp"
                     alt=""
                     class={'white ' +
                       (landingReading.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
@@ -125,12 +125,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
                     </span>
                   </h3>
                   <!-- <p>{@html landingReading.cards[i].reversed ? landingReading.cards[i].reversedMeaning : landingReading.cards[i].meaning }</p> -->
-                </div>
-              </div>
-            {:else}
-              <div class="stacked">
-                <div class={'card cardmissing'}>
-                  <img src="/cards/cardback-400.webp" alt="" />
                 </div>
               </div>
             {/if}
@@ -229,7 +223,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 					pointer-events: none;
 				}
 				& h3 {
-					margin-bottom: 1rem;
 					font-family: $header-font;
 					& span {
 						font-size: $base-font-size;

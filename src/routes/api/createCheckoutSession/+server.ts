@@ -1,12 +1,20 @@
 import type { RequestHandler } from "@sveltejs/kit";
 import Stripe from "stripe";
+import { shopItems } from "$lib/shop";
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const formData: {
+    item: string;
+  } = await request.json();
+
   // Get User Profile
   const profileData = await locals.sb.from('Profile')
     .select('*')
     .eq('id', locals.session.user.id)
     .single()
+
+  // Get shop Item
+  const shopItem = shopItems.get(formData.item);
 
   const webHookSecret = import.meta.env.VITE_STRIPE_WEBHOOK_SECRET
 
@@ -23,15 +31,17 @@ export const GET: RequestHandler = async ({ locals }) => {
           price_data: {
             currency: 'cad',
             product_data: {
-              name: '1000 Generations',
+              name: `${shopItem?.description}`,
             },
-            unit_amount: 50,
+            unit_amount: shopItem?.cost,
           },
           quantity: 1,
         },
       ],
       metadata: {
-        profileId: profileData.data!.id
+        profileId: profileData.data!.id,
+        tokenAmount: shopItem!.amount,
+        amountPaid: shopItem!.cost,
       },
       payment_method_types: [
         'card',

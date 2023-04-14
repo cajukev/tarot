@@ -3,12 +3,8 @@ TODO:
 Site:
 guide to energies
 About readers
-Unlocks Progression View
 More Achievements
-Achievement view
-Popups
-Landing Page
-Login Page
+Login Pages
 Custom Scenarios Design
 Shop
 

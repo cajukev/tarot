@@ -21,3 +21,14 @@ export let objToMap = (obj: { [key: string]: any }) => {
 
 	return map;
 };
+
+export let getTokenCost = (nbCards: number, model: string) => {
+	let cardCost = nbCards / 2;
+	let modelCost = model === 'gpt-3.5-turbo' ? 1 : 10;
+	return Math.ceil(cardCost * modelCost);
+}
+
+export let centsToDollars = (cents: number) => {
+	// Returns a string with the dollar amount with 2 decimal places
+	return (cents / 100).toFixed(2);
+}

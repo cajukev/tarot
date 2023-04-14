@@ -19,6 +19,7 @@
 	import { secret as secretToast } from '$lib/toastStubs';
 	import { secrets } from '$lib/secrets';
 	import { unlocks } from '$lib/unlocks';
+	import { getTokenCost } from '$lib/utils';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -34,6 +35,20 @@
 
 	let scrollVar = 1;
 	let oldScroll = 0;
+
+	let tokenCost = 0;
+	$: {
+		let nbCards = 0;
+		if (readingScenarios.get($readingStore.setting)) {
+			nbCards = readingScenarios.get($readingStore.setting)!.positions.length;
+		}else{
+			nbCards = $customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)!.positions.length
+		}
+
+		let model = characters.get($readingStore.character)!.model;
+
+		tokenCost = getTokenCost(nbCards, model);
+	}
 	onMount(() => {
 		window.onscroll = function () {
 			scrollVar = oldScroll > scrollY ? 0 : 1;
@@ -225,15 +240,6 @@
 		$customScenariosStore = $customScenariosStore.filter((scenario) => scenario.name !== name);
 	};
 
-	let goToCheckout = () => {
-		fetch('/api/createCheckoutSession')
-			.then((res) => res.json())
-			.then((response) => {
-				if (response.sessionUrl) {
-					goto(response.sessionUrl);
-				}
-			});
-	};
 	$: if ($readingStore) checkForSecret($readingStore.question);
 
 	// Handle Secrets
@@ -365,7 +371,7 @@
 							}}
 						>
 							<div class="imgWrapper">
-								<img src="/options/Custom.png" alt="" />
+								<img src="/options/custom.png" alt="" />
 							</div>
 							<div class="optionText">
 								<p>{scenario.name}</p>
@@ -518,7 +524,8 @@
 			</div>
 			<p>Tell me my fortune</p>
 		</div>
-		<button on:click={() => goToCheckout()}>goToCheckout</button>
+		<p>Costs {tokenCost} token | <span>({$page.data.profile.data.tokens} remaining)</span></p>
+		<button class="cta" on:click={() => $menuStateStore = { value: 6, change: true }}>Buy More Tokens</button>
 	</div>
 </div>
 
@@ -763,5 +770,13 @@
 			font-size: $h4-font-size;
 			transform: translateZ(0);
 		}
+	}
+	.cta{
+		cursor: pointer;
+		background-color: $accent;
+		border: none;
+		padding: 0.25rem 0.5rem;
+		font-family: $other-font;
+		font-weight: 700;
 	}
 </style>

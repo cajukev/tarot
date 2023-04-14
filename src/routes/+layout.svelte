@@ -15,15 +15,25 @@
 
 	export let data: PageData;
 
+	let userAchievements: Map<string, Achievement>
+
 	onMount(() => {
-		console.log(data);
 		if (window.matchMedia('(any-pointer: coarse)').matches) {
 			$deviceStore.hasTouch = true;
 		}
 		if (matchMedia('(pointer:fine)').matches) {
 			$deviceStore.hasMouse = true;
 		}
+		
+		// HANDLE ACHIEVEMENTS
+		if(!data.profile?.data?.achievements){
+			userAchievements = achievements;
+		} else {
+			userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
+		}
+		console.log("userAchievements", userAchievements);
 
+		// Supabase Auth
 		const {
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {
@@ -35,13 +45,6 @@
 		};
 	});
 
-	// HANDLE ACHIEVEMENTS
-	// let userAchievements: Map<string, Achievement> = new Map(data.profile?.data?.achievements) || achievements;
-	let userAchievements: Map<string, Achievement> =
-		objToMap(data.profile?.data?.achievements) || achievements;
-	console.log('userAchievements', userAchievements);
-	console.log(mapToObj(userAchievements));
-
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 
 	$: {
@@ -50,14 +53,17 @@
 	let handleAchievements = () => {
 		completeAchievement('Beginnings');
 		let value;
+		console.log("handleAchievements", $achievementsStore);
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
 				value = $readingStore;
 				// Completed a reading
 				completeAchievement('Beginnings');
-
+				console.log("userAchievements", userAchievements);
 				if (!userAchievements.get('NewBeginnings')!.completed) {
-					if (!userAchievements.get('NewBeginnings')!.progress.progress) {
+					console.log('NewBeginnings not completed');
+					if (!userAchievements.get('NewBeginnings')!.progress.progress || userAchievements.get('NewBeginnings')!.progress.progress.length === 0) {
+						console.log('NewBeginnings progress not set');
 						userAchievements.get('NewBeginnings')!.progress.progress = [value.setting];
 						updateAchievements();
 					} else {
@@ -92,6 +98,7 @@
 			<i>+${userAchievements.get(achievement)!.experience} XP</i>`);
 	};
 	let updateAchievements = () => {
+		console.log('updateAchievements', mapToObj(userAchievements));
 		fetch('/api/updateAchievements', {
 			method: 'POST',
 			headers: {

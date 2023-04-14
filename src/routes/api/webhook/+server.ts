@@ -29,7 +29,7 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
   if (stripeEvent.type === 'checkout.session.completed') {
     const session = stripeEvent.data.object;
     // @ts-ignore
-    const profileId: string = session.metadata.profileId
+    const profileId: string = session.metadata.profileId;
 
     const profileData = await dbSecret.from('Profile')
       .select('*')
@@ -53,7 +53,8 @@ export const POST: RequestHandler = async (event: RequestEvent) => {
 
 
     // Update profile
-    const { data, error } = await dbSecret.from('Profile').update({ tokens: profileData.data.tokens + 1000, total_paid: profileData.data.total_paid + 0.50 }).eq('id', profileId)
+    // @ts-ignore
+    const { data, error } = await dbSecret.from('Profile').update({ tokens: profileData.data.tokens + session.metadata.tokenAmount, total_paid: profileData.data.total_paid + session.metadata.amountPaid }).eq('id', profileId)
     if (error) {
       return new Response(
         JSON.stringify({

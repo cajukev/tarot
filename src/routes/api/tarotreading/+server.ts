@@ -45,12 +45,13 @@ drawn card(s):`
   })
   system += `
 Do not use any other card name than the one provided in the list above.
-follow this structure, separate each p with a line break:
+follow this structure:
 p1: one phrase overview of the reading, start paragraph with an expression, max 20 words
-${scenario.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain, start with an expression`).join(`
+${scenario.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`
 `)}
 p${(scenario.positions.length || 1) + 2}: conclusion
 p${(scenario.positions.length || 1) + 3}: invite the user to ask more questions
+separate each p with a line break
 Total between ${40 * drawnCards.length + 80} and ${40 * drawnCards.length + 120} words, no more no less`
 
   const messages = [
