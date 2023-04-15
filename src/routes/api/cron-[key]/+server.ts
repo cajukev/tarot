@@ -8,6 +8,7 @@ export function GET({request, params}) {
         .lt("tokens", 15)
     } catch (error) {
       console.log(error);
+      return new Response('No Cron!');
     } finally {
       return new Response('Yes Cron!');
     }
