@@ -1,4 +1,29 @@
 <script lang="ts">
+	import Collection from "./Collection.svelte";
+import Contents from "./Contents.svelte";
+import { page } from "$app/stores";
+	import { onMount } from "svelte";
+	import { invalidateAll } from "$app/navigation";
+
+
+  let recursiveInvalidate = (count: number) => {
+    switch(count){
+      case 0: 
+        break;
+      default:
+        setTimeout(() => {
+          if(!$page.data.profile){
+            invalidateAll();
+          }
+        }, 500)
+        recursiveInvalidate(count - 1)
+    }
+
+  }
+onMount(() => {
+  recursiveInvalidate(5)
+})
+
   let landingReading: ReadingType = {
     cards: [
       {
@@ -72,6 +97,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 
   let landingTextInterval: any;
 
+  let afterButton: HTMLElement;
   let onReadingStart = () => {
     landingTextInterval = setInterval(() => {
       if (landingTextArrayIndex < landingTextArray.length) {
@@ -79,14 +105,15 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
         landingTextArrayIndex++
       } else {
         clearInterval(landingTextInterval)
+        afterButton.classList.remove('hidden')
       }
-    }, 75)
+    }, 30)
   }
 
 </script>
 
 <div class="container screenPadding">
-  <a href="/login"><button>Login / Sign up</button></a>
+  <a href="/login"><div class="button">Login</div></a>
   <!-- Landing Reading -->
 
   <div class="reading">
@@ -133,12 +160,12 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
       {/each}
     </div>
     <p class="conclusion">{@html landingReading.conclusion.trim() || ''}</p>
-    <!-- Restart button -->
+    <a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
   </div>
-  
-
-
-
+</div>
+<div class="collection screenPadding">
+  <h2>Collection</h2>
+  <Collection />
 </div>
 
 <style lang="scss">
@@ -146,26 +173,45 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
     display: flex;
     flex-direction: column;
     align-items: center;
-    a button{
-      margin-top: 2rem;
+
+    a{
+      transition: all 1s ease-in-out;
+      position: relative;
+      text-decoration: none;
+      &.hidden{
+        opacity: 0;
+        pointer-events: none;
+        .button{
+          transform: translateY(100%);
+        }
+      }
+      .button{
+      margin-top: 2rem;   
       padding: 0.5rem 1.25rem;
+      width: max-content;
       border: none;
       border-radius: 0.5rem;
       background: $accent;
       color: black;
       font-family: $header-font;
       font-size: $h4-font-size;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.25s ease-in-out;
+      transition: all 1s ease-in-out;
       &:hover{
         background: rgba($accent, 0.75);
       }
+      
+    }
     }
   }
   .reading {
 		margin-top: 2rem;
 		padding-bottom: 5rem;
 		text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 		& h2 {
 			margin-bottom: 0.5rem;
 			& ~ p {
@@ -245,4 +291,11 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 		opacity: 0;
 		pointer-events: none;
 	}
+
+  .collection{
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    background-color: $bg2;
+    text-align: center;
+  }
 </style>

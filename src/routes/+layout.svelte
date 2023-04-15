@@ -12,6 +12,7 @@
 	import { unlocks } from '$lib/unlocks';
 	import Menu from './Menu.svelte';
 	import { mapToObj, objToMap } from '$lib/utils';
+	import Title from './Title.svelte';
 
 	export let data: PageData;
 
@@ -165,6 +166,7 @@
 <div class="topShadow" />
 <div class="app">
 	<div class="bg" />
+	<Title/>
 	<slot />
 </div>
 

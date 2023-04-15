@@ -3,7 +3,6 @@
 	import Reading from './Reading.svelte';
 	import { readingStore } from '../stores';
 	import { page } from '$app/stores';
-	import Title from './Title.svelte';
 	import Landing from './Landing.svelte';
 	import Contents from './Contents.svelte';
 	
@@ -19,7 +18,6 @@
 </script>
 
 <div class="container">
-	<Title />
 	{#if $page.data?.profile }
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>

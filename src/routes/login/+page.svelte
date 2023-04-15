@@ -2,40 +2,54 @@
 	import { enhance } from "$app/forms";
   export let form: any;
   let loading = false;
+	let email = "";
 </script>
 <main>
-	<!-- Return -->
-	<a href="/">&larr; Return</a>
-  <!-- Login form -->
-  <form
-		method="POST"
-		action="?/login"
-		use:enhance={({ form }) => {
-			loading = true;
-			return async ({ result, update }) => {
-				loading = false;
-				update();
-			};
-		}}
-	>
-  <input type="text" name="email" placeholder="Email" />
-  <!-- <input type="password" name="password" placeholder="Password" /> -->
-  <button type="submit" disabled={loading}>Send link</button>
+	<div class="container">
+		<!-- Return -->
+		<a href="/"><h4>&larr; Return</h4></a>
+		<!-- Login form -->
+		<form
+			method="POST"
+			action="?/login"
+			use:enhance={({ form }) => {
+				loading = true;
+				return async ({ result, update }) => {
+					loading = false;
+					update();
+				};
+			}}
+		>
+		<input type="text" name="email" placeholder="Email" bind:value={email} />
+		<!-- <input type="password" name="password" placeholder="Password" /> -->
+		<button type="submit" disabled={email.length === 0}>Email me a login link</button>
+	</form>
+	</div>
 
-</form>
 </main>
 
 <style lang="scss">
+	.container{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 100vh;
+	}
+	a{
+		margin: 2rem;
+		color: rgba($color: white, $alpha: 0.7);
+	}
   form {
     display: flex;
     flex-direction: column;
     width: fit-content;
+		align-items: center;
     gap: 1rem;
   }
   input[type='text'] {
 		display: block;
 		font-family: $other-font;
-		font-size: $h2-font-size;
+		font-size: $h4-font-size;
 		text-align: center;
 		width: 20rem;
 		max-width: calc(100vw - 1rem);
@@ -44,12 +58,12 @@
 		border: none;
 		outline: none;
 		box-shadow: 0.2rem 0.2rem 0px #a79c8f;
-		transition: transform 0.25s ease, box-shadow 0.25s ease;
+		transition: all 0.25s ease;
 	}
 	input[type='text']:focus {
 		box-shadow: 0.6rem 0.6rem 0px #72675b;
 		transform: translate(-0.2rem, -0.2rem);
-		transition: transform 0.25s ease, box-shadow 0.5s ease;
+		transition: all 0.25s ease;
 	}
 	button[type='submit'] {
 		margin-top: 1rem;
@@ -57,26 +71,41 @@
 		font-family: $other-font;
 		font-size: $h2-font-size;
 		display: inline-block;
-		width: 20rem;
 		max-width: calc(100vw - 1rem);
-		padding: 0.25rem 0.5rem;
-		background-color: $off-white;
-		color: white;
+		padding: 0.5rem 1.5rem;
+		background-color: $accent;
 		border-radius: 0.5rem;
 		border: none;
 		outline: none;
-		box-shadow: 0.2rem 0.2rem 0px #a79c8f;
-		transition: transform 0.25s ease, box-shadow 0.25s ease;
+		box-shadow: 0.2rem 0.2rem 0px rgba($color: $accent, $alpha: 0.7);
+		transition: all 0.25s ease;
+		animation: jump 3s ease infinite;
 		&:focus,
 		&:hover {
-			box-shadow: 0.6rem 0.6rem 0px #72675b;
+			box-shadow: 0.6rem 0.6rem 0px rgba($color: $accent, $alpha: 0.4);
 			transform: translate(-0.2rem, -0.2rem);
-			transition: transform 0.25s ease, box-shadow 0.5s ease;
+			transition: all 0.5s ease;
 			cursor: pointer;
 		}
 		&:disabled {
-			opacity: 0.5;
+			opacity: 0.8;
+			background-color: $off-white;
+			box-shadow: 0.2rem 0.2rem 0px #a79c8f;
 			cursor: not-allowed;
+			pointer-events: none;
+			animation: none;
+		}
+
+	}
+	@keyframes jump {
+		0% {
+			transform: translate(0, 0);
+		}
+		10% {
+			transform: translate(0, -0.25rem);
+		}
+		20% {
+			transform: translate(0, 0);
 		}
 	}
 </style>

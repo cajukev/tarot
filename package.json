@@ -30,6 +30,7 @@
 	"dependencies": {
 		"@fern-api/openai": "^0.0.23",
 		"@supabase/auth-helpers-sveltekit": "^0.8.7",
+		"@sveltejs/adapter-vercel": "^2.4.1",
 		"openai": "^3.1.0",
 		"stripe": "^12.0.0",
 		"svelte-preprocess-import-assets": "^0.2.6"

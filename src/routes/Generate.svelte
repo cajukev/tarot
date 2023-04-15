@@ -234,7 +234,7 @@
 	};
 
 	let navigateToCustomScenarios = () => {
-		$menuStateStore = { value: 4, change: true };
+		$menuStateStore = { value: 5, change: true };
 	};
 
 	let deleteCustomScenario = (name: string) => {
@@ -416,116 +416,122 @@
 				</div>
 			</div>
 		</div>
-		<p>Enter your question</p>
-		<input bind:value={question} type="text" name="question" id="question" />
-		<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
-			<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
-				<div
-					class="timeVarIndicator"
-					style={'left:' +
-						(($timeVariableStore - 1) / 11) * 100 +
-						'%; ' +
-						'transform: translatey(' +
-						(scrollVar === 1 ? '-100%' : '-70%') +
-						');' +
-						'opacity:' +
-						($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
-				/>
-				<div
-					class="timeVarIndicator"
-					style={'left:' +
-						(($timeVariableStore - 1) / 11) * 100 +
-						'%; ' +
-						'transform: scale(-1) translatey(' +
-						(scrollVar === 1 ? '-70%' : '-100%') +
-						');' +
-						'opacity:' +
-						($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
-				/>
-				<button
-					type="button"
-					on:mouseover|preventDefault={() => mouseoverSegment(1)}
-					on:focus={() => mouseoverSegment(1)}
-					on:touchstart={() => mouseoverSegment(1)}
-					on:touchmove={() => mouseoverSegment(1)}
-					on:click|preventDefault={() => clickSegment(1)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(2)}
-					on:focus={() => mouseoverSegment(2)}
-					on:touchstart={() => mouseoverSegment(2)}
-					on:touchmove={() => mouseoverSegment(2)}
-					on:click={() => clickSegment(2)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(3)}
-					on:focus={() => mouseoverSegment(3)}
-					on:touchstart={() => mouseoverSegment(3)}
-					on:touchmove={() => mouseoverSegment(3)}
-					on:click={() => clickSegment(3)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(4)}
-					on:focus={() => mouseoverSegment(4)}
-					on:touchstart={() => mouseoverSegment(4)}
-					on:touchmove={() => mouseoverSegment(4)}
-					on:click={() => clickSegment(4)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(5)}
-					on:focus={() => mouseoverSegment(5)}
-					on:touchstart={() => mouseoverSegment(5)}
-					on:touchmove={() => mouseoverSegment(5)}
-					on:click={() => clickSegment(5)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(6)}
-					on:focus={() => mouseoverSegment(6)}
-					on:touchstart={() => mouseoverSegment(6)}
-					on:touchmove={() => mouseoverSegment(6)}
-					on:click={() => clickSegment(6)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(7)}
-					on:focus={() => mouseoverSegment(7)}
-					on:touchstart={() => mouseoverSegment(7)}
-					on:touchmove={() => mouseoverSegment(7)}
-					on:click={() => clickSegment(7)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(8)}
-					on:focus={() => mouseoverSegment(8)}
-					on:touchstart={() => mouseoverSegment(8)}
-					on:touchmove={() => mouseoverSegment(8)}
-					on:click={() => clickSegment(8)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(9)}
-					on:focus={() => mouseoverSegment(9)}
-					on:touchstart={() => mouseoverSegment(9)}
-					on:touchmove={() => mouseoverSegment(9)}
-					on:click={() => clickSegment(9)}
-				/>
-				<button
-					type="button"
-					on:mouseover={() => mouseoverSegment(10)}
-					on:focus={() => mouseoverSegment(10)}
-					on:touchstart={() => mouseoverSegment(10)}
-					on:touchmove={() => mouseoverSegment(10)}
-					on:click={() => clickSegment(10)}
-				/>
+		{#if tokenCost <= $page.data.profile.data.tokens}
+		<div>
+			<p>Enter your question</p>
+			<input bind:value={question} type="text" name="question" id="question" />
+			<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
+				<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
+					<div
+						class="timeVarIndicator"
+						style={'left:' +
+							(($timeVariableStore - 1) / 11) * 100 +
+							'%; ' +
+							'transform: translatey(' +
+							(scrollVar === 1 ? '-100%' : '-70%') +
+							');' +
+							'opacity:' +
+							($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
+					/>
+					<div
+						class="timeVarIndicator"
+						style={'left:' +
+							(($timeVariableStore - 1) / 11) * 100 +
+							'%; ' +
+							'transform: scale(-1) translatey(' +
+							(scrollVar === 1 ? '-70%' : '-100%') +
+							');' +
+							'opacity:' +
+							($timeVariableStore === 0 || $timeVariableStore === 10 ? '0' : '1')}
+					/>
+					<button
+						type="button"
+						on:mouseover|preventDefault={() => mouseoverSegment(1)}
+						on:focus={() => mouseoverSegment(1)}
+						on:touchstart={() => mouseoverSegment(1)}
+						on:touchmove={() => mouseoverSegment(1)}
+						on:click|preventDefault={() => clickSegment(1)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(2)}
+						on:focus={() => mouseoverSegment(2)}
+						on:touchstart={() => mouseoverSegment(2)}
+						on:touchmove={() => mouseoverSegment(2)}
+						on:click={() => clickSegment(2)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(3)}
+						on:focus={() => mouseoverSegment(3)}
+						on:touchstart={() => mouseoverSegment(3)}
+						on:touchmove={() => mouseoverSegment(3)}
+						on:click={() => clickSegment(3)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(4)}
+						on:focus={() => mouseoverSegment(4)}
+						on:touchstart={() => mouseoverSegment(4)}
+						on:touchmove={() => mouseoverSegment(4)}
+						on:click={() => clickSegment(4)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(5)}
+						on:focus={() => mouseoverSegment(5)}
+						on:touchstart={() => mouseoverSegment(5)}
+						on:touchmove={() => mouseoverSegment(5)}
+						on:click={() => clickSegment(5)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(6)}
+						on:focus={() => mouseoverSegment(6)}
+						on:touchstart={() => mouseoverSegment(6)}
+						on:touchmove={() => mouseoverSegment(6)}
+						on:click={() => clickSegment(6)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(7)}
+						on:focus={() => mouseoverSegment(7)}
+						on:touchstart={() => mouseoverSegment(7)}
+						on:touchmove={() => mouseoverSegment(7)}
+						on:click={() => clickSegment(7)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(8)}
+						on:focus={() => mouseoverSegment(8)}
+						on:touchstart={() => mouseoverSegment(8)}
+						on:touchmove={() => mouseoverSegment(8)}
+						on:click={() => clickSegment(8)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(9)}
+						on:focus={() => mouseoverSegment(9)}
+						on:touchstart={() => mouseoverSegment(9)}
+						on:touchmove={() => mouseoverSegment(9)}
+						on:click={() => clickSegment(9)}
+					/>
+					<button
+						type="button"
+						on:mouseover={() => mouseoverSegment(10)}
+						on:focus={() => mouseoverSegment(10)}
+						on:touchstart={() => mouseoverSegment(10)}
+						on:touchmove={() => mouseoverSegment(10)}
+						on:click={() => clickSegment(10)}
+					/>
+				</div>
+				<p>Tell me my fortune</p>
 			</div>
-			<p>Tell me my fortune</p>
 		</div>
-		<p>Costs {tokenCost} token | <span>({$page.data.profile.data.tokens} remaining)</span></p>
+		{:else}
+		<p>Regain up to 15 tokens at 12:00PM EST </p>
+		{/if}
+		<p class="cost">Costs {tokenCost} token{tokenCost  !== 1 ? "s" : ""} | <span>({$page.data.profile.data.tokens} remaining)</span></p>
 		<button class="cta" on:click={() => $menuStateStore = { value: 6, change: true }}>Buy More Tokens</button>
 	</div>
 </div>
@@ -728,6 +734,9 @@
 			width: 15rem;
 			height: 2.5rem;
 			margin-bottom: 1rem;
+			text-align: center;
+			font-size: $base-font-size;
+			font-family: $other-font;
 		}
 	}
 	.generateButtonWrapper {
@@ -779,5 +788,8 @@
 		padding: 0.25rem 0.5rem;
 		font-family: $other-font;
 		font-weight: 700;
+	}
+	.cost{
+		padding: 1rem 0rem 0.5rem;
 	}
 </style>

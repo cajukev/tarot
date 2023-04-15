@@ -23,9 +23,18 @@ export let objToMap = (obj: { [key: string]: any }) => {
 };
 
 export let getTokenCost = (nbCards: number, model: string) => {
-	let cardCost = nbCards / 2;
-	let modelCost = model === 'gpt-3.5-turbo' ? 1 : 10;
-	return Math.ceil(cardCost * modelCost);
+	let cardCost = 0.5 + nbCards / 2;
+	let modelCost = 0;
+	switch (model) {
+		case 'gpt-3.5-turbo':
+			modelCost = 1;
+			break;
+		case 'gpt-4':
+			modelCost = 5;
+			break;
+	}
+
+	return (cardCost * modelCost);
 }
 
 export let centsToDollars = (cents: number) => {
