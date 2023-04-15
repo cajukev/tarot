@@ -1,9 +1,7 @@
 import { dbSecret } from '$lib/db';
 
 export function GET() {
-  dbSecret.from('Profile')
-  .update({ tokens: 15 })
-  .lt('tokens', 15)
+  dbSecret.rpc('cron_update_profile_tokens')
     
   return new Response('Hello Cron!');
 }
