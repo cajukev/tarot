@@ -3,39 +3,77 @@
 export type Achievement = {
   name: string;
   description: string;
-  progress: any;
+  progress?: any;
+  progressType?: string;
   experience: number;
   completed: boolean;
 };
 
 export const achievements: Map<string, Achievement> = new Map([
-  ["Beginnings", {
-    name: "Beginnings",
+  ["FirstCompletedReading", {
+    name: "Tarot Beginner",
     description: "Completed a reading",
-    progress: { },
     experience: 50,
     completed: false
   }],
-  ["NewBeginnings", {
-    name: "New Beginnings",
+  ["ReadingWith3Preset", {
+    name: "Learning the Basics",
     description: "Completed a reading with all three preset scenarios",
-    progress: { progress: []},
+    progress: [],
+    progressType: "scenarios",
     experience: 50,
     completed: false
   }],
-  ["Perseverance", {
-    name: "Perseverance",
+  ["SameQuestion", {
+    name: "Let's try again...",
     description: "Ask the same question twice in a row", 
-    progress: { },
     experience: 50,
     completed: false
   }],
-  ["TheLongRoad", {
-    name: "The Long Road",
+  ["10Readings", {
+    name: "Tarot amateur",
     description: "Completed 10 readings",
-    progress: { progress: 0 },
+    progress: 0,
+    progressType: "number",
     experience: 50,
     completed: false
   }],
+  ["20Readings", {
+    name: "Tarot enthusiast",
+    description: "Completed 20 readings",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["30Readings", {
+    name: "Tarot enjoyer",
+    description: "Completed 30 readings",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["SameEnergy", {
+    name: "Beginnings of a pattern",
+    description: "Manifest the same energy twice in a row",
+    experience: 50,
+    completed: false
+  }],
+  ["PerfectionismEnergy", {
+    name: "Perfectionism",
+    description: "Manifest Perfectionism",
+    experience: 50,
+    completed: false
+  }],
+  ["AllMACards", {
+    name: "Master of the Major Arcana",
+    description: "Manifest all Major Arcana cards",
+    progress: [],
+    progressType: "cards",
+    experience: 50,
+    completed: false
+  }],
+
 ]
 )

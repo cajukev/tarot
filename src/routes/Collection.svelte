@@ -170,7 +170,6 @@
 	.container {
 	}
 	h3 {
-		margin-top: 2rem;
 		font-family: $header-font;
 		text-align: center;
 	}

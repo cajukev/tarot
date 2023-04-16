@@ -37,7 +37,7 @@
   .container{
     text-align: center;
     .prices{
-      padding: 1rem;
+      padding-bottom: 1rem;
     }
     .items{
       display: flex;

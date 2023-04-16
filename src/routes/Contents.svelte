@@ -171,10 +171,11 @@
       padding-bottom: 1rem;
     }
 		h3 {
-			margin-top: 1rem;
+			margin-top: 1.5rem;
 			font-size: $h2-font-size;
 			font-family: $other-font;
 			text-align: center;
+			padding-bottom: 2rem;
 		}
 	}
 </style>

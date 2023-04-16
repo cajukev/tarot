@@ -83,8 +83,6 @@
 		&:focus,
 		&:hover {
 			box-shadow: 0.6rem 0.6rem 0px rgba($color: $accent, $alpha: 0.4);
-			transform: translate(-0.2rem, -0.2rem);
-			transition: all 0.5s ease;
 			cursor: pointer;
 		}
 		&:disabled {

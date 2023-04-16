@@ -1,10 +1,14 @@
 <script lang="ts">
 	import readingScenarios from '$lib/readingScenarios';
-	import { readingStore, flippedCardsStore, customScenariosStore } from '../stores';
+	import { readingStore, flippedCardsStore, customScenariosStore, achievementsStore } from '../stores';
 	export let state: number;
 
 	let flipCard = (index: number) => {
 		$flippedCardsStore[index] = !$flippedCardsStore[index];
+		$achievementsStore = {
+			action: 'FlipCard',
+			value: $readingStore.cards[index]
+		};
 	};
 
 	let correctTitle = (title: string) => {

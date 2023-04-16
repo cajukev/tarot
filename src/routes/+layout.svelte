@@ -31,8 +31,10 @@
 			userAchievements = achievements;
 		} else {
 			userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
+			if(userAchievements.size !== achievements.size){
+				updateAchievements();
+			}
 		}
-		console.log("userAchievements", userAchievements);
 
 		// Supabase Auth
 		const {
@@ -47,45 +49,117 @@
 	});
 
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
+	let storedEnergy = "";
 
 	$: {
 		if ($achievementsStore?.value) handleAchievements();
 	}
 	let handleAchievements = () => {
-		completeAchievement('Beginnings');
 		let value;
+		let updateAchievementsFlag = false;
 		console.log("handleAchievements", $achievementsStore);
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
 				value = $readingStore;
-				// Completed a reading
-				completeAchievement('Beginnings');
-				console.log("userAchievements", userAchievements);
-				if (!userAchievements.get('NewBeginnings')!.completed) {
-					console.log('NewBeginnings not completed');
-					if (!userAchievements.get('NewBeginnings')!.progress.progress || userAchievements.get('NewBeginnings')!.progress.progress.length === 0) {
-						console.log('NewBeginnings progress not set');
-						userAchievements.get('NewBeginnings')!.progress.progress = [value.setting];
-						updateAchievements();
+				// FirstCompletedReading
+				completeAchievement('FirstCompletedReading');
+				// ReadingWith3Preset
+				if (!userAchievements.get('ReadingWith3Preset')!.completed) {
+					if (!userAchievements.get('ReadingWith3Preset')!.progress || userAchievements.get('ReadingWith3Preset')!.progress.length === 0) {
+						userAchievements.get('ReadingWith3Preset')!.progress = [value.setting];
+						updateAchievementsFlag = true;
 					} else {
-						userAchievements.get('NewBeginnings')!.progress.progress.push(value.setting);
-						updateAchievements();
+						userAchievements.get('ReadingWith3Preset')!.progress.push(value.setting);
+						updateAchievementsFlag = true;
 					}
-					if (userAchievements.get('NewBeginnings')!.progress.progress?.length >= 3) {
-						completeAchievement('NewBeginnings');
+					if (userAchievements.get('ReadingWith3Preset')!.progress?.length >= 3) {
+						completeAchievement('ReadingWith3Preset');
 					}
 				}
+				// 10Readings
+				if (!userAchievements.get('10Readings')!.completed) {
+					if (!userAchievements.get('10Readings')!.progress) {
+						userAchievements.get('10Readings')!.progress = 1;
+						updateAchievementsFlag = true;
+					} else {
+						userAchievements.get('10Readings')!.progress++;
+						updateAchievementsFlag = true;
+					}
+					if (userAchievements.get('10Readings')!.progress >= 10) {
+						completeAchievement('10Readings');
+					}
+				}
+				// 20Readings
+				if (!userAchievements.get('20Readings')!.completed) {
+					if (!userAchievements.get('20Readings')!.progress) {
+						userAchievements.get('20Readings')!.progress = 1;
+						updateAchievementsFlag = true;
+					} else {
+						userAchievements.get('20Readings')!.progress++;
+						updateAchievementsFlag = true;
+					}
+					if (userAchievements.get('20Readings')!.progress >= 20) {
+						completeAchievement('20Readings');
+					}
+				}
+				// 30Readings
+				if (!userAchievements.get('30Readings')!.completed) {
+					if (!userAchievements.get('30Readings')!.progress) {
+						userAchievements.get('30Readings')!.progress = 1;
+						updateAchievementsFlag = true;
+					} else {
+						userAchievements.get('30Readings')!.progress++;
+						updateAchievementsFlag = true;
+					}
+					if (userAchievements.get('30Readings')!.progress >= 30) {
+						completeAchievement('30Readings');
+					}
+				}
+
 				break;
 			case 'AskQuestion':
-				value = $readingStore.question;
-				if (value !== storedQuestion) {
-					storedQuestion = value;
+				value = $readingStore;
+				// SameQuestion
+				if (value.question !== storedQuestion) {
+					storedQuestion = value.question;
 				} else {
-					completeAchievement('Perseverance');
-					updateAchievements();
+					completeAchievement('SameQuestion');
+					updateAchievementsFlag = true;
 				}
+				// SameEnergy
+				if (value.question !== storedEnergy) {
+					storedEnergy = value.question;
+				} else {
+					completeAchievement('SameEnergy');
+					updateAchievementsFlag = true;
+				}
+				// PerfectionismEnergy
+				if (value.energy === 'Perfectionism') {
+					completeAchievement('PerfectionismEnergy');
+					updateAchievementsFlag = true;
+				}
+				break;
+				case 'FlipCard':
+					value = $achievementsStore?.value;
+					// AllMACards (flip all Major Arcana cards, progress is card name array)
+					if (!userAchievements.get('AllMACards')!.completed) {
+						if (!userAchievements.get('AllMACards')!.progress || userAchievements.get('AllMACards')!.progress.length === 0) {
+							userAchievements.get('AllMACards')!.progress = [$achievementsStore?.value];
+							updateAchievementsFlag = true;
+						} else {
+							if(!userAchievements.get('AllMACards')!.progress.includes($achievementsStore?.value)){
+								userAchievements.get('AllMACards')!.progress.push($achievementsStore?.value);
+								updateAchievementsFlag = true;
+							}
+						}
+						if (userAchievements.get('AllMACards')!.progress?.length >= 22) {
+							completeAchievement('AllMACards');
+						}
+					}
+
 		}
 		userAchievements = new Map(userAchievements);
+		if (updateAchievementsFlag) updateAchievements();
 		console.log('handleAchievements', userAchievements);
 	};
 	let completeAchievement = (achievement: string) => {
