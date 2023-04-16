@@ -162,7 +162,8 @@
 				collectionDecks: $collectionStore,
 				customScenario: $customScenariosStore.find(
 					(scenario) => scenario.name === $readingStore.setting
-				)
+				),
+				tokenCost: tokenCost
 			})
 		})
 			.then((res) => res.json())
@@ -194,6 +195,7 @@
 						});
 						console.log(returnCards);
 						$readingStore.cards = returnCards;
+						invalidateAll();
 						state = 3;
 					}
 				}
@@ -210,8 +212,7 @@
 				reading: $readingStore,
 				customScenario: $customScenariosStore.find(
 					(scenario) => scenario.name === $readingStore.setting
-				),
-				tokenCost: tokenCost
+				)
 			})
 		}).then(async (res) => {
 			const reader = res.body?.getReader();

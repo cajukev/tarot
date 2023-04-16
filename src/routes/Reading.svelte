@@ -94,7 +94,9 @@
 	</div>
 	<p class="conclusion">{@html $readingStore.conclusion.trim() || ''}</p>
 	<!-- Restart button -->
+	{#if $flippedCardsStore.every((card) => card)}
 	<button on:click={() => restart()}>Restart</button>
+	{/if}
 </div>
 
 <style lang="scss">
