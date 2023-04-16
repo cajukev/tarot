@@ -5,6 +5,8 @@
 	import CustomScenarios from './CustomScenarios.svelte';
 	import Achievements from './Achievements.svelte';
 	import Shop from './Shop.svelte';
+	import Readers from './Readers.svelte';
+	import EnergiesGuide from './EnergiesGuide.svelte';
 
 	// $menuStateStore
 	// 0: card collection
@@ -15,6 +17,17 @@
 	// 5: Custom Scenarios
 	// 6: Shop
 	$: if ($menuStateStore.change) contents.scrollIntoView();
+
+	let menuItems = [
+		{ name: 'Card Collection', component: Collection },
+		{ name: 'Guide to Energies', component: EnergiesGuide },
+		{ name: 'Progression', component: Progression },
+		{ name: 'Achievements', component: Achievements },
+		{ name: 'About Readers', component: Readers },
+		{ name: 'Custom Scenarios', component: CustomScenarios },
+		{ name: 'Shop', component: Shop }
+	];
+
 	let contents: HTMLElement;
 
   let menuValue: number;
@@ -62,54 +75,21 @@
     <div class="ubp1">
       <div class="mobileMenu">
         <select bind:value={menuValue} on:change={()=>{$menuStateStore.value = menuValue}}>
-          <option value={0}>Card Collection</option>
-          <option value={1}>Guide to Energies</option>
-          <option value={2}>Progression</option>
-          <option value={3}>Achievements</option>
-          <option value={4}>About Readers</option>
-          <option value={5}>Custom Scenarios</option>
-          <option value={6}>Shop</option>
+					{#each menuItems as item, i}
+						<option value={i}>{item.name}</option>
+					{/each}
         </select>
       </div>
     </div>
+
 		<h3>
-			{$menuStateStore.value === 0
-				? 'Card Collection'
-        : $menuStateStore.value === 1
-        ? 'Guide to Energies'
-        : $menuStateStore.value === 2
-        ? 'Progression'
-        : $menuStateStore.value === 3
-        ? 'Achievements'
-        : $menuStateStore.value === 4
-        ? 'About Readers'
-        : $menuStateStore.value === 5
-        ? 'Custom Scenarios'
-        : $menuStateStore.value === 6
-        ? 'Shop'
-				: ''}
+			{ menuItems[$menuStateStore.value].name }
 		</h3>
-		{#if $menuStateStore.value === 0}
-			<Collection />
+
+		{#if menuItems[$menuStateStore.value].component}
+			<svelte:component this={menuItems[$menuStateStore.value].component} />
 		{/if}
-		{#if $menuStateStore.value === 1}
-			coming soon...
-		{/if}
-		{#if $menuStateStore.value === 2}
-			<Progression />
-		{/if}
-		{#if $menuStateStore.value === 3}
-			<Achievements />
-		{/if}
-		{#if $menuStateStore.value === 4}
-		coming soon...
-		{/if}
-		{#if $menuStateStore.value === 5}
-		<CustomScenarios />
-		{/if}
-		{#if $menuStateStore.value === 6}
-		<Shop />
-		{/if}
+		
 	</div>
 </div>
 

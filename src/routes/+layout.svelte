@@ -10,9 +10,10 @@
 	import type { Achievement } from '$lib/achievements';
 	import { achievements } from '$lib/achievements';
 	import { unlocks } from '$lib/unlocks';
-	import Menu from './Menu.svelte';
+	import { cards } from '$lib/cards';
 	import { mapToObj, objToMap } from '$lib/utils';
 	import Title from './Title.svelte';
+	import Menu from './Menu.svelte';
 
 	export let data: PageData;
 
@@ -31,6 +32,7 @@
 			userAchievements = achievements;
 		} else {
 			userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
+			console.log("userAchievements", userAchievements, achievements);
 			if(userAchievements.size !== achievements.size){
 				updateAchievements();
 			}
@@ -127,8 +129,8 @@
 					updateAchievementsFlag = true;
 				}
 				// SameEnergy
-				if (value.question !== storedEnergy) {
-					storedEnergy = value.question;
+				if (value.energy !== storedEnergy) {
+					storedEnergy = value.energy;
 				} else {
 					completeAchievement('SameEnergy');
 					updateAchievementsFlag = true;
@@ -143,17 +145,19 @@
 					value = $achievementsStore?.value;
 					// AllMACards (flip all Major Arcana cards, progress is card name array)
 					if (!userAchievements.get('AllMACards')!.completed) {
-						if (!userAchievements.get('AllMACards')!.progress || userAchievements.get('AllMACards')!.progress.length === 0) {
-							userAchievements.get('AllMACards')!.progress = [$achievementsStore?.value];
-							updateAchievementsFlag = true;
-						} else {
-							if(!userAchievements.get('AllMACards')!.progress.includes($achievementsStore?.value)){
-								userAchievements.get('AllMACards')!.progress.push($achievementsStore?.value);
+						if(cards.get("Major Arcana")?.cards?.find(card => card.name === $achievementsStore?.value)){
+							if (!userAchievements.get('AllMACards')!.progress || userAchievements.get('AllMACards')!.progress.length === 0) {
+								userAchievements.get('AllMACards')!.progress = [$achievementsStore?.value];
 								updateAchievementsFlag = true;
+							} else {
+								if(!userAchievements.get('AllMACards')!.progress.includes($achievementsStore?.value)){
+									userAchievements.get('AllMACards')!.progress.push($achievementsStore?.value);
+									updateAchievementsFlag = true;
+								}
 							}
-						}
-						if (userAchievements.get('AllMACards')!.progress?.length >= 22) {
-							completeAchievement('AllMACards');
+							if (userAchievements.get('AllMACards')!.progress?.length >= 22) {
+								completeAchievement('AllMACards');
+							}
 						}
 					}
 
@@ -256,7 +260,7 @@
 		}
 	}
 	.bg {
-		background-image: url('bg.svg');
+		background-image: url('/static/bg.svg');
 		position: absolute;
 		z-index: -2;
 		width: 100%;

@@ -7,7 +7,7 @@
 <main>
 	<div class="container">
 		<!-- Return -->
-		<a href="/"><h4>&larr; Return</h4></a>
+		<a href="/" class="return"><h4>&larr; Return</h4></a>
 		<!-- Login form -->
 		<form
 			method="POST"
@@ -23,6 +23,7 @@
 		<input type="text" name="email" placeholder="Email" bind:value={email} />
 		<!-- <input type="password" name="password" placeholder="Password" /> -->
 		<button type="submit" disabled={email.length === 0}>Email me a login link</button>
+		<p class="policy">By signing up, you agree to our <a href="/privacypolicy">privacy policy</a></p>
 	</form>
 	</div>
 
@@ -35,7 +36,7 @@
 		align-items: center;
 		height: 100vh;
 	}
-	a{
+	.return{
 		margin: 2rem;
 		color: rgba($color: white, $alpha: 0.7);
 	}
@@ -69,7 +70,7 @@
 		margin-top: 1rem;
 		display: block;
 		font-family: $other-font;
-		font-size: $h2-font-size;
+		font-size: $h4-font-size;
 		display: inline-block;
 		max-width: calc(100vw - 1rem);
 		padding: 0.5rem 1.5rem;
@@ -94,6 +95,9 @@
 			animation: none;
 		}
 
+	}
+	.policy a{
+		color: rgba($color: white, $alpha: 0.7);
 	}
 	@keyframes jump {
 		0% {

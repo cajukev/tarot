@@ -41,8 +41,12 @@
 		let nbCards = 0;
 		if (readingScenarios.get($readingStore.setting)) {
 			nbCards = readingScenarios.get($readingStore.setting)!.positions.length;
-		}else{
+		}else if ($customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)){
 			nbCards = $customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)!.positions.length
+		}else{
+			// Deleted selected custom setting
+			$readingStore.setting = 'qa';
+			nbCards = 1;
 		}
 
 		let model = characters.get($readingStore.character)!.model;
@@ -226,7 +230,9 @@
 
 	let selectOption = (option: string) => {
 		$readingStore.setting = option;
-		$flippedCardsStore = readingScenarios.get(option)?.positions.map(() => false) || [];
+		$flippedCardsStore = readingScenarios.get(option)?.positions.map(() => false) || $customScenariosStore.find(
+			(scenario) => scenario.name === option
+		)?.positions.map(() => false) || [];
 	};
 
 	let selectCharacter = (character: string) => {
@@ -324,7 +330,9 @@
 					{/each}
 				</div>
 			</div>
+
 			<div class="separator" />
+			
 			<div class="optionSelectWrapper">
 				<p>Choose a scenario</p>
 				<div class="optionSelect scenario">

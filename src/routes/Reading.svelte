@@ -7,7 +7,7 @@
 		$flippedCardsStore[index] = !$flippedCardsStore[index];
 		$achievementsStore = {
 			action: 'FlipCard',
-			value: $readingStore.cards[index]
+			value: $readingStore.cards[index].name
 		};
 	};
 

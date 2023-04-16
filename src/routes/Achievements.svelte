@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { achievements } from "$lib/achievements";
+  import { achievements, achievementsOrder } from "$lib/achievements";
   import { page } from "$app/stores";
   import { objToMap } from "$lib/utils";
   let achievementsArray = Array.from((objToMap($page.data.profile.data.achievements) || achievements).entries());
-
+  // AchievementsOrder is an array of achievement IDs in the order they should be displayed
+  achievementsArray.sort((a, b) => achievementsOrder.indexOf(a[0]) - achievementsOrder.indexOf(b[0]));
 </script>
 
 <div class="container">

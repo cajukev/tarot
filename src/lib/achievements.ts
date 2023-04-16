@@ -61,7 +61,7 @@ export const achievements: Map<string, Achievement> = new Map([
     completed: false
   }],
   ["PerfectionismEnergy", {
-    name: "Perfectionism",
+    name: "Perfectionist",
     description: "Manifest Perfectionism",
     experience: 50,
     completed: false
@@ -77,3 +77,15 @@ export const achievements: Map<string, Achievement> = new Map([
 
 ]
 )
+
+export const achievementsOrder = [
+  "FirstCompletedReading",
+  "ReadingWith3Preset",
+  "SameQuestion",
+  "10Readings",
+  "20Readings",
+  "30Readings",
+  "SameEnergy",
+  "PerfectionismEnergy",
+  "AllMACards"
+]

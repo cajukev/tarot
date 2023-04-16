@@ -31,6 +31,11 @@
           <input type="text" id="positionName" bind:value={newScenario.positions[i]} />
           <label for="positionInstruction">Instruction: </label>
           <input type="text" id="positionInstruction" bind:value={newScenario.instructions[i]} />
+          <!-- Delete this card -->
+          <button on:click={() => {
+            newScenario.positions.splice(i, 1); 
+            newScenario = { ...newScenario }
+            }}>Delete</button>
         </div>
       {/each}
       <div class="addCard">

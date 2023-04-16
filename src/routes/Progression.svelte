@@ -5,7 +5,7 @@
 </script>
 
 <div class="container">
-	<p>Current experience: {$page.data.profile.data.experience}</p>
+	<p class="current">Current experience: {$page.data.profile.data.experience}</p>
 	<div class="unlocks">
 		{#each unlocksArray as unlock}
 			<div
@@ -47,8 +47,6 @@
 				</p>
         {/if}
 			</div>
-		{:else}
-			<p>You have unlocked everything!</p>
 		{/each}
 	</div>
 </div>
@@ -57,6 +55,9 @@
 	.container {
 		p {
 			text-align: center;
+		}
+		.current{
+			margin-bottom: 1rem;
 		}
 		.unlocks {
 			display: flex;

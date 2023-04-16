@@ -31,7 +31,7 @@ export let getTokenCost = (nbCards: number, model: string) => {
 			modelMultiplier = 0.25;
 			break;
 		case 'gpt-4':
-			modelCost = 3;
+			modelCost = 4;
 			modelMultiplier = 1;
 			break;
 	}
