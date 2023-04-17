@@ -74,11 +74,13 @@
 						userAchievements.get('ReadingWith3Preset')!.progress = [value.setting];
 						updateAchievementsFlag = true;
 					} else {
-						userAchievements.get('ReadingWith3Preset')!.progress.push(value.setting);
-						updateAchievementsFlag = true;
-					}
-					if (userAchievements.get('ReadingWith3Preset')!.progress?.length >= 3) {
-						completeAchievement('ReadingWith3Preset');
+						if(!userAchievements.get('ReadingWith3Preset')!.progress.includes(value.setting)){
+							userAchievements.get('ReadingWith3Preset')!.progress.push(value.setting);
+							updateAchievementsFlag = true;
+						}
+						if (userAchievements.get('ReadingWith3Preset')!.progress?.length >= 3) {
+							completeAchievement('ReadingWith3Preset');
+						}
 					}
 				}
 				break;

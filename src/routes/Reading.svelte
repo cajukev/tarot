@@ -46,6 +46,7 @@
 
 <div class="reading">
 	<div class="header">
+		<button class="restart" on:click={() => restart()}>Restart</button>
 		<h2>"{$readingStore.question}"</h2>
 		<p>Energy: {$readingStore.energy}</p>
 	</div>
@@ -93,10 +94,8 @@
 		{/each}
 	</div>
 	<p class="conclusion">{@html $readingStore.conclusion.trim() || ''}</p>
-	<!-- Restart button -->
-	{#if $flippedCardsStore?.every((card) => card)}
-	<button on:click={() => restart()}>Restart</button>
-	{/if}
+	<button class="restart bottom" on:click={() => restart()}>Restart</button>
+
 </div>
 
 <style lang="scss">
@@ -109,6 +108,17 @@
 			& ~ p {
 				font-size: $mini-font-size;
 				margin-bottom: 2rem;
+			}
+		}
+		.restart{
+			background: none;
+			border: none;
+			color: white;
+			text-decoration: underline;
+			font-size: $base-font-size;
+			margin-bottom: 1rem;
+			&.bottom{
+				margin-top: 1rem;
 			}
 		}
 		.cards {

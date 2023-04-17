@@ -141,6 +141,7 @@
 	let handleSubmit2 = () => {
 		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
+		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
 		$readingStore.energy =
