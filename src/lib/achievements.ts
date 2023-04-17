@@ -30,9 +30,25 @@ export const achievements: Map<string, Achievement> = new Map([
     experience: 50,
     completed: false
   }],
+  ["5Readings", {
+    name: "Tarot novice",
+    description: "Completed 5 readings",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
   ["10Readings", {
     name: "Tarot amateur",
     description: "Completed 10 readings",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["15Readings", {
+    name: "Tarot fan",
+    description: "Completed 15 readings",
     progress: 0,
     progressType: "number",
     experience: 50,
