@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       JSON.stringify({
         status: 200,
         body: {
-          error: "... Try again ...."
+          error: "... Try again ...." + trimmedQuestion.trim().slice(7)
         }
       }),
     );

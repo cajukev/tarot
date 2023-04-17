@@ -62,6 +62,7 @@
 		}
 	}
 	.error{
+		margin-top: 2rem;
 		text-align: center;
 	}
 </style>
