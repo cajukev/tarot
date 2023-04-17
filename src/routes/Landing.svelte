@@ -159,6 +159,9 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
         </div>
       {/each}
     </div>
+    {#if flippedCards.every((card) => !card)}
+      <p>Click the cards to start the reading</p>
+    {/if}
     <p class="conclusion">{@html landingReading.conclusion.trim() || ''}</p>
     <a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
   </div>
