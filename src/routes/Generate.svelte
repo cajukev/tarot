@@ -36,6 +36,12 @@
 	let scrollVar = 1;
 	let oldScroll = 0;
 
+	$: if($page.data.profile.data){
+		console.log('profile data', $page.data.profile.data);
+		$customScenariosStore = $page.data.profile.data.custom_scenarios || [];
+	}
+
+
 	let tokenCost = 0;
 	$: {
 		let nbCards = 0;
@@ -216,6 +222,7 @@
 			})
 		}).then(async (res) => {
 			const reader = res.body?.getReader();
+			$achievementsStore = { action: 'StartReading', value: 'default' };
 			invalidateAll();
 			while (true && reader) {
 				const { done, value } = await reader.read();
@@ -246,6 +253,16 @@
 
 	let deleteCustomScenario = (name: string) => {
 		$customScenariosStore = $customScenariosStore.filter((scenario) => scenario.name !== name);
+		fetch("/api/updateCustomScenarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customScenarios: $customScenariosStore
+      }
+      ),
+    });
 	};
 
 	$: if ($readingStore) checkForSecret($readingStore.question);

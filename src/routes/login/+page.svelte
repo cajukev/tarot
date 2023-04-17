@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { enhance } from "$app/forms";
-  export let form: any;
-  let loading = false;
-	let email = "";
-	let password = "";
+	import { enhance } from '$app/forms';
+	export let form: any;
+	let loading = false;
+	let email = '';
+	let password = '';
 </script>
+
 <main>
 	<div class="container">
 		<!-- Return -->
@@ -12,7 +13,7 @@
 		<!-- Login form -->
 		<form
 			method="POST"
-			action="?/login"
+			action={password.length !== 0 ? "?/loginPW" : "?/login"}
 			use:enhance={({ form }) => {
 				loading = true;
 				return async ({ result, update }) => {
@@ -21,35 +22,41 @@
 				};
 			}}
 		>
-		<input type="text" name="email" placeholder="Email" bind:value={email} />
-		<!-- <input type="password" name="password" placeholder="Password" bind:value={password} /> -->
-		<button type="submit" disabled={email.length === 0}>Email me a login link</button>
-		<p class="policy">By signing up, you agree to our <a href="/privacypolicy">privacy policy</a></p>
-	</form>
-	</div>
+			<input type="text" name="email" placeholder="Email" bind:value={email} />
 
+				<input type="password" name="password" placeholder="Password" bind:value={password} />
+
+			<button type="submit" disabled={email?.length === 0}>{ password?.length === 0 ? "Email me a login link" : "Login / Sign up"}</button>
+			{#if email?.length > 0 && password?.length === 0}
+				<p class="passwordlessInfo">By sending a login link to an email without an existing account, you will create a passwordless account.<br> You will not be able to add one later.</p>
+			{/if}
+			<p class="policy">
+				By signing up, you agree to our <a href="/privacypolicy">privacy policy</a>
+			</p>
+		</form>
+	</div>
 </main>
 
 <style lang="scss">
-	.container{
+	.container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		height: 100vh;
 		text-align: center;
 	}
-	.return{
+	.return {
 		margin: 2rem;
 		color: rgba($color: white, $alpha: 0.7);
 	}
-  form {
-    display: flex;
-    flex-direction: column;
-    width: fit-content;
+	form {
+		display: flex;
+		flex-direction: column;
+		width: fit-content;
 		align-items: center;
-    gap: 1rem;
-  }
-  input[type='text'] {
+		gap: 1rem;
+	}
+	input[type='text'] {
 		display: block;
 		font-family: $other-font;
 		font-size: $h4-font-size;
@@ -63,9 +70,18 @@
 		box-shadow: 0.2rem 0.2rem 0px #a79c8f;
 		transition: all 0.25s ease;
 	}
-	input[type='text']:focus {
-		box-shadow: 0.6rem 0.6rem 0px #72675b;
-		transform: translate(-0.2rem, -0.2rem);
+	input[type='password'] {
+		display: block;
+		font-family: $other-font;
+		font-size: $h4-font-size;
+		text-align: center;
+		width: 20rem;
+		max-width: calc(100vw - 1rem);
+		padding: 0.25rem;
+		background-color: $off-white;
+		border: none;
+		outline: none;
+		box-shadow: 0.2rem 0.2rem 0px #a79c8f;
 		transition: all 0.25s ease;
 	}
 	button[type='submit'] {
@@ -96,9 +112,8 @@
 			pointer-events: none;
 			animation: none;
 		}
-
 	}
-	.policy a{
+	.policy a {
 		color: rgba($color: white, $alpha: 0.7);
 	}
 	@keyframes jump {

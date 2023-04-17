@@ -30,41 +30,41 @@ export const achievements: Map<string, Achievement> = new Map([
     experience: 50,
     completed: false
   }],
-  ["5Readings", {
-    name: "Tarot novice",
-    description: "Completed 5 readings",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
-  ["10Readings", {
-    name: "Tarot amateur",
-    description: "Completed 10 readings",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
-  ["15Readings", {
+  ["5Tokens", {
     name: "Tarot fan",
-    description: "Completed 15 readings",
+    description: "Spent 5 tokens",
     progress: 0,
     progressType: "number",
     experience: 50,
     completed: false
   }],
-  ["20Readings", {
+  ["10Tokens", {
+    name: "Tarot novice",
+    description: "Spent 10 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["15Tokens", {
+    name: "Tarot amateur",
+    description: "Spent 15 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["20Tokens", {
     name: "Tarot enthusiast",
-    description: "Completed 20 readings",
+    description: "Spent 20 tokens",
     progress: 0,
     progressType: "number",
     experience: 50,
     completed: false
   }],
-  ["30Readings", {
-    name: "Tarot enjoyer",
-    description: "Completed 30 readings",
+  ["30Tokens", {
+    name: "Tarot reader",
+    description: "Spent 30 tokens",
     progress: 0,
     progressType: "number",
     experience: 50,
@@ -78,7 +78,7 @@ export const achievements: Map<string, Achievement> = new Map([
   }],
   ["PerfectionismEnergy", {
     name: "Perfectionist",
-    description: "Manifest Perfectionism",
+    description: "Manifest Perfectionism twice in a row",
     experience: 50,
     completed: false
   }],
@@ -89,7 +89,7 @@ export const achievements: Map<string, Achievement> = new Map([
     progressType: "cards",
     experience: 50,
     completed: false
-  }],
+  }]
 
 ]
 )
@@ -98,9 +98,12 @@ export const achievementsOrder = [
   "FirstCompletedReading",
   "ReadingWith3Preset",
   "SameQuestion",
-  "10Readings",
-  "20Readings",
-  "30Readings",
+  "5Tokens",
+  "10Tokens",
+  "15Tokens",
+  "20Tokens",
+  "25Tokens",
+  "30Tokens",
   "SameEnergy",
   "PerfectionismEnergy",
   "AllMACards"

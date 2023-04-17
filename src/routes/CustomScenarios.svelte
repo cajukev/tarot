@@ -21,6 +21,16 @@
       scenarios.push(newScenario);
       return scenarios;
     });
+    fetch("/api/updateCustomScenarios", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        customScenarios: $customScenariosStore
+      }
+      ),
+    });
   };
 </script>
 

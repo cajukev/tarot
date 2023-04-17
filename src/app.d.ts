@@ -24,6 +24,7 @@ declare global {
 						description: string
 						experience: number
 					}[]
+					custom_scenarios: any[]
 					tokens: number
 				}
 			}

@@ -11,9 +11,10 @@
 	import { achievements } from '$lib/achievements';
 	import { unlocks } from '$lib/unlocks';
 	import { cards } from '$lib/cards';
-	import { mapToObj, objToMap } from '$lib/utils';
+	import { getTokenCost, mapToObj, objToMap } from '$lib/utils';
 	import Title from './Title.svelte';
 	import Menu from './Menu.svelte';
+	import characters from '$lib/characters';
 
 	export let data: PageData;
 
@@ -78,47 +79,7 @@
 						completeAchievement('ReadingWith3Preset');
 					}
 				}
-				// 10Readings
-				if (!userAchievements.get('10Readings')!.completed) {
-					if (!userAchievements.get('10Readings')!.progress) {
-						userAchievements.get('10Readings')!.progress = 1;
-						updateAchievementsFlag = true;
-					} else {
-						userAchievements.get('10Readings')!.progress++;
-						updateAchievementsFlag = true;
-					}
-					if (userAchievements.get('10Readings')!.progress >= 10) {
-						completeAchievement('10Readings');
-					}
-				}
-				// 20Readings
-				if (!userAchievements.get('20Readings')!.completed) {
-					if (!userAchievements.get('20Readings')!.progress) {
-						userAchievements.get('20Readings')!.progress = 1;
-						updateAchievementsFlag = true;
-					} else {
-						userAchievements.get('20Readings')!.progress++;
-						updateAchievementsFlag = true;
-					}
-					if (userAchievements.get('20Readings')!.progress >= 20) {
-						completeAchievement('20Readings');
-					}
-				}
-				// 30Readings
-				if (!userAchievements.get('30Readings')!.completed) {
-					if (!userAchievements.get('30Readings')!.progress) {
-						userAchievements.get('30Readings')!.progress = 1;
-						updateAchievementsFlag = true;
-					} else {
-						userAchievements.get('30Readings')!.progress++;
-						updateAchievementsFlag = true;
-					}
-					if (userAchievements.get('30Readings')!.progress >= 30) {
-						completeAchievement('30Readings');
-					}
-				}
-
-				break;
+				
 			case 'AskQuestion':
 				value = $readingStore;
 				// SameQuestion
@@ -128,16 +89,16 @@
 					completeAchievement('SameQuestion');
 					updateAchievementsFlag = true;
 				}
+				// PerfectionismEnergy
+				if (value.energy === 'Perfectionism' && storedEnergy === 'Perfectionism') {
+					completeAchievement('PerfectionismEnergy');
+					updateAchievementsFlag = true;
+				}
 				// SameEnergy
 				if (value.energy !== storedEnergy) {
 					storedEnergy = value.energy;
 				} else {
 					completeAchievement('SameEnergy');
-					updateAchievementsFlag = true;
-				}
-				// PerfectionismEnergy
-				if (value.energy === 'Perfectionism') {
-					completeAchievement('PerfectionismEnergy');
 					updateAchievementsFlag = true;
 				}
 				break;
@@ -160,6 +121,33 @@
 							}
 						}
 					}
+					break;
+					case 'StartReading': 
+					console.log("StartReading");
+						value = $readingStore;
+						let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
+								userAchievements.get('30Tokens')!.progress = userAchievements.get('30Tokens')!.progress + spentTokens;
+								if (userAchievements.get('30Tokens')!.progress >= 30) {
+									completeAchievement('30Tokens');
+								}
+								if (userAchievements.get('30Tokens')!.progress >= 25) {
+									completeAchievement('25Tokens');
+								}
+								if (userAchievements.get('30Tokens')!.progress >= 20) {
+									completeAchievement('20Tokens');
+								}
+								if (userAchievements.get('30Tokens')!.progress >= 15) {
+									completeAchievement('15Tokens');
+								}
+								if (userAchievements.get('30Tokens')!.progress >= 10) {
+									completeAchievement('10Tokens');
+								}
+								if (userAchievements.get('30Tokens')!.progress >= 5) {
+									completeAchievement('5Tokens');
+								}
+								updateAchievementsFlag = true;
+								break;
+
 
 		}
 		userAchievements = new Map(userAchievements);

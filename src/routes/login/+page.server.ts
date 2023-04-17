@@ -48,7 +48,7 @@ export const actions: Actions = {
                 body: 'User not found'
             };
         }
-        throw redirect(300, '/checkemail')
+        throw redirect(300, '/')
 
     },
 
