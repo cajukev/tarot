@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { unlocks, type Unlock } from '$lib/unlocks';
 	import { page } from '$app/stores';
+	import { menuStateStore } from '../stores';
 	let unlocksArray = Array.from(unlocks.entries());
 </script>
 
 <div class="container">
-	<p class="current">Current experience: {$page.data.profile.data.experience}</p>
+	<p class="current">Current experience: {$page.data.profile.data.experience}<br>Gain experience by completing <span
+		tabindex="0"
+		on:click={() => $menuStateStore = {value: 3, change: true}} 
+		on:keydown={(e) => {if (e.key === 'Enter') $menuStateStore = {value: 3, change: true}}}
+		>achievements</span></p>
 	<div class="unlocks">
 		{#each unlocksArray as unlock}
 			<div
@@ -58,6 +63,10 @@
 		}
 		.current{
 			margin-bottom: 1rem;
+			span{
+				cursor: pointer;
+				text-decoration: underline;
+			}
 		}
 		.unlocks {
 			display: flex;
