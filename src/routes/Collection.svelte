@@ -177,8 +177,6 @@
 	{/each}
 </div> -->
 <style lang="scss">
-	.container {
-	}
 	h3 {
 		font-family: $header-font;
 		text-align: center;
