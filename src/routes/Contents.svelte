@@ -16,7 +16,10 @@
 	// 4: Readers
 	// 5: Custom Scenarios
 	// 6: Shop
-	$: if ($menuStateStore.change) contents.scrollIntoView();
+	$: if ($menuStateStore.change){
+		contents.scrollIntoView();
+		menuValue = $menuStateStore.value;
+	}
 
 	let menuItems = [
 		{ name: 'Card Collection', component: Collection },
@@ -30,7 +33,7 @@
 
 	let contents: HTMLElement;
 
-  let menuValue: number;
+  let menuValue = 0;
 </script>
 
 <div class="container">
@@ -40,41 +43,41 @@
         <div class="left">
           <button
             on:click={() => ($menuStateStore = { value: 0, change: false })}
-            class={$menuStateStore.value === 0 ? 'active' : ''}>Card Collection</button
+            class={menuValue === 0 ? 'active' : ''}>Card Collection</button
           >
           <button
             on:click={() => ($menuStateStore = { value: 1, change: false })}
-            class={$menuStateStore.value === 1 ? 'active' : ''}>Guide to Energies</button
+            class={menuValue === 1 ? 'active' : ''}>Guide to Energies</button
           >
           <button
             on:click={() => ($menuStateStore = { value: 2, change: false })}
-            class={$menuStateStore.value === 2 ? 'active' : ''}>Progression</button
+            class={menuValue === 2 ? 'active' : ''}>Progression</button
           >
           <button
             on:click={() => ($menuStateStore = { value: 3, change: false })}
-            class={$menuStateStore.value === 3 ? 'active' : ''}>Achievements</button
+            class={menuValue === 3 ? 'active' : ''}>Achievements</button
           >
         </div>
         <div class="separator" />
         <div class="right">
           <button
             on:click={() => ($menuStateStore = { value: 4, change: false })}
-            class={$menuStateStore.value === 4 ? 'active' : ''}>About Readers</button
+            class={menuValue === 4 ? 'active' : ''}>About Readers</button
           >
           <button
             on:click={() => ($menuStateStore = { value: 5, change: false })}
-            class={$menuStateStore.value === 5 ? 'active' : ''}>Custom Scenarios</button
+            class={menuValue === 5 ? 'active' : ''}>Custom Scenarios</button
           >
           <button
             on:click={() => ($menuStateStore = { value: 6, change: false })}
-            class={$menuStateStore.value === 6 ? 'active' : ''}>Shop</button
+            class={menuValue === 6 ? 'active' : ''}>Shop</button
           >
         </div>
       </div>
     </div>
     <div class="ubp1">
       <div class="mobileMenu">
-        <select bind:value={menuValue} on:change={()=>{$menuStateStore.value = menuValue}}>
+        <select bind:value={$menuStateStore.value} on:change={(e)=>{menuValue = parseInt(e.currentTarget.value)}}>
 					{#each menuItems as item, i}
 						<option value={i}>{item.name}</option>
 					{/each}
@@ -83,11 +86,11 @@
     </div>
 
 		<h3>
-			{ menuItems[$menuStateStore.value].name }
+			{ menuItems[menuValue].name }
 		</h3>
 
-		{#if menuItems[$menuStateStore.value].component}
-			<svelte:component this={menuItems[$menuStateStore.value].component} />
+		{#if menuItems[menuValue].component}
+			<svelte:component this={menuItems[menuValue].component} />
 		{/if}
 		
 	</div>

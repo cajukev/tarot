@@ -42,7 +42,8 @@
     .items{
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
       margin: 0 auto;
       gap: 1rem;
       div{
@@ -50,7 +51,7 @@
         background: $bg;
         border-radius: 0.5rem;
         padding: 1rem;
-        width: 10rem;
+        width: 8rem;
         button{
           background-color: #000;
           border: none;

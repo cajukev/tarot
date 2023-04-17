@@ -30,6 +30,7 @@ export const actions: Actions = {
 
     loginPW: async ({request, locals}) => {
         const formData = await request.formData();
+        console.log(formData)
         const email = formData.get('email') + "";
         const password = formData.get('password') + "";
         if (!email || !password) {

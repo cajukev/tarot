@@ -3,6 +3,7 @@
   export let form: any;
   let loading = false;
 	let email = "";
+	let password = "";
 </script>
 <main>
 	<div class="container">
@@ -21,7 +22,7 @@
 			}}
 		>
 		<input type="text" name="email" placeholder="Email" bind:value={email} />
-		<!-- <input type="password" name="password" placeholder="Password" /> -->
+		<!-- <input type="password" name="password" placeholder="Password" bind:value={password} /> -->
 		<button type="submit" disabled={email.length === 0}>Email me a login link</button>
 		<p class="policy">By signing up, you agree to our <a href="/privacypolicy">privacy policy</a></p>
 	</form>
@@ -35,6 +36,7 @@
 		flex-direction: column;
 		align-items: center;
 		height: 100vh;
+		text-align: center;
 	}
 	.return{
 		margin: 2rem;

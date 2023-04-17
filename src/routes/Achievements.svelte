@@ -38,10 +38,10 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      width: 12.5rem;
+      width: 10rem;
       background: $bg;
       border-radius: 0.5rem;
-      padding: 1rem;
+      padding: 1rem 0.25rem;
       transition: all 0.25s ease;
       &.completed{
         opacity: 0.65;

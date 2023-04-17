@@ -314,9 +314,9 @@
 						{:else}
 							<button
 								class="option lockedOption"
-								on:click={() => $menuStateStore = { value: 3, change: true }}
+								on:click={() => $menuStateStore = { value: 2, change: true }}
 								on:keydown={(event) => {
-									if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+									if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
 								}}
 							>
 								<div class="imgWrapper">
@@ -356,9 +356,9 @@
 					{:else}
 					<button
 						class="option lockedOption"
-						on:click={() => $menuStateStore = { value: 3, change: true }}
+						on:click={() => $menuStateStore = { value: 2, change: true }}
 						on:keydown={(event) => {
-							if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+							if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
 						}}
 					>
 						<div class="imgWrapper">
@@ -409,9 +409,9 @@
 					{:else}
 						<button
 							class="option lockedOption"
-							on:click={() => $menuStateStore = { value: 3, change: true }}
+							on:click={() => $menuStateStore = { value: 2, change: true }}
 							on:keydown={(event) => {
-								if (event.key === 'Enter') $menuStateStore = { value: 3, change: true };
+								if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
 							}}
 						>
 							<div class="imgWrapper">
