@@ -20,4 +20,5 @@ Stripe: Payment<br>
 OpenAI: AI readings using gpt3.5 and gpt-4 <br>
 Also, the site is hosted on Vercel, with a cron job hosted on Vercel.
 
-## Demo
+## Demo video
+[Watch on YouTube](https://youtu.be/RRuvrgxsodY)
