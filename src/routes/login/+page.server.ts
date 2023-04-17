@@ -41,11 +41,10 @@ export const actions: Actions = {
         }
 
         const user = await locals.sb.auth.signInWithPassword({ email, password })
-
-        if (!user) {
+        if (!user.data.user) {
             return {
                 status: 400,
-                body: 'User not found'
+                body: 'Wrong email or password'
             };
         }
         throw redirect(300, '/')

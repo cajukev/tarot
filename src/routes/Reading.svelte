@@ -117,6 +117,7 @@
 			text-decoration: underline;
 			font-size: $base-font-size;
 			margin-bottom: 1rem;
+			cursor: pointer;
 			&.bottom{
 				margin-top: 1rem;
 			}

@@ -4,6 +4,7 @@
 	let loading = false;
 	let email = '';
 	let password = '';
+	let error = '';
 </script>
 
 <main>
@@ -17,8 +18,13 @@
 			use:enhance={({ form }) => {
 				loading = true;
 				return async ({ result, update }) => {
-					loading = false;
+					console.log(result);
+					if(result.data){
+						error = result.data.body;
+						loading = false;
+					}
 					update();
+
 				};
 			}}
 		>
@@ -27,6 +33,7 @@
 				<input type="password" name="password" placeholder="Password" bind:value={password} />
 
 			<button type="submit" disabled={email?.length === 0}>{ password?.length === 0 ? "Email me a login link" : "Login / Sign up"}</button>
+			<p class="error">{error}</p>
 			{#if email?.length > 0 && password?.length === 0}
 				<p class="passwordlessInfo">By sending a login link to an email without an existing account, you will create a passwordless account.<br> You will not be able to add one later.</p>
 			{/if}
@@ -112,6 +119,9 @@
 			pointer-events: none;
 			animation: none;
 		}
+	}
+	.error{
+		color: rgb(255, 103, 103);
 	}
 	.policy a {
 		color: rgba($color: white, $alpha: 0.7);
