@@ -95,6 +95,13 @@
 							alt={card?.name}
 						/>
 					</div>
+					<div class="hiddenImg">
+						<img
+							src="/cards/{_getCardImgName(card)}-400.webp"
+							alt={card?.name}
+							loading="lazy"
+						/>
+					</div>
 				{/each}
 			</div>
 			{/if}
@@ -188,6 +195,17 @@
 		gap: 0.75rem;
 		.card {
 			width: max(60px, 8%);
+			.hiddenImg {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 0;
+				height: 0;
+				overflow: hidden;
+				opacity: 0;
+				visibility: hidden;
+				pointer-events: none;
+			}
 			img {
 				border-radius: 0.25rem;
 				border: 2px solid white;
