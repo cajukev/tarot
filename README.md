@@ -1,6 +1,6 @@
 # AI Tarot Website
 ### My submission for SvelteHack 2023
-Contest Deployment: https://tarot-i57xqgbns-kevin-brousseau.vercel.app/ <br>
+Contest Deployment: https://tarot-d7fz38dxw-kevin-brousseau.vercel.app/ <br>
 Live Deployment: https://www.aitarot.website/
 
 ### The #1 destination for AI generated Tarot readings
