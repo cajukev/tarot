@@ -53,9 +53,6 @@
 
 <style lang="scss">
 	.container{
-		.stacked{
-			min-height: 100vh;
-		}
 		.loading{
 			margin-top: 2rem;
 			text-align: center;

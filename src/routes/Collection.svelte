@@ -64,38 +64,41 @@
 </script>
 
 <div class="container">
-	<div class="">
+	<div>
 		{#each decks as deck}
-		{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) }
-
-		<div class="header">
-			<h3>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h3>
-			
-		</div>
 		<div class="deck">
-			{#each deck.cards as card}
-				<div
-					on:click={() => {
-						infoBoxAppear(card);
-					}}
-					on:keydown={(e) => {
-						if (e.key === 'Enter') {
+			
+			{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) }
+	
+			<div class="header">
+				<h3>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h3>
+				
+			</div>
+			<div class="cards">
+				{#each deck.cards as card}
+					<div
+						on:click={() => {
 							infoBoxAppear(card);
-						}
-					}}
-					class="card"
-				>
-					<img
-						src="/cards/{_getCardImgName(card)}-120.webp"
-						srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
-							card
-						)}-200.webp 200w`}
-						alt={card?.name}
-					/>
-				</div>
-			{/each}
+						}}
+						on:keydown={(e) => {
+							if (e.key === 'Enter') {
+								infoBoxAppear(card);
+							}
+						}}
+						class="card"
+					>
+						<img
+							src="/cards/{_getCardImgName(card)}-120.webp"
+							srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
+								card
+							)}-200.webp 200w`}
+							alt={card?.name}
+						/>
+					</div>
+				{/each}
+			</div>
+			{/if}
 		</div>
-		{/if}
 		{/each}
 	</div>
 
@@ -173,7 +176,10 @@
 		font-family: $header-font;
 		text-align: center;
 	}
-	.deck {
+	.deck:not(:first-of-type){
+		margin-top: 2rem;
+	}
+	.cards {
 		margin-top: 1rem;
 		display: flex;
 		flex-wrap: wrap;
