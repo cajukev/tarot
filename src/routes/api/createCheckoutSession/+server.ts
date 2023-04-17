@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         'card',
       ],
       success_url: 'https://aitarot.website/success',
-      cancel_url: 'https://aitarot.website/cancel',
+      cancel_url: 'https://aitarot.website',
     });
 
     return new Response(
