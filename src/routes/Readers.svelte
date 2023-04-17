@@ -8,7 +8,6 @@
 
 <div class="container">
   {#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-    {#if !unlocks.get(character.character.name) || $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0)}  
     <div class="character">
       <div class="imgWrapper stacked">
         <img src={"/options/"+character.name+"-1024.webp"} alt={character.character.name} />
@@ -19,14 +18,14 @@
         <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
         <p class="model">AI Model: {character.character.model}</p>
         <p class="description">{character.character.publicDescription}</p>
+        {#if unlocks.get(character.character.name) && $page.data.profile?.data.experience < (unlocks.get(character.character.name)?.exp || 0)}  
+        <div class="locked">
+          <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>
+        </div>
+        {/if}
         <p class="imgBy">Image created by {character.character.imageCreator}</p>
       </div>
     </div>
-    {:else}
-    <div class="locked">
-      <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>
-    </div>
-    {/if}
   {/each}
 </div>
 
