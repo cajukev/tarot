@@ -79,6 +79,7 @@
 						completeAchievement('ReadingWith3Preset');
 					}
 				}
+				break;
 				
 			case 'AskQuestion':
 				value = $readingStore;
