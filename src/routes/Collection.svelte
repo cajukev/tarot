@@ -195,17 +195,6 @@
 		gap: 0.75rem;
 		.card {
 			width: max(60px, 8%);
-			.hiddenImg {
-				position: fixed;
-				top: 0;
-				left: 0;
-				width: 0;
-				height: 0;
-				overflow: hidden;
-				opacity: 0;
-				visibility: hidden;
-				pointer-events: none;
-			}
 			img {
 				border-radius: 0.25rem;
 				border: 2px solid white;
@@ -220,6 +209,17 @@
 					transform: translateY(-0.25rem);
 				}
 			}
+		}
+		.hiddenImg {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 0;
+			height: 0;
+			overflow: hidden;
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
 		}
 	}
 
