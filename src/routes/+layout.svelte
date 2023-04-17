@@ -53,11 +53,13 @@
 
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 	let storedEnergy = "";
+	let completedExp = 0;
 
 	$: {
 		if ($achievementsStore?.value) handleAchievements();
 	}
 	let handleAchievements = () => {
+		completedExp = 0;
 		let value;
 		let updateAchievementsFlag = false;
 		console.log("handleAchievements", $achievementsStore);
@@ -153,6 +155,9 @@
 		}
 		userAchievements = new Map(userAchievements);
 		if (updateAchievementsFlag) updateAchievements();
+		if (completedExp > 0) {
+			addExperience(completedExp);
+		}
 		console.log('handleAchievements', userAchievements);
 	};
 	let completeAchievement = (achievement: string) => {
@@ -160,7 +165,7 @@
 
 		userAchievements.get(achievement)!.completed = true;
 		updateAchievements();
-		addExperience(userAchievements.get(achievement)!.experience);
+		completedExp += userAchievements.get(achievement)!.experience;
 		achievementToast(`<b>Achievement Unlocked: ${userAchievements.get(achievement)!.name}</b><br>
 			${userAchievements.get(achievement)!.description}<br>
 			<i>+${userAchievements.get(achievement)!.experience} XP</i>`);
@@ -181,18 +186,17 @@
 	};
 
 	let addExperience = (amount: number) => {
-		let newExperience = data.profile?.data?.experience + amount;
-		console.log('addExperience', newExperience);
+		console.log('addExperience', amount);
 		fetch('/api/addExperience', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				experience: newExperience
+				experience: amount
 			})
 		}).then(() => {
-			checkUnlocks(data.profile?.data?.experience, newExperience);
+			checkUnlocks(data.profile?.data?.experience, data.profile?.data?.experience + amount);
 			invalidateAll();
 		});
 	};
