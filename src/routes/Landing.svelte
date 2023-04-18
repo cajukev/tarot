@@ -120,7 +120,11 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
     <div class="header">
       <h2>"{landingReading.question}"</h2>
       <p>Energy: {landingReading.energy}</p>
+      <p>Reader: Kevin The Novice</p>
     </div>
+    {#if flippedCards.every((card) => !card)}
+      <p>Click the cards to start the reading</p>
+    {/if}
     <div class="cards">
       {#each new Array(landingReading.cards.length) as card, i}
         <div>
@@ -159,9 +163,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
         </div>
       {/each}
     </div>
-    {#if flippedCards.every((card) => !card)}
-      <p>Click the cards to start the reading</p>
-    {/if}
     <p class="conclusion">{@html landingReading.conclusion.trim() || ''}</p>
     <a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
   </div>
@@ -217,9 +218,12 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
     align-items: center;
 		& h2 {
 			margin-bottom: 0.5rem;
-			& ~ p {
+			~ p {
 				font-size: $mini-font-size;
-				margin-bottom: 2rem;
+        opacity: 0.8;
+        &:last-of-type{
+          margin-bottom: 2rem;
+        }
 			}
 		}
 		.cards {

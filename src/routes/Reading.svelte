@@ -1,4 +1,5 @@
 <script lang="ts">
+	import characters from '$lib/characters';
 	import readingScenarios from '$lib/readingScenarios';
 	import { readingStore, flippedCardsStore, customScenariosStore, achievementsStore } from '../stores';
 	export let state: number;
@@ -49,6 +50,7 @@
 		<button class="restart" on:click={() => restart()}>Restart</button>
 		<h2>"{$readingStore.question}"</h2>
 		<p>Energy: {$readingStore.energy}</p>
+		<p>Reader: {characters.get($readingStore.character)?.name} {characters.get($readingStore.character)?.title}</p>
 	</div>
 	<div class="cards">
 		{#each new Array($flippedCardsStore?.length) as card, i}
@@ -105,9 +107,12 @@
 		text-align: center;
 		& h2 {
 			margin-bottom: 0.5rem;
-			& ~ p {
+			~ p {
 				font-size: $mini-font-size;
-				margin-bottom: 2rem;
+        opacity: 0.8;
+        &:last-of-type{
+          margin-bottom: 2rem;
+        }
 			}
 		}
 		.restart{

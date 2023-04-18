@@ -17,7 +17,7 @@ export const actions: Actions = {
         }
 
         const user = await locals.sb.auth.signInWithOtp({ email })
-
+        
         if (!user) {
             return {
                 status: 400,
@@ -42,10 +42,15 @@ export const actions: Actions = {
 
         const user = await locals.sb.auth.signInWithPassword({ email, password })
         if (!user.data.user) {
-            return {
-                status: 400,
-                body: 'Wrong email or password'
-            };
+            const user = await locals.sb.auth.signUp({ email, password })
+            if (!user) {
+                return {
+                    status: 400,
+                    body: 'User not found'
+                };
+            }else{
+                throw redirect(300, '/checkemail')
+            }
         }
         throw redirect(300, '/')
 
