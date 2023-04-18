@@ -7,6 +7,7 @@
 	import Shop from './Shop.svelte';
 	import Readers from './Readers.svelte';
 	import EnergiesGuide from './EnergiesGuide.svelte';
+	import { fade } from 'svelte/transition';
 
 	// $menuStateStore
 	// 0: card collection
@@ -85,13 +86,19 @@
       </div>
     </div>
 
-		<h3>
-			{ menuItems[menuValue].name }
-		</h3>
+		{#each menuItems as item, i}
+			{#if i === menuValue}
+			<div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}">
 
-		{#if menuItems[menuValue].component}
-			<svelte:component this={menuItems[menuValue].component} />
-		{/if}
+				<h3>
+					{ item.name }
+				</h3>
+				<div >
+					<svelte:component this={item.component} />
+			</div>
+				</div>
+			{/if}
+		{/each}
 		
 	</div>
 </div>
