@@ -875,3 +875,5 @@ export const cards = new Map<string, CollectionDeck>([
         }]
 ]);
 
+// Export the name of each  card of each suit as an array
+export const cardNames = Array.from(cards.keys()).map(suit => cards.get(suit)?.cards.map(card => card.name));

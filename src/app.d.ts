@@ -48,5 +48,6 @@ declare global {
 		energy: string,
 		setting: string,
 		character: string,
+		ready?: boolean | false
 	}
 }

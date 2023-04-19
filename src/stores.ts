@@ -10,8 +10,7 @@ export const readingStore = writable<ReadingType>(
     question: "",
     energy: "",
     setting: "",
-    character: "",
-
+    character: ""
   }
 );
 export const conclusionStore = writable<string>(undefined);

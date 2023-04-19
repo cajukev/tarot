@@ -4,8 +4,8 @@ export async function GET({request, params}) {
 
   if(params.key === import.meta.env.VITE_CRON_SHARED_KEY) {
     let data = await dbSecret.from("Profile")
-      .update({ tokens: 15})
-      .lt("tokens", 15)
+      .update({ tokens: 10})
+      .lt("tokens", 10)
       .select("id")
       .then((data) => {
         return data.data

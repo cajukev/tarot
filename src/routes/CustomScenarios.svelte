@@ -4,6 +4,8 @@
   import { page } from "$app/stores";
   import { unlocks } from "$lib/unlocks";
 	import { get } from "svelte/store";
+	import { invalidateAll } from "$app/navigation";
+  $:console.log($page.data.profile.data.custom_scenarios)
   let newScenario: ReadingScenarioType = {
     name: "New Scenario",
     positions: [],
@@ -30,11 +32,23 @@
         customScenarios: $customScenariosStore
       }
       ),
-    });
+    })
+    .then(() => {
+      invalidateAll();
+    })
   };
 </script>
 
 <div class="container">
+
+
+  {#each $page.data.profile.data.custom_scenarios as scenario}
+    <div class="card">
+      <h2>{scenario.name}</h2>
+      <p>{scenario.positions.join(", ")}</p>
+    </div>
+  {/each}
+
   {#if (unlocks.get("custom")?.exp || 10000) < $page.data.profile.data.experience}
 
   <div class="">

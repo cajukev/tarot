@@ -1,7 +1,16 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import characters from '$lib/characters';
 	import readingScenarios from '$lib/readingScenarios';
-	import { readingStore, flippedCardsStore, customScenariosStore, achievementsStore } from '../stores';
+	import { getTokenCost } from '$lib/utils';
+	import { fade } from 'svelte/transition';
+	import {
+		readingStore,
+		flippedCardsStore,
+		customScenariosStore,
+		achievementsStore,
+		menuStateStore
+	} from '../stores';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -12,29 +21,16 @@
 		};
 	};
 
-	let correctTitle = (title: string) => {
-		return title
-			.replace('The Justice', 'Justice')
-			.replace('The Death', 'Death')
-			.replace('The Wheel of Fortune', 'Wheel of Fortune')
-			.replace('The Judgement', 'Judgment')
-			.replace('The Judgment', 'Judgment')
-			.replace('Judgment', 'Judgement')
-			.replace('The King', 'King')
-			.replace('The Queen', 'Queen')
-			.replace('The Knight', 'Knight')
-			.replace('The Page', 'Page')
-			.replace('The One', 'One')
-			.replace('The Two', 'Two')
-			.replace('The Three', 'Three')
-			.replace('The Four', 'Four')
-			.replace('The Five', 'Five')
-			.replace('The Six', 'Six')
-			.replace('The Seven', 'Seven')
-			.replace('The Eight', 'Eight')
-			.replace('The Nine', 'Nine')
-			.replace('The Ten', 'Ten');
-	};
+	// actionState 0: show actions
+	// actionState 1: hide actions
+
+	let actionState = 0;
+
+	$: if($flippedCardsStore?.every((card) => card) && !$readingStore.conclusion){
+		actionState = 1;
+	}else{
+		actionState = 0;
+	}
 
 	let restart = () => {
 		state = 1;
@@ -43,22 +39,35 @@
 	let _getCardImgName = (name: string) => {
 		return name.replace(/ /g, '_').replace(/'/g, '');
 	};
+
+	let tokenCost = 0;
+	$: {
+		tokenCost = getTokenCost(
+			$flippedCardsStore?.length,
+			characters.get($readingStore.character)?.model || 'default'
+		);
+	}
+	let startReading = () => {
+		$readingStore.ready = true;
+		actionState = 0;
+	};
+	
 </script>
 
 <div class="reading">
 	<div class="header">
 		<button class="restart" on:click={() => restart()}>Restart</button>
 		<h2>"{$readingStore.question}"</h2>
-		<p>Energy: {$readingStore.energy}</p>
-		<p>Reader: {characters.get($readingStore.character)?.name} {characters.get($readingStore.character)?.title}</p>
+		<p class="info">Energy: {$readingStore.energy}</p>
 	</div>
 	<div class="cards">
 		{#each new Array($flippedCardsStore?.length) as card, i}
 			<div>
 				<p class="text-center">
-					{readingScenarios.get($readingStore.setting)?.positions &&
-						readingScenarios.get($readingStore.setting)?.positions[i] || ''}
-					{$customScenariosStore.find((scenario) => scenario.name === $readingStore.setting )
+					{(readingScenarios.get($readingStore.setting)?.positions &&
+						readingScenarios.get($readingStore.setting)?.positions[i]) ||
+						''}
+					{$customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)
 						?.positions[i] || ''}
 				</p>
 				<div class="stacked">
@@ -77,15 +86,16 @@
 
 							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{_getCardImgName(correctTitle($readingStore.cards[i].name))}-200.webp"
+									src="/cards/{_getCardImgName($readingStore.cards[i].name)}-200.webp"
 									alt=""
 									class={'white ' +
 										($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
 								/>
 								<h3>
-									{correctTitle($readingStore.cards[i].name)}<span
-										>{$readingStore.cards[i].reversed ? ' reversed' : ''}</span
-									>
+									{$readingStore.cards[i].name}
+									<span>
+										{$readingStore.cards[i].reversed ? ' reversed' : ''}
+									</span>
 								</h3>
 								<!-- <p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p> -->
 							</div>
@@ -95,9 +105,39 @@
 			</div>
 		{/each}
 	</div>
-	<p class="conclusion">{@html $readingStore.conclusion.trim() || ''}</p>
+	{#if actionState}
+		<div transition:fade>
+			{#if tokenCost <= $page.data.profile.data.tokens}
+				<div>
+					<button class="startReading" on:click={() => startReading()}>
+						{'Get ' + $readingStore.character + "'s interpretation"}
+					</button>
+				</div>
+			{:else}
+				<div>
+					<p>Not enough tokens</p>
+				</div>
+			{/if}
+			<p class="cost">
+				Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''} |
+				<span>({$page.data.profile.data.tokens} remaining)</span>
+			</p>
+			<button class="cta" on:click={() => ($menuStateStore = { value: 6, change: true })}
+				>Buy More Tokens</button
+			>
+			{#if $page.data.profile.data.tokens < 10}
+				<p class="info">Regain up to 10 tokens at 12:00PM EST</p>
+			{/if}
+		</div>
+	{/if}
+	{#if $readingStore.conclusion.length > 0 }
+	<p class="info infoReader">
+		Reader: {characters.get($readingStore.character)?.name}
+		{characters.get($readingStore.character)?.title}
+	</p>
+	{/if}
+	<p class="conclusion">{@html $readingStore.conclusion.trim()}</p>
 	<button class="restart bottom" on:click={() => restart()}>Restart</button>
-
 </div>
 
 <style lang="scss">
@@ -109,13 +149,13 @@
 			margin-bottom: 0.5rem;
 			~ p {
 				font-size: $mini-font-size;
-        opacity: 0.8;
-        &:last-of-type{
-          margin-bottom: 2rem;
-        }
+				opacity: 0.8;
+				&:last-of-type {
+					margin-bottom: 2rem;
+				}
 			}
 		}
-		.restart{
+		.restart {
 			background: none;
 			border: none;
 			color: white;
@@ -123,7 +163,7 @@
 			font-size: $base-font-size;
 			margin-bottom: 1rem;
 			cursor: pointer;
-			&.bottom{
+			&.bottom {
 				margin-top: 1rem;
 			}
 		}
@@ -187,7 +227,7 @@
 			}
 		}
 		.conclusion {
-			margin: 2rem auto 0rem;
+			margin: 1rem auto 0rem;
 			max-width: 40rem;
 			white-space: break-spaces;
 		}
@@ -206,12 +246,28 @@
 		opacity: 0;
 		pointer-events: none;
 	}
-
-	.cardmissing {
-		opacity: 0.2;
-		scale: 0.75;
-		pointer-events: none;
-		filter: blur(2px);
+	.startReading {
+		margin-top: 2rem;
+		background-color: $accent;
+		border: none;
+		padding: 0.25rem 0.5rem;
+		font-family: $other-font;
+		font-size: $h4-font-size;
+		cursor: pointer;
+	}
+	.cta{
+		cursor: pointer;
+		background-color: $accent;
+		border: none;
+		padding: 0.25rem 0.5rem;
+		font-family: $other-font;
+		font-weight: 700;
+	}
+	.cost{
+		padding: 1rem 0rem 0.5rem;
+	}
+	.infoReader {
+		margin-top: 2rem;
 	}
 
 	.cardGrow {

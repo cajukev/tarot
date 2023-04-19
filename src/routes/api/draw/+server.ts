@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     reading: ReadingType;
     collectionDecks: CollectionDeck[];
     customScenario: ReadingScenarioType;
-    tokenCost: number;
+    // tokenCost: number;
   } = await request.json();
   
 
@@ -40,26 +40,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     question = trimmedQuestion;
   }
 
-  let tokenCost = formData.tokenCost || 999999999;
+  // let tokenCost = formData.tokenCost || 999999999;
 
-  // Verify tokens
-  const profileData = await locals.sb.from('Profile')
-    .select('*')
-    .eq('id', locals.session.user.id)
-    .single()
+  // // Verify tokens
+  // const profileData = await locals.sb.from('Profile')
+  //   .select('*')
+  //   .eq('id', locals.session.user.id)
+  //   .single()
 
-  if (profileData.data!.tokens < tokenCost) {
-    return new Response(
-      JSON.stringify({
-        error: "Not enough tokens",
-      }),
-    );
-  }else{
-    await locals.sb.from('Profile')
-      .update({ tokens: profileData.data!.tokens - tokenCost })
-      .eq('id', locals.session.user.id)
-      .single()
-  }
+  // if (profileData.data!.tokens < tokenCost) {
+  //   return new Response(
+  //     JSON.stringify({
+  //       error: "Not enough tokens",
+  //     }),
+  //   );
+  // }else{
+  //   await locals.sb.from('Profile')
+  //     .update({ tokens: profileData.data!.tokens - tokenCost })
+  //     .eq('id', locals.session.user.id)
+  //     .single()
+  // }
 
   let allAllowedCards: CollectionCard[] = [];
   collectionDecks.forEach((deck: CollectionDeck) => {

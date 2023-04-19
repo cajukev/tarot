@@ -112,6 +112,11 @@ button{
   pointer-events: none;
 }
 
+.faded {
+  transition: 0.5s opacity ease;
+  opacity: 0;
+}
+
 .stacked {
   display: grid;
   > * {
@@ -133,4 +138,9 @@ button{
 
 .energy {
   font-weight: 700;
+}
+
+p.info{
+  opacity: 0.8;
+  font-size: $mini-font-size;
 }

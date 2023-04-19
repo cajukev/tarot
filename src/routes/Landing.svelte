@@ -119,12 +119,10 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
   <div class="reading">
     <div class="header">
       <h2>"{landingReading.question}"</h2>
-      <p>Energy: {landingReading.energy}</p>
-      <p>Reader: Kevin The Novice</p>
+      <p class="info">Energy: {landingReading.energy}</p>
+      <p class="info">Reader: Kevin The Novice</p>
     </div>
-    {#if flippedCards.every((card) => !card)}
-      <p>Click the cards to start the reading</p>
-    {/if}
+    <p class={!flippedCards.some((card) => !card) ? "faded" : ""}>Click the cards to start the reading</p>
     <div class="cards">
       {#each new Array(landingReading.cards.length) as card, i}
         <div>
@@ -169,7 +167,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 </div>
 <div class="collection screenPadding">
   <h2>Collection</h2>
-  <Collection />
+  <Collection landing={true}/>
 </div>
 
 <style lang="scss">
@@ -219,8 +217,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 		& h2 {
 			margin-bottom: 0.5rem;
 			~ p {
-				font-size: $mini-font-size;
-        opacity: 0.8;
         &:last-of-type{
           margin-bottom: 2rem;
         }
@@ -256,7 +252,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 				}
 				& img {
 					margin: 1rem 0rem;
-					width: 100%;
 					max-width: min(80vw, 400px);
 					border-radius: 0.25rem;
 					border: 0.25rem solid #000;

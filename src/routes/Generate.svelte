@@ -41,24 +41,27 @@
 		$customScenariosStore = $page.data.profile.data.custom_scenarios || [];
 	}
 
-
-	let tokenCost = 0;
-	$: {
-		let nbCards = 0;
-		if (readingScenarios.get($readingStore.setting)) {
-			nbCards = readingScenarios.get($readingStore.setting)!.positions.length;
-		}else if ($customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)){
-			nbCards = $customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)!.positions.length
-		}else{
-			// Deleted selected custom setting
-			$readingStore.setting = 'qa';
-			nbCards = 1;
-		}
-
-		let model = characters.get($readingStore.character)!.model;
-
-		tokenCost = getTokenCost(nbCards, model);
+	$: if($readingStore.ready){
+		getReading();
 	}
+
+	// let tokenCost = 0;
+	// $: {
+	// 	let nbCards = 0;
+	// 	if (readingScenarios.get($readingStore.setting)) {
+	// 		nbCards = readingScenarios.get($readingStore.setting)!.positions.length;
+	// 	}else if ($customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)){
+	// 		nbCards = $customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)!.positions.length
+	// 	}else{
+	// 		// Deleted selected custom setting
+	// 		$readingStore.setting = 'qa';
+	// 		nbCards = 1;
+	// 	}
+
+	// 	let model = characters.get($readingStore.character)!.model;
+
+	// 	tokenCost = getTokenCost(nbCards, model);
+	// }
 	onMount(() => {
 		window.onscroll = function () {
 			scrollVar = oldScroll > scrollY ? 0 : 1;
@@ -71,25 +74,18 @@
 		$readingStore.question = question;
 	}
 
-	$: {
-		console.log('flippedCardsStore', $flippedCardsStore);
-		cardFlipped();
+	$: if($readingStore.ready){
+		$readingStore.ready = false;
+		getReading();
 	}
 
-	let cardFlipped = () => {
-		if (
-			$flippedCardsStore?.length > 0 &&
-			$flippedCardsStore?.filter((card) => card).length === $flippedCardsStore?.length &&
-			$readingStore.cards.length > 0
-		) {
-			console.log(
-				'all cards flipped',
-				$flippedCardsStore?.filter((card) => card).length,
-				$readingStore.cards
-			);
-			getReading();
-		}
-	};
+	let tokenCost = 0;
+	$: {
+		tokenCost = getTokenCost(
+			$readingStore.cards.length,
+			characters.get($readingStore.character)?.model || 'default'
+		);
+	}
 
 	let mouseoverSegment = (segment: number) => {
 		switch (segment) {
@@ -170,7 +166,7 @@
 				customScenario: $customScenariosStore.find(
 					(scenario) => scenario.name === $readingStore.setting
 				),
-				tokenCost: tokenCost
+				// tokenCost: tokenCost
 			})
 		})
 			.then((res) => res.json())
@@ -210,6 +206,7 @@
 	};
 
 	let getReading = () => {
+
 		fetch('/api/tarotreading', {
 			method: 'POST',
 			headers: {
@@ -219,7 +216,8 @@
 				reading: $readingStore,
 				customScenario: $customScenariosStore.find(
 					(scenario) => scenario.name === $readingStore.setting
-				)
+				),
+				tokenCost: tokenCost
 			})
 		}).then(async (res) => {
 			const reader = res.body?.getReader();
@@ -263,6 +261,9 @@
         customScenarios: $customScenariosStore
       }
       ),
+    })
+		.then(() => {
+      invalidateAll();
     });
 	};
 
@@ -443,7 +444,7 @@
 				</div>
 			</div>
 		</div>
-		{#if tokenCost <= $page.data.profile.data.tokens}
+		<!-- {#if tokenCost <= $page.data.profile.data.tokens} -->
 		<div>
 			<p>Enter your question</p>
 			<input bind:value={question} type="text" name="question" id="question" />
@@ -555,11 +556,14 @@
 				<p>Tell me my fortune</p>
 			</div>
 		</div>
-		{:else}
-		<p>Regain up to 15 tokens at 12:00PM EST </p>
+		<!-- {:else}
+		<p>Not enough tokens </p>
 		{/if}
 		<p class="cost">Costs {tokenCost} token{tokenCost  !== 1 ? "s" : ""} | <span>({$page.data.profile.data.tokens} remaining)</span></p>
 		<button class="cta" on:click={() => $menuStateStore = { value: 6, change: true }}>Buy More Tokens</button>
+		{#if $page.data.profile.data.tokens < 10}
+			<p class="info">Regain up to 10 tokens at 12:00PM EST</p>
+		{/if} -->
 	</div>
 </div>
 
@@ -808,15 +812,5 @@
 			transform: translateZ(0);
 		}
 	}
-	.cta{
-		cursor: pointer;
-		background-color: $accent;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: $other-font;
-		font-weight: 700;
-	}
-	.cost{
-		padding: 1rem 0rem 0.5rem;
-	}
+	
 </style>

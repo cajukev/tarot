@@ -7,6 +7,8 @@
 	import { unlocks } from '$lib/unlocks';
 	import { secrets } from '$lib/secrets';
 
+	export let landing = false;
+
 	let decks: CollectionDeck[] = [];
 	for (let [key, deck] of cards.entries()) {
 		deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
@@ -57,7 +59,7 @@
 		return newText;
 	};
 
-	let _getEnergyColor = (energy: string) => {
+	export let _getEnergyColor = (energy: string) => {
 		console.log(energy, energyMap.get(energyList.indexOf(energy) + 1)?.group);
 		return energyGroups.get(energyMap.get(energyList.indexOf(energy) + 1)?.group || 0)?.color;
 	};
@@ -65,14 +67,27 @@
 
 <div class="container">
 	<div>
+	<p class="info">
+		You can click on a card to see more information about it. 
+		{#if !landing}
+		<br>You can click on the deck name to toggle a deck on or off.
+		{/if}
+	</p>
 		{#each decks as deck}
 		<div class="deck">
 			
 			{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) }
 	
 			<div class="header">
-				<h3>{deck.name} <button on:click={() => deck.available = !deck.available}>{deck.available ? '✅' : '❌'}</button></h3>
-				
+				<h3>
+					<label for={"check."+deck.name}>{deck.name} 
+						{#if !landing}
+						<button id={"check."+deck.name} on:click={() => deck.available = !deck.available}>
+							{deck.available ? '✅' : '❌'}
+						</button>
+						{/if}
+					</label>
+				</h3>
 			</div>
 			<div class="cards">
 				{#each deck.cards as card}
@@ -177,9 +192,17 @@
 	{/each}
 </div> -->
 <style lang="scss">
+	.container{
+		text-align: center;
+	}
 	h3 {
 		font-family: $header-font;
 		text-align: center;
+		button{
+			background: none;
+			border: none;
+			font-size: $h4-font-size;
+		}
 	}
 	.deck:not(:first-of-type){
 		margin-top: 2rem;

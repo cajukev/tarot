@@ -9,8 +9,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const formData: {
     reading: ReadingType;
     customScenario: ReadingScenarioType;
+    tokenCost: number;
   } = await request.json();
 
+  // // Verify tokens
+  const profileData = await locals.sb.from('Profile')
+    .select('*')
+    .eq('id', locals.session.user.id)
+    .single()
+
+  if (profileData.data!.tokens < formData.tokenCost) {
+    return new Response(
+      JSON.stringify({
+        error: "Not enough tokens",
+      }),
+    );
+  }else{
+    await locals.sb.from('Profile')
+      .update({ tokens: profileData.data!.tokens - formData.tokenCost })
+      .eq('id', locals.session.user.id)
+      .single()
+  }
 
   let setting = formData.reading.setting || "ppf";
   let scenario: ReadingScenarioType;
@@ -35,14 +54,13 @@ You are ${characterInput}.
 `)}
 `
     +
-    `If you mention a card, please use the following format:<b>Card name</b>
-Do not explicitely say card meaning in the reading
+    `Scenario: ${scenario.name}
 energy = ${energy}
 question = ${question}
 drawn card(s):`
   drawnCards.forEach((card, i) => {
     system += `
-  ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${scenario.positions[i]}", "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}, special instruction: ${scenario.instructions[i]}`
+  ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${scenario.positions[i]}", special instruction: ${scenario.instructions[i]}, "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
   })
   system += `
 Do not use any other card name than the one provided in the list above.
@@ -50,10 +68,9 @@ follow this structure:
 p1: one phrase overview of the reading, start paragraph with an expression, max 20 words
 ${scenario.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`
 `)}
-p${(scenario.positions.length || 1) + 2}: conclusion
-p${(scenario.positions.length || 1) + 3}: invite the user to ask more questions
+p${(scenario.positions.length || 1) + 2}: conclusion & reopening or closing words
 separate each p with a line break
-Total between ${40 * drawnCards.length + 80} and ${40 * drawnCards.length + 120} words, no more no less`
+Total between ${40 * drawnCards.length + 80} and ${60 * drawnCards.length + 120} words, no more no less`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },
