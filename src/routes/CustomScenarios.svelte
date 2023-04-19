@@ -42,12 +42,12 @@
 <div class="container">
 
 
-  {#each $page.data.profile.data.custom_scenarios as scenario}
+  <!-- {#each $page.data.profile.data.custom_scenarios as scenario}
     <div class="card">
       <h2>{scenario.name}</h2>
       <p>{scenario.positions.join(", ")}</p>
     </div>
-  {/each}
+  {/each} -->
 
   {#if (unlocks.get("custom")?.exp || 10000) < $page.data.profile.data.experience}
 
