@@ -120,7 +120,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
     <div class="header">
       <h2>"{landingReading.question}"</h2>
       <p class="info">Energy: {landingReading.energy}</p>
-      <p class="info">Reader: Kevin The Novice</p>
+      <p class="info">Reader: Alex The Novice</p>
     </div>
     <p class={!flippedCards.some((card) => !card) ? "faded" : ""}>Click the cards to start the reading</p>
     <div class="cards">

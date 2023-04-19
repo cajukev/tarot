@@ -28,7 +28,7 @@
 	let pressedSegment = 0;
 
 	$readingStore.setting = 'qa';
-	$readingStore.character = 'Kevin';
+	$readingStore.character = 'Alex';
 
 	let drawnCards: CollectionCard[] = [];
 	let question = '';
