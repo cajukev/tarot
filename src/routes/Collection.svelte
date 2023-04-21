@@ -6,6 +6,8 @@
 	import { fade } from 'svelte/transition';
 	import { unlocks } from '$lib/unlocks';
 	import { secrets } from '$lib/secrets';
+	import { achievements, achievementsOrder } from '$lib/achievements';
+	import { objToMap } from '$lib/utils';
 
 	export let landing = false;
 
@@ -22,6 +24,10 @@
 
 	let infoBox: HTMLDivElement;
 	let isShown = false;
+
+	let achievementsMap = objToMap($page.data.profile.data.achievements) || achievements;
+	let achiementMACompleted: boolean = achievementsMap.get("AllMACards").completed;
+	let achievementMAProgress: string[] = achievementsMap.get("AllMACards").progress;
 
 	let infoBoxAppear = (card: CollectionCard) => {
 		isShown = true;
@@ -158,7 +164,12 @@
 					alt=""
 				/>
 			{/if}
-			<h3>{currentCard?.name}</h3>
+			<h3>
+				{currentCard?.name}
+				{#if !achiementMACompleted && achievementMAProgress.includes(currentCard?.name || '')}
+					<span class="achievementIndicator">✨</span>
+				{/if}
+			</h3>
 			{#if currentCard?.reversed}
 				<h4 in:fade>Reversed</h4>
 			{/if}
@@ -173,6 +184,7 @@
 					<span class="dummy energy" />
 				</p>
 			{/if}
+			
 		</div>
 	</div>
 </div>
@@ -287,6 +299,9 @@
 			}
 			& h3 {
 				font-family: $header-font;
+				.achievementIndicator{
+					opacity: 0.5;
+				}
 			}
 			& h4 {
 				font-family: $header-font;
@@ -300,5 +315,6 @@
 			transform: scale(0.9) translateY(1rem);
 			pointer-events: none;
 		}
+		
 	}
 </style>

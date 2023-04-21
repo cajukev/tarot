@@ -3,6 +3,7 @@
   import { page } from "$app/stores";
   import { objToMap } from "$lib/utils";
   let achievementsArray = Array.from((objToMap($page.data.profile.data.achievements) || achievements).entries());
+  console.log("achievementsArray", achievementsArray);
   // AchievementsOrder is an array of achievement IDs in the order they should be displayed
   achievementsArray.sort((a, b) => achievementsOrder.indexOf(a[0]) - achievementsOrder.indexOf(b[0]));
 </script>
