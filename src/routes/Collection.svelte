@@ -25,7 +25,7 @@
 	let infoBox: HTMLDivElement;
 	let isShown = false;
 
-	let achievementsMap = objToMap($page.data.profile.data.achievements) || achievements;
+	let achievementsMap = objToMap($page.data.profile?.data.achievements) || achievements;
 	let achiementMACompleted: boolean = achievementsMap.get("AllMACards").completed;
 	let achievementMAProgress: string[] = achievementsMap.get("AllMACards").progress;
 
