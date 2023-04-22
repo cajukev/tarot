@@ -49,7 +49,10 @@
 			characters.get($readingStore.character)?.model || 'default'
 		);
 	}
+	let loading = false;
 	let startReading = () => {
+		if(loading === true) return;
+		loading = true;
 		$readingStore.ready = true;
 		actionState = 0;
 	};
