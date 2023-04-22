@@ -152,13 +152,13 @@
 								}
 								updateAchievementsFlag = true;
 								break;
-
-
 		}
 		userAchievements = new Map(userAchievements);
 		if (updateAchievementsFlag) updateAchievements();
 		if (completedExp > 0) {
 			addExperience(completedExp);
+		}else{
+			invalidateAll();
 		}
 		console.log('handleAchievements', userAchievements);
 	};

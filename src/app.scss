@@ -114,7 +114,7 @@ button{
 
 .faded {
   transition: 0.5s opacity ease;
-  opacity: 0;
+  opacity: 0 !important;
 }
 
 .stacked {

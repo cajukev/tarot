@@ -104,7 +104,6 @@ export const achievements: Map<string, Achievement> = new Map([
 
 export const achievementsOrder = [
   "FirstCompletedReading",
-  "ReadingWith3Preset",
   "SameQuestion",
   "5Tokens",
   "10Tokens",
@@ -112,6 +111,7 @@ export const achievementsOrder = [
   "20Tokens",
   "25Tokens",
   "30Tokens",
+  "ReadingWith3Preset",
   "SameEnergy",
   "PerfectionismEnergy",
   "AllMACards"

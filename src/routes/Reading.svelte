@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import characters from '$lib/characters';
 	import readingScenarios from '$lib/readingScenarios';
-	import { getTokenCost } from '$lib/utils';
+	import { getTokenCost, objToMap } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import {
 		readingStore,
@@ -11,6 +11,8 @@
 		achievementsStore,
 		menuStateStore
 	} from '../stores';
+	import type { CollectionCard } from '$lib/cards';
+	import InfoBox from './InfoBox.svelte';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -51,6 +53,21 @@
 		$readingStore.ready = true;
 		actionState = 0;
 	};
+
+	// Infobox state
+
+	let currentCard: CollectionCard | undefined = undefined;
+
+	let isShown = false;
+	
+
+	let infoBoxAppear = (card: CollectionCard) => {
+		isShown = true;
+		currentCard = card;
+		setTimeout(() => {
+			currentCard = card;
+		}, 250);
+	};
 	
 </script>
 
@@ -60,6 +77,9 @@
 		<h2>"{$readingStore.question}"</h2>
 		<p class="info">Energy: {$readingStore.energy}</p>
 	</div>
+	<p class={"info " + ($flippedCardsStore?.some((card) => card) ? 'faded' : '')}>
+		Click the cards to start the reading
+	</p>
 	<div class="cards">
 		{#each new Array($flippedCardsStore?.length) as card, i}
 			<div>
@@ -78,9 +98,17 @@
 									src="/cards/cardback-200.webp"
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
+									tabindex={$flippedCardsStore[i] ? -1 : 0}
 									on:click={() => {
 										flipCard(i);
 									}}
+									on:keydown={
+										(event) => {
+											if (event.key === 'Enter') {
+												flipCard(i);
+											}
+										}
+									}
 								/>
 							</div>
 
@@ -88,16 +116,20 @@
 								<img
 									src="/cards/{_getCardImgName($readingStore.cards[i].name)}-200.webp"
 									alt=""
+									tabindex={$flippedCardsStore[i] ? 0 : -1}
 									class={'white ' +
 										($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
+										on:click={() => {
+											infoBoxAppear($readingStore.cards[i]);
+										}}
+										on:keydown={
+											(event) => {
+												if (event.key === 'Enter') {
+													infoBoxAppear($readingStore.cards[i]);
+												}
+											}
+										}
 								/>
-								<h3>
-									{$readingStore.cards[i].name}
-									<span>
-										{$readingStore.cards[i].reversed ? ' reversed' : ''}
-									</span>
-								</h3>
-								<!-- <p>{@html $readingStore.cards[i].reversed ? $readingStore.cards[i].reversedMeaning : $readingStore.cards[i].meaning }</p> -->
 							</div>
 						</div>
 					{/if}
@@ -105,6 +137,9 @@
 			</div>
 		{/each}
 	</div>
+	<p class={"info " + ($flippedCardsStore?.every((card) => !card) ? 'faded' : '')}>
+		Click the cards to learn more about them
+	</p>
 	{#if actionState}
 		<div transition:fade>
 			{#if tokenCost <= $page.data.profile.data.tokens}
@@ -140,6 +175,11 @@
 	<button class="restart bottom" on:click={() => restart()}>Restart</button>
 </div>
 
+<div>
+	<InfoBox bind:isShown bind:currentCard></InfoBox>
+</div>
+
+
 <style lang="scss">
 	.reading {
 		margin-top: 2rem;
@@ -172,7 +212,7 @@
 			// grid-template-columns: repeat(auto-fit, minmax(250px, 1fr) );
 			display: flex;
 			flex-wrap: wrap;
-			justify-content: space-evenly;
+			justify-content: center;
 			grid-gap: clamp(32px, 3vw, 64px);
 
 			@media screen and (max-width: 600px) {
@@ -296,4 +336,5 @@
 			transform: scale(1) rotatex(180deg) rotateY(180deg);
 		}
 	}
+	
 </style>

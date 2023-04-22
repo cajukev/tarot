@@ -1,55 +1,61 @@
+<!-- TODO
+
+	- Add a way to save toggle state of decks
+	- update card in achievements on load
+	
+
+-->
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
-	import { energyGroups, energyList, energyMap } from '$lib/energies';
 	import { collectionStore } from '../stores';
 	import { page } from '$app/stores';
-	import { fade } from 'svelte/transition';
 	import { unlocks } from '$lib/unlocks';
 	import { secrets } from '$lib/secrets';
-	import { achievements, achievementsOrder } from '$lib/achievements';
-	import { objToMap } from '$lib/utils';
-	import { onMount } from 'svelte';
+	import InfoBox from './InfoBox.svelte';
 
 	export let landing = false;
 
+	// Save collection state
+
 	let decks: CollectionDeck[] = [];
-	onMount(() => {
-		if ($collectionStore.length === 0){
+
+	$: {
+		if($collectionStore)
+		checkCollection();
+	}
+	
+	let checkCollection = () => {
+		console.log('check collection', $collectionStore);
+		if ($collectionStore?.length > 0) {
+			decks = $collectionStore;
+		}else{
 			for (let [key, deck] of cards.entries()) {
 				decks.push(deck);
 				deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
 			}
 		}
-	});
-	$:{
-		$collectionStore = decks;
 	}
+
+	checkCollection();
+
+	let toggleDeck = (deck: CollectionDeck) => {
+		deck.available = !deck.available;
+		collectionStore.set(decks);
+		checkCollection();
+	};
+
+	// Infobox state
 
 	let currentCard: CollectionCard | undefined = undefined;
 
-	let infoBox: HTMLDivElement;
 	let isShown = false;
-
-	let achievementsMap = objToMap($page.data.profile?.data.achievements) || achievements;
-	let achiementMACompleted: boolean = achievementsMap.get("AllMACards").completed;
-	let achievementMAProgress: string[] = achievementsMap.get("AllMACards").progress;
+	
 
 	let infoBoxAppear = (card: CollectionCard) => {
 		isShown = true;
-		infoBox.classList.add('visible');
-		infoBox.scrollTop = 0;
 		currentCard = card;
 		setTimeout(() => {
 			currentCard = card;
-		}, 250);
-	};
-
-	let infoBoxHide = () => {
-		isShown = false;
-		infoBox.classList.remove('visible');
-		setTimeout(() => {
-			currentCard?.reversed && (currentCard.reversed = false);
-			currentCard = undefined;
 		}, 250);
 	};
 
@@ -57,23 +63,6 @@
 		return card.name.replace(/ /g, '_').replace(/'/g, '');
 	};
 
-	let addColorsToMeaningText = (text: string) => {
-		let newText = text;
-		energyList.forEach((energy) => {
-			newText = newText.replace(
-				`<b>${energy}</b>`,
-				`<b><span style="color: ${_getEnergyColor(
-					energy
-				)}; text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25), 0px 0px 8px rgba(255, 255, 255, 0.35);">${energy}</span></b>`
-			);
-		});
-		return newText;
-	};
-
-	export let _getEnergyColor = (energy: string) => {
-		console.log(energy, energyMap.get(energyList.indexOf(energy) + 1)?.group);
-		return energyGroups.get(energyMap.get(energyList.indexOf(energy) + 1)?.group || 0)?.color;
-	};
 </script>
 
 <div class="container">
@@ -93,7 +82,7 @@
 				<h3>
 					<label for={"check."+deck.name}>{deck.name} 
 						{#if !landing}
-						<button id={"check."+deck.name} on:click={() => deck.available = !deck.available}>
+						<button id={"check."+deck.name} on:click={() => toggleDeck(deck)}>
 							{deck.available ? '✅' : '❌'}
 						</button>
 						{/if}
@@ -135,79 +124,9 @@
 		{/each}
 	</div>
 
-	<div
-		bind:this={infoBox}
-		class={'infoBox '}
-		on:click={(e) => {
-			infoBoxHide();
-		}}
-		on:keydown={(e) => {
-			if (e.key === 'Escape') {
-				infoBoxHide();
-			}
-		}}
-	>
-		<div class="infoBoxContent">
-			{#if currentCard}
-				<img
-					on:click={(e) => {
-						e.stopPropagation();
-						if (currentCard) {
-							currentCard.reversed = !currentCard?.reversed;
-						}
-					}}
-					on:keydown={(e) => {
-						if (e.key === 'Enter') {
-							e.stopPropagation();
-							if (currentCard) {
-								currentCard.reversed = !currentCard?.reversed;
-							}
-						}
-					}}
-					class={currentCard?.reversed ? 'reversed' : ''}
-					src="/cards/{_getCardImgName(currentCard)}-400.webp"
-					alt=""
-				/>
-			{/if}
-			<h3>
-				{currentCard?.name}
-				{#if !achiementMACompleted && achievementMAProgress.includes(currentCard?.name || '')}
-					<span class="achievementIndicator">✨</span>
-				{/if}
-			</h3>
-			{#if currentCard?.reversed}
-				<h4 in:fade>Reversed</h4>
-			{/if}
-			{#if currentCard?.reversed === false}
-				<p in:fade>
-					{@html addColorsToMeaningText(currentCard?.meaning)}
-					<span class="dummy energy" />
-				</p>
-			{:else if currentCard?.reversed === true}
-				<p in:fade>
-					{@html addColorsToMeaningText(currentCard?.reversedMeaning)}
-					<span class="dummy energy" />
-				</p>
-			{/if}
-			
-		</div>
-	</div>
+	<InfoBox bind:isShown bind:currentCard collection={true}></InfoBox>
 </div>
 
-<!-- <div>
-	{#each [...energyGroups.values()] as group, i}
-		<div class="energyGroup">
-			<h3>{addColorsToMeaningText(group.title)}</h3>
-			{#each [...energyMap.values()]
-				.sort((a, b) => a.value.localeCompare(b.value))
-				.filter((e) => e.group === i + 1) as energy}
-				<div class="">
-					<div class="energyName">{energy.value}</div>
-				</div>
-			{/each}
-		</div>
-	{/each}
-</div> -->
 <style lang="scss">
 	.container{
 		text-align: center;
