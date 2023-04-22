@@ -32,6 +32,7 @@
 		actionState = 1;
 	}else{
 		actionState = 0;
+		loading = false;
 	}
 
 	let restart = () => {
