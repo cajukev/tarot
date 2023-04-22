@@ -28,28 +28,29 @@
 			$deviceStore.hasMouse = true;
 		}
 		
-		// HANDLE ACHIEVEMENTS
-		if(!data.profile?.data?.achievements){
-			userAchievements = achievements;
-		} else {
-			userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
-			console.log("userAchievements", userAchievements, achievements);
-			if(userAchievements.size !== achievements.size){
-				updateAchievements();
-			}
-		}
-
+		
 		// Supabase Auth
 		const {
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
 		});
-
+		
 		return () => {
 			subscription.unsubscribe();
 		};
 	});
+	
+	// HANDLE ACHIEVEMENTS
+	$: if(!data.profile?.data?.achievements){
+		userAchievements = achievements;
+	} else {
+		userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
+		console.log("userAchievements", userAchievements, achievements);
+		if(userAchievements.size !== achievements.size){
+			updateAchievements();
+		}
+	}
 
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 	let storedEnergy = "";
