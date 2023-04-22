@@ -8,14 +8,19 @@
 	import { secrets } from '$lib/secrets';
 	import { achievements, achievementsOrder } from '$lib/achievements';
 	import { objToMap } from '$lib/utils';
+	import { onMount } from 'svelte';
 
 	export let landing = false;
 
 	let decks: CollectionDeck[] = [];
-	for (let [key, deck] of cards.entries()) {
-		deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
-		decks.push(deck);
-	}
+	onMount(() => {
+		if ($collectionStore.length === 0){
+			for (let [key, deck] of cards.entries()) {
+				decks.push(deck);
+				deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
+			}
+		}
+	});
 	$:{
 		$collectionStore = decks;
 	}

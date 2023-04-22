@@ -49,7 +49,7 @@
     </div>
   {/each} -->
 
-  {#if (unlocks.get("custom")?.exp || 10000) < $page.data.profile.data.experience}
+  {#if (unlocks.get("custom")?.exp || 10000) <= $page.data.profile.data.experience}
 
   <div class="">
     <label for="scenarioName">Scenario Name: </label>
