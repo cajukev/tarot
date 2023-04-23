@@ -32,7 +32,12 @@
 
 				<input type="password" name="password" placeholder="Password" bind:value={password} />
 
-			<button type="submit" disabled={email?.length === 0}>{ password?.length === 0 ? "Email me a login link" : "Login / Sign up"}</button>
+
+			<button type="submit" disabled={email?.length === 0}>{ password?.length === 0 ? "Email me a login link" : "Login"}</button>
+			{#if email?.length > 0 && password?.length > 0}
+				<!-- Sign up btn -->
+				<button type="submit" formaction="?/signup" >Sign up</button>
+			{/if}
 			<p class="error">{error}</p>
 			{#if email?.length > 0 && password?.length === 0}
 				<p class="passwordlessInfo">By sending a login link to an email without an existing account, you will create a passwordless account.<br> You will not be able to add one later.</p>

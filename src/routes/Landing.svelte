@@ -138,7 +138,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 		<div class="header">
 			<h2>"{landingReading.question}"</h2>
 			<p class="info">Energy: {landingReading.energy}</p>
-			<p class="info">Reader: Alex The Novice</p>
 		</div>
 		<p class={!flippedCards.some((card) => !card) ? 'faded' : ''}>
 			Click the cards to start the reading
@@ -184,12 +183,12 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 											}
 										}}
 									/>
-									<h3>
+									<!-- <h3>
 										{landingReading.cards[i].name}
 										<span>
 											{landingReading.cards[i].reversed ? ' reversed' : ''}
 										</span>
-									</h3>
+									</h3> -->
 									<!-- <p>{@html landingReading.cards[i].reversed ? landingReading.cards[i].reversedMeaning : landingReading.cards[i].meaning }</p> -->
 								</div>
 							</div>
@@ -198,8 +197,17 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 				</div>
 			{/each}
 		</div>
-		<p class="conclusion">{@html landingReading.conclusion.trim() || ''}</p>
-		<a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
+    <p class={"info " + (flippedCards.every((card) => !card) ? 'faded' : '')}>
+      Click the cards to learn more about them
+    </p>
+    <div class="conclusion">
+      {#if landingReading.conclusion.length > 0 }
+      <p class="info">Reader: Alex The Novice</p>
+      {/if}
+      <p class="">{@html landingReading.conclusion.trim() || ''}</p>
+      <a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
+    </div>
+
 	</div>
 </div>
 <div class="collection screenPadding">
@@ -207,7 +215,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 	<Collection landing={true} />
 </div>
 
-<InfoBox bind:isShown bind:currentCard collection={true}> </InfoBox>
+<InfoBox bind:isShown bind:currentCard> </InfoBox>
 
 <style lang="scss">
 	.container {
@@ -219,6 +227,8 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 			transition: all 1s ease-in-out;
 			position: relative;
 			text-decoration: none;
+      display: flex;
+      justify-content: center;
 			&.hidden {
 				opacity: 0;
 				pointer-events: none;

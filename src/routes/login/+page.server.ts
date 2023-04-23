@@ -43,18 +43,40 @@ export const actions: Actions = {
         const user = await locals.sb.auth.signInWithPassword({ email, password })
         if (!user.data.user) {
             const user = await locals.sb.auth.signUp({ email, password })
-            if (!user) {
-                return {
-                    status: 400,
-                    body: 'User not found'
-                };
-            }else{
-                throw redirect(300, '/checkemail')
-            }
+
+        }else {
+            throw redirect(300, '/')
         }
-        throw redirect(300, '/')
+        return {
+            status: 400,
+            body: 'Incorrect password'
+        };
 
     },
+
+    signup: async ({request, locals}) => {
+        const formData = await request.formData();
+        const email = formData.get('email') + "";
+        const password = formData.get('password') + "";
+        if (!email || !password) {
+            return {
+                status: 400,
+                body: 'Missing email or password'
+            };
+        }
+        
+        const user = await locals.sb.auth.signUp({ email, password })
+        if (!user) {
+            return {
+                status: 400,
+                body: 'User not found'
+            };
+        }
+        throw redirect(300, '/checkemail')
+        
+        
+    },
+
 
   logout: async ({ locals}) => {
     const error = await locals.sb.auth.signOut();
