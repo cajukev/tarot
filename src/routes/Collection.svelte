@@ -28,16 +28,13 @@
 		if ($collectionStore?.length > 0) {
 			decks = $collectionStore;
 		}else{
-			console.log(decks, cards.entries())
 			decks = [];
 			for (let [key, deck] of cards.entries()) {
-				if (!decks.some((d) => d.name === deck.name)){
 					decks.push(deck);
 					deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
-				}
+				
 			}
 		}
-		console.log(decks);
 
 	}
 
