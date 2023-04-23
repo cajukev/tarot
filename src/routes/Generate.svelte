@@ -155,7 +155,7 @@
 			$flippedCardsStore =
 				readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
 		}
-		va.track('Draw');
+		// va.track('Draw');
 		fetch('/api/draw', {
 			method: 'POST',
 			headers: {
@@ -207,7 +207,7 @@
 	};
 
 	let getReading = () => {
-		va.track('GetReading');
+		// va.track('GetReading');
 		fetch('/api/tarotreading', {
 			method: 'POST',
 			headers: {

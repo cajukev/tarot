@@ -20,7 +20,7 @@
 
 	export let data: PageData;
 
-	inject({ mode: dev ? 'development' : 'production' });
+	// inject({ mode: dev ? 'development' : 'production' });
 
 	let userAchievements: Map<string, Achievement>;
 
