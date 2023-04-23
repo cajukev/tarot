@@ -15,10 +15,14 @@
 	import Title from './Title.svelte';
 	import Menu from './Menu.svelte';
 	import characters from '$lib/characters';
+	import { dev } from '$app/environment';
+	import { inject } from '@vercel/analytics';
 
 	export let data: PageData;
 
-	let userAchievements: Map<string, Achievement>
+	inject({ mode: dev ? 'development' : 'production' });
+
+	let userAchievements: Map<string, Achievement>;
 
 	onMount(() => {
 		if (window.matchMedia('(any-pointer: coarse)').matches) {
@@ -27,33 +31,35 @@
 		if (matchMedia('(pointer:fine)').matches) {
 			$deviceStore.hasMouse = true;
 		}
-		
-		
+
 		// Supabase Auth
 		const {
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
 		});
-		
+
 		return () => {
 			subscription.unsubscribe();
 		};
 	});
-	
+
 	// HANDLE ACHIEVEMENTS
-	$: if(!data.profile?.data?.achievements){
+	$: if (!data.profile?.data?.achievements) {
 		userAchievements = achievements;
 	} else {
-		userAchievements = new Map([...achievements, ...objToMap(data.profile!.data.achievements) || []]);
-		console.log("userAchievements", userAchievements, achievements);
-		if(userAchievements.size !== achievements.size){
+		userAchievements = new Map([
+			...achievements,
+			...(objToMap(data.profile!.data.achievements) || [])
+		]);
+		console.log('userAchievements', userAchievements, achievements);
+		if (userAchievements.size !== achievements.size) {
 			updateAchievements();
 		}
 	}
 
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
-	let storedEnergy = "";
+	let storedEnergy = '';
 	let completedExp = 0;
 
 	$: {
@@ -63,7 +69,7 @@
 		completedExp = 0;
 		let value;
 		let updateAchievementsFlag = false;
-		console.log("handleAchievements", $achievementsStore);
+		console.log('handleAchievements', $achievementsStore);
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
 				value = $readingStore;
@@ -71,11 +77,14 @@
 				completeAchievement('FirstCompletedReading');
 				// ReadingWith3Preset
 				if (!userAchievements.get('ReadingWith3Preset')!.completed) {
-					if (!userAchievements.get('ReadingWith3Preset')!.progress || userAchievements.get('ReadingWith3Preset')!.progress.length === 0) {
+					if (
+						!userAchievements.get('ReadingWith3Preset')!.progress ||
+						userAchievements.get('ReadingWith3Preset')!.progress.length === 0
+					) {
 						userAchievements.get('ReadingWith3Preset')!.progress = [value.setting];
 						updateAchievementsFlag = true;
 					} else {
-						if(!userAchievements.get('ReadingWith3Preset')!.progress.includes(value.setting)){
+						if (!userAchievements.get('ReadingWith3Preset')!.progress.includes(value.setting)) {
 							userAchievements.get('ReadingWith3Preset')!.progress.push(value.setting);
 							updateAchievementsFlag = true;
 						}
@@ -85,7 +94,7 @@
 					}
 				}
 				break;
-				
+
 			case 'AskQuestion':
 				value = $readingStore;
 				// SameQuestion
@@ -108,57 +117,67 @@
 					updateAchievementsFlag = true;
 				}
 				break;
-				case 'FlipCard':
-					value = $achievementsStore?.value;
-					// AllMACards (flip all Major Arcana cards, progress is card name array)
-					if (!userAchievements.get('AllMACards')!.completed) {
-						if(cards.get("Major Arcana")?.cards?.find(card => card.name === $achievementsStore?.value)){
-							if (!userAchievements.get('AllMACards')!.progress || userAchievements.get('AllMACards')!.progress.length === 0) {
-								userAchievements.get('AllMACards')!.progress = [$achievementsStore?.value];
+			case 'FlipCard':
+				value = $achievementsStore?.value;
+				// AllMACards (flip all Major Arcana cards, progress is card name array)
+				if (!userAchievements.get('AllMACards')!.completed) {
+					if (
+						cards
+							.get('Major Arcana')
+							?.cards?.find((card) => card.name === $achievementsStore?.value)
+					) {
+						if (
+							!userAchievements.get('AllMACards')!.progress ||
+							userAchievements.get('AllMACards')!.progress.length === 0
+						) {
+							userAchievements.get('AllMACards')!.progress = [$achievementsStore?.value];
+							updateAchievementsFlag = true;
+						} else {
+							if (
+								!userAchievements.get('AllMACards')!.progress.includes($achievementsStore?.value)
+							) {
+								userAchievements.get('AllMACards')!.progress.push($achievementsStore?.value);
 								updateAchievementsFlag = true;
-							} else {
-								if(!userAchievements.get('AllMACards')!.progress.includes($achievementsStore?.value)){
-									userAchievements.get('AllMACards')!.progress.push($achievementsStore?.value);
-									updateAchievementsFlag = true;
-								}
-							}
-							if (userAchievements.get('AllMACards')!.progress?.length >= 22) {
-								completeAchievement('AllMACards');
 							}
 						}
+						if (userAchievements.get('AllMACards')!.progress?.length >= 22) {
+							completeAchievement('AllMACards');
+						}
 					}
-					break;
-					case 'StartReading': 
-					console.log("StartReading");
-						value = $readingStore;
-						let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
-								userAchievements.get('30Tokens')!.progress = userAchievements.get('30Tokens')!.progress + spentTokens;
-								if (userAchievements.get('30Tokens')!.progress >= 30) {
-									completeAchievement('30Tokens');
-								}
-								if (userAchievements.get('30Tokens')!.progress >= 25) {
-									completeAchievement('25Tokens');
-								}
-								if (userAchievements.get('30Tokens')!.progress >= 20) {
-									completeAchievement('20Tokens');
-								}
-								if (userAchievements.get('30Tokens')!.progress >= 15) {
-									completeAchievement('15Tokens');
-								}
-								if (userAchievements.get('30Tokens')!.progress >= 10) {
-									completeAchievement('10Tokens');
-								}
-								if (userAchievements.get('30Tokens')!.progress >= 5) {
-									completeAchievement('5Tokens');
-								}
-								updateAchievementsFlag = true;
-								break;
+				}
+				break;
+			case 'StartReading':
+				console.log('StartReading');
+				value = $readingStore;
+				let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
+				userAchievements.get('30Tokens')!.progress =
+					userAchievements.get('30Tokens')!.progress + spentTokens;
+				if (userAchievements.get('30Tokens')!.progress >= 30) {
+					completeAchievement('30Tokens');
+				}
+				if (userAchievements.get('30Tokens')!.progress >= 25) {
+					completeAchievement('25Tokens');
+				}
+				if (userAchievements.get('30Tokens')!.progress >= 20) {
+					completeAchievement('20Tokens');
+				}
+				if (userAchievements.get('30Tokens')!.progress >= 15) {
+					completeAchievement('15Tokens');
+				}
+				if (userAchievements.get('30Tokens')!.progress >= 10) {
+					completeAchievement('10Tokens');
+				}
+				if (userAchievements.get('30Tokens')!.progress >= 5) {
+					completeAchievement('5Tokens');
+				}
+				updateAchievementsFlag = true;
+				break;
 		}
 		userAchievements = new Map(userAchievements);
 		if (updateAchievementsFlag) updateAchievements();
 		if (completedExp > 0) {
 			addExperience(completedExp);
-		}else{
+		} else {
 			invalidateAll();
 		}
 		console.log('handleAchievements', userAchievements);
@@ -229,8 +248,8 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
-	href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
-	rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
+		rel="stylesheet"
 	/>
 </svelte:head>
 <Menu />
@@ -240,7 +259,7 @@
 <div class="topShadow" />
 <div class="app">
 	<div class="bg" />
-	<Title/>
+	<Title />
 	<slot />
 </div>
 

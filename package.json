@@ -31,6 +31,7 @@
 		"@fern-api/openai": "^0.0.23",
 		"@supabase/auth-helpers-sveltekit": "^0.8.7",
 		"@sveltejs/adapter-vercel": "^2.4.1",
+		"@vercel/analytics": "^1.0.0",
 		"openai": "^3.1.0",
 		"stripe": "^12.0.0",
 		"svelte-local-storage-store": "^0.4.0",
