@@ -29,6 +29,7 @@
 			decks = $collectionStore;
 		}else{
 			for (let [key, deck] of cards.entries()) {
+				deck.available = false;
 				if (!decks.includes(deck)){
 					decks.push(deck);
 					deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
