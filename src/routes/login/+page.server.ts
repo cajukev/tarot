@@ -1,12 +1,13 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import va from '@vercel/analytics';
 
 export const load = (async () => {
     return {};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-    login: async ({request, locals}) => {
+    login: async ({ request, locals }) => {
         const formData = await request.formData();
         const email = formData.get('email') + "";
         if (!email) {
@@ -17,18 +18,19 @@ export const actions: Actions = {
         }
 
         const user = await locals.sb.auth.signInWithOtp({ email })
-        
+
         if (!user) {
             return {
                 status: 400,
                 body: 'User not found'
             };
         }
+        va.track('Login', { email: email, method: 'email' });
         throw redirect(300, '/checkemail')
 
     },
 
-    loginPW: async ({request, locals}) => {
+    loginPW: async ({ request, locals }) => {
         const formData = await request.formData();
         console.log(formData)
         const email = formData.get('email') + "";
@@ -44,7 +46,8 @@ export const actions: Actions = {
         if (!user.data.user) {
             const user = await locals.sb.auth.signUp({ email, password })
 
-        }else {
+        } else {
+            va.track('Login', { email: email, method: 'password' });
             throw redirect(300, '/')
         }
         return {
@@ -54,7 +57,7 @@ export const actions: Actions = {
 
     },
 
-    signup: async ({request, locals}) => {
+    signup: async ({ request, locals }) => {
         const formData = await request.formData();
         const email = formData.get('email') + "";
         const password = formData.get('password') + "";
@@ -64,7 +67,7 @@ export const actions: Actions = {
                 body: 'Missing email or password'
             };
         }
-        
+
         const user = await locals.sb.auth.signUp({ email, password })
         if (!user) {
             return {
@@ -72,15 +75,16 @@ export const actions: Actions = {
                 body: 'User not found'
             };
         }
+        va.track('Signup', { email: email, method: 'email' });
         throw redirect(300, '/checkemail')
-        
-        
+
+
     },
 
 
-  logout: async ({ locals}) => {
-    const error = await locals.sb.auth.signOut();
-    throw redirect(303, '/')
-}
-    
+    logout: async ({ locals }) => {
+        const error = await locals.sb.auth.signOut();
+        throw redirect(303, '/')
+    }
+
 };
