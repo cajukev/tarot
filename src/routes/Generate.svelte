@@ -20,6 +20,7 @@
 	import { secrets } from '$lib/secrets';
 	import { unlocks } from '$lib/unlocks';
 	import { getTokenCost } from '$lib/utils';
+	import va from '@vercel/analytics';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -154,7 +155,7 @@
 			$flippedCardsStore =
 				readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
 		}
-
+		va.track('Draw');
 		fetch('/api/draw', {
 			method: 'POST',
 			headers: {
@@ -206,7 +207,7 @@
 	};
 
 	let getReading = () => {
-
+		va.track('GetReading');
 		fetch('/api/tarotreading', {
 			method: 'POST',
 			headers: {

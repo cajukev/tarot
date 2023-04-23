@@ -25,7 +25,6 @@ export const actions: Actions = {
                 body: 'User not found'
             };
         }
-        va.track('Login', { email: email, method: 'email' });
         throw redirect(300, '/checkemail')
 
     },
@@ -47,7 +46,6 @@ export const actions: Actions = {
             const user = await locals.sb.auth.signUp({ email, password })
 
         } else {
-            va.track('Login', { email: email, method: 'password' });
             throw redirect(300, '/')
         }
         return {
@@ -75,7 +73,6 @@ export const actions: Actions = {
                 body: 'User not found'
             };
         }
-        va.track('Signup', { email: email, method: 'email' });
         throw redirect(300, '/checkemail')
 
 
