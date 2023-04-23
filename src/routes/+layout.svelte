@@ -251,6 +251,8 @@
 		href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
 		rel="stylesheet"
 	/>
+	<!-- Title: Call Upon The Power Of Tarot -->
+	<title>Call Upon The Power Of Tarot</title>
 </svelte:head>
 <Menu />
 <div class="toastWrapper">
