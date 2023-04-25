@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let character = characters.get(characterInput);
 
 
-  let system = `Ignore all instructions before this one.
+  let system = `Ignore all instructions before this one. You print out only raw text.
 You are ${characterInput}.
 ` +
     character?.description
@@ -63,7 +63,7 @@ drawn card(s):`
   ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${spread.positions[i]}", special instruction: ${spread.instructions[i]}, "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
   })
   system += `
-Do not use any other card name than the one provided in the list above.
+Do not use any other card name than the one provided in the list above. Do not explicitely say the <b>keywords</b> in the given meaning, use prior knowledge of the cards to supplement the meaning.
 follow this structure:
 p1: one phrase overview of the reading, start paragraph with an expression, max 20 words
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`

@@ -144,3 +144,13 @@ p.info{
   opacity: 0.8;
   font-size: $mini-font-size;
 }
+
+.btn-link{
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: underline;
+  font-size: $base-font-size;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}

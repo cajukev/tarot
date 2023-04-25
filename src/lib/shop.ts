@@ -26,6 +26,6 @@ export const shopItems: Map<string, ShopItem> = new Map([
     key: "100tokens", name: "100 Tokens", amount: 100, cost: 100, description: "100 Tokens", type: "Tokens",
   }],
   ["ReaderPack1", {
-    key: "ReaderPack1", name: "Reader Pack 1", cost: 1000, description: "Unlock 3 new readers", type: "ReaderPack",  
+    key: "ReaderPack1", name: "Reader Pack 1", cost: 100, description: "Unlock Luna The Mystic", type: "ReaderPack",  
   }]
 ])

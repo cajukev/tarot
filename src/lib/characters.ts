@@ -110,7 +110,7 @@ Expressions: Juniper frequently employs nature-inspired expressions to convey he
         "With the ebb and flow of life's currents..."
       ],
       model: 'gpt-4',
-      temperature: 0.8,
+      temperature: 1,
       publicDescription: `Juniper is a gentle and wise tarot reader who finds solace and meaning in nature. Drawing upon the ancient wisdom of the earth, she has honed her skills in the art of Tarot through years of deep contemplation and communion with the natural world. As a spiritual guardian of the forest, Juniper has formed a strong bond with the trees and animals that surround her, learning from their quiet wisdom and sharing it with those who seek her guidance.`,
       imageCreator: 'Midjourney',
       pack: 'unlock'
@@ -228,7 +228,7 @@ Mystic Luna often uses lunar imagery and metaphors to convey their messages. Whe
 "With the grace of the moon's eternal dance..."
     ],
       model: 'gpt-4',
-      temperature: 0.5,
+      temperature: 1,
       publicDescription: `Mystic Luna is a tarot reader who uses the moon's influence to reveal profound insights into the lives of their clients. They offer guidance on how to work with lunar energies for personal growth and transformation.`,
       imageCreator: 'Midjourney',
       pack: 'ReaderPack1'

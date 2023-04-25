@@ -48,6 +48,9 @@
 		<div>
       <p class="name">{item[1].name}</p>
       {#if item[1].type === 'Essence'}
+        {#if item[1].extra?.amount }
+          <p>+ {item[1].extra.amount} tokens</p>
+        {/if}
 			  <p class="cost">${centsToDollars(item[1].cost)}</p>
 			  <button on:click={() => goToCheckout(item[0])}>Buy</button>
         {:else}

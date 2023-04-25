@@ -243,9 +243,7 @@
 		)?.positions.map(() => false) || [];
 	};
 
-	let selectCharacter = (character: string) => {
-		$readingStore.character = character;
-	};
+	
 
 	let navigateToCustomSpreads = () => {
 		$menuStateStore = { value: 5, change: true };
@@ -311,51 +309,6 @@
 <div class="container">
 	<div class={'input ' + (innerState !== 1 ? 'hidden' : '')}>
 		<div class="setup">
-			<div class="optionSelectWrapper">
-				<p>Choose a reader</p>
-				<div class="optionSelect character">
-					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						{#if character.character.pack === 'default' || 
-						character.character.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0) ||
-						character.character.pack === 'ReaderPack1' && $page.data.profile?.data.bought_items.includes('ReaderPack1')}
-							<button
-								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
-								on:click={() => selectCharacter(character.character.name)}
-								on:keydown={(event) => {
-									if (event.key === 'Enter') selectCharacter(character.character.name);
-								}}
-							>
-								<div class="imgWrapper">
-									<img src="/options/{character.character.name}-300.webp" alt="" />
-								</div>
-								<div class="optionText">
-									<p><b>{character.character.name}</b></p>
-									<p><i>{character.character.title}</i></p>
-								</div>
-							</button>
-						{:else}
-							<button
-								class="option lockedOption"
-								on:click={() => $menuStateStore = { value: 2, change: true }}
-								on:keydown={(event) => {
-									if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
-								}}
-							>
-								<div class="imgWrapper">
-									<img src="/options/Lock.svg" alt="" />
-								</div>
-								<div class="optionText">
-									<p><b>{character.character.name}</b></p>
-									<p><i>{character.character.title}</i></p>
-								</div>
-							</button>
-						{/if}
-					{/each}
-				</div>
-			</div>
-
-			<div class="separator" />
-			
 			<div class="optionSelectWrapper">
 				<p>Choose a spread</p>
 				<div class="optionSelect spread">

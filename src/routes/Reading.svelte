@@ -13,6 +13,7 @@
 	} from '../stores';
 	import type { CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
+	import { unlocks } from '$lib/unlocks';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -39,6 +40,11 @@
 		state = 1;
 		document.body.scrollIntoView();
 	};
+	let reset = () => {
+		actionState = 0;
+		$readingStore.ready = false;
+		$readingStore.conclusion = "";
+	}
 	let _getCardImgName = (name: string) => {
 		return name.replace(/ /g, '_').replace(/'/g, '');
 	};
@@ -72,12 +78,15 @@
 			currentCard = card;
 		}, 250);
 	};
+
+	let selectCharacter = (character: string) => {
+		$readingStore.character = character;
+	};
 	
 </script>
 
 <div class="reading">
 	<div class="header">
-		<button class="restart" on:click={() => restart()}>Restart</button>
 		<h2>"{$readingStore.question}"</h2>
 		<p class="info">Energy: {$readingStore.energy}</p>
 	</div>
@@ -146,6 +155,48 @@
 	</p>
 	{#if actionState}
 		<div transition:fade>
+			<div class="optionSelectWrapper">
+				<p>Choose a reader</p>
+				<div class="optionSelect character">
+					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
+						{#if character.character.pack === 'default' || 
+						character.character.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0) ||
+						character.character.pack === 'ReaderPack1' && $page.data.profile?.data.bought_items.includes('ReaderPack1')}
+							<button
+								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
+								on:click={() => selectCharacter(character.character.name)}
+								on:keydown={(event) => {
+									if (event.key === 'Enter') selectCharacter(character.character.name);
+								}}
+							>
+								<div class="imgWrapper">
+									<img src="/options/{character.character.name}-300.webp" alt="" />
+								</div>
+								<div class="optionText">
+									<p><b>{character.character.name}</b></p>
+									<p><i>{character.character.title}</i></p>
+								</div>
+							</button>
+						{:else}
+							<button
+								class="option lockedOption"
+								on:click={() => $menuStateStore = { value: 2, change: true }}
+								on:keydown={(event) => {
+									if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
+								}}
+							>
+								<div class="imgWrapper">
+									<img src="/options/Lock.svg" alt="" />
+								</div>
+								<div class="optionText">
+									<p><b>{character.character.name}</b></p>
+									<p><i>{character.character.title}</i></p>
+								</div>
+							</button>
+						{/if}
+					{/each}
+				</div>
+			</div>
 			{#if tokenCost <= $page.data.profile.data.tokens}
 				<div>
 					<button class="startReading" on:click={() => startReading()}>
@@ -176,7 +227,13 @@
 	</p>
 	{/if}
 	<p class="conclusion">{@html $readingStore.conclusion.trim()}</p>
-	<button class="restart bottom" on:click={() => restart()}>Restart</button>
+	<div class="actions">
+		<button class="btn-link" on:click={() => restart()}>Restart</button>
+		{#if !actionState }
+			<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+		{/if}
+
+	</div>
 </div>
 
 <div>
@@ -199,17 +256,11 @@
 				}
 			}
 		}
-		.restart {
-			background: none;
-			border: none;
-			color: white;
-			text-decoration: underline;
-			font-size: $base-font-size;
-			margin-bottom: 1rem;
-			cursor: pointer;
-			&.bottom {
-				margin-top: 1rem;
-			}
+		.actions {
+			margin-top: 2rem;
+			display: flex;
+			justify-content: center;
+			gap: 1rem;
 		}
 		.cards {
 			// display: grid;
@@ -340,5 +391,175 @@
 			transform: scale(1) rotatex(180deg) rotateY(180deg);
 		}
 	}
+
+	.optionSelectWrapper {
+			> p {
+				font-size: $h4-font-size;
+			}
+			& .optionSelect {
+				max-width: 100vw;
+				overflow: auto;
+				display: inline-flex;
+				gap: 1rem;
+				padding: 1rem;
+				&::-webkit-scrollbar {
+					display: none;
+				}
+				.option {
+					color: white;
+					font-size: $base-font-size;
+					font-family: $other-font;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: start;
+					padding: 1rem 1rem;
+					width: min-content;
+					background: rgba($color: #000000, $alpha: 0.2);
+					border-radius: 1rem;
+					outline: none;
+					border: 1px solid transparent;
+					cursor: pointer;
+					transition: all 0.2s ease;
+					&::-webkit-scrollbar {
+						display: none;
+					}
+					.imgWrapper {
+						width: min(30vw, 6rem);
+						aspect-ratio: 1/1;
+						overflow: hidden;
+						border-radius: 1rem;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						img {
+							transition: all 1s ease;
+						}
+					}
+					&:hover {
+						background-color: rgba($color: #000000, $alpha: 0.4);
+						& img {
+							transform: scale(1.05);
+						}
+					}
+					&.active {
+						background-color: rgba($color: #000000, $alpha: 0.8);
+						border: 1px solid #ffffff2c;
+						& img {
+							transform: scale(1.1);
+						}
+					}
+					&:focus {
+						border: 1px solid white;
+					}
+					& .optionText {
+						margin-top: 0.5rem;
+					}
+					&.customOption {
+						position: relative;
+						&:hover {
+							& .delete {
+								opacity: 1;
+								pointer-events: all;
+							}
+						}
+						&:focus {
+							& .delete {
+								opacity: 1;
+								pointer-events: all;
+							}
+						}
+						& .delete {
+							position: absolute;
+							bottom: 0;
+							transform: translateY(50%);
+							width: 100%;
+							background-color: red;
+							border-radius: 0 0 1rem 1rem;
+							border: none;
+							font-family: $other-font;
+							font-size: $base-font-size;
+							opacity: 0;
+							pointer-events: none;
+							transition: all 0.25s ease;
+							&:hover {
+								background-color: #be0000;
+								cursor: pointer;
+							}
+							&:focus {
+								opacity: 1;
+								pointer-events: all;
+								outline: 1px solid white;
+							}
+						}
+					}
+				}
+				.lockedOption {
+					color: white;
+					font-size: $base-font-size;
+					font-family: $other-font;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: start;
+					padding: 1rem 1rem;
+					width: min-content;
+					background: rgba($color: #000000, $alpha: 0.2);
+					border-radius: 1rem;
+					outline: none;
+					border: 1px solid transparent;
+					cursor: pointer;
+					transition: all 0.2s ease;
+					&::-webkit-scrollbar {
+						display: none;
+					}
+					.imgWrapper {
+						width: min(30vw, 6rem);
+						aspect-ratio: 1/1;
+						overflow: hidden;
+						border-radius: 0;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						img {
+							transition: all 1s ease;
+						}
+					}
+					&:hover {
+						background-color: rgba($color: #000000, $alpha: 0.4);
+						& img {
+							transform: scale(1.05);
+						}
+					}
+					&:focus {
+						border: 1px solid white;
+					}
+					& .optionText {
+						margin-top: 0.5rem;
+					}
+				}
+			}
+		}
+		.character {
+			& .option:not(.lockedOption) {
+				& .imgWrapper {
+					&.active {
+						border: 1px solid #ffffff;
+					}
+					& img {
+						width: 100%;
+					}
+				}
+			}
+		}
+		.lockedOption {
+			& .imgWrapper {
+				& img {
+					width: 60%;
+				}
+			}
+		}
+	
+	
 	
 </style>
