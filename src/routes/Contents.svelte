@@ -2,7 +2,7 @@
 	import { menuStateStore } from '../stores';
 	import Progression from './Progression.svelte';
 	import Collection from './Collection.svelte';
-	import CustomScenarios from './CustomScenarios.svelte';
+	import CustomSpreads from './CustomSpreads.svelte';
 	import Achievements from './Achievements.svelte';
 	import Shop from './Shop.svelte';
 	import Readers from './Readers.svelte';
@@ -15,7 +15,7 @@
 	// 2: Progression
   // 3: Achievements
 	// 4: Readers
-	// 5: Custom Scenarios
+	// 5: Custom Spreads
 	// 6: Shop
 	$: if ($menuStateStore.change){
 		contents.scrollIntoView();
@@ -28,7 +28,7 @@
 		{ name: 'Progression', component: Progression },
 		{ name: 'Achievements', component: Achievements },
 		{ name: 'About Readers', component: Readers },
-		{ name: 'Custom Scenarios', component: CustomScenarios },
+		{ name: 'Custom Spreads', component: CustomSpreads },
 		{ name: 'Shop', component: Shop }
 	];
 
@@ -67,7 +67,7 @@
           >
           <button
             on:click={() => (menuValue = 5)}
-            class={menuValue === 5 ? 'active' : ''}>Custom Scenarios</button
+            class={menuValue === 5 ? 'active' : ''}>Custom Spreads</button
           >
           <button
             on:click={() => (menuValue = 6)}

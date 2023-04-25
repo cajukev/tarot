@@ -20,8 +20,8 @@
 					{#if unlock[1].type === 'card'}
 						Card deck
 					{/if}
-					{#if unlock[1].type === 'scenario'}
-						Scenario
+					{#if unlock[1].type === 'spread'}
+						Spread
 					{/if}
 					{#if unlock[1].type === 'reader'}
 						Reader
@@ -35,7 +35,7 @@
 						{#if unlock[1].type === 'card'}
 							<img src={'/cards/Ace_of_' + unlock[0] + '-120.webp'} alt={unlock[1].name} />
 						{/if}
-						{#if unlock[1].type === 'scenario'}
+						{#if unlock[1].type === 'spread'}
 							<img src={'/options/' + unlock[0] + '.png'} alt={unlock[1].name} />
 						{/if}
 						{#if unlock[1].type === 'reader'}

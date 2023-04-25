@@ -52,7 +52,7 @@
 			...achievements,
 			...(objToMap(data.profile!.data.achievements) || [])
 		]);
-		console.log('userAchievements', userAchievements, achievements);
+		// console.log('userAchievements', userAchievements, achievements);
 		if (userAchievements.size !== achievements.size) {
 			updateAchievements();
 		}

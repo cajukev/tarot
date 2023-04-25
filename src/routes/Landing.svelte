@@ -90,11 +90,11 @@
 
 The first card I've drawn for you is the <b>Magician</b>. This card hints at the transformative potential of this website. By embracing the tarot's guidance, you can gain valuable insights and discover new perspectives that may help you navigate through life's challenges. The Magician's presence indicates that the tools and resources offered by this website can truly empower you on your personal journey.
 
-Next up is the <b>Wheel of Fortune</b>. This card represents the cycles of life and the many opportunities that come with them. The website offers a dynamic and engaging experience, inviting you to dive deeper into the world of tarot. By exploring the various scenarios and unlocking additional card packs, you'll find that the website is constantly evolving, providing you with fresh insights and new ways to grow and learn.
+Next up is the <b>Wheel of Fortune</b>. This card represents the cycles of life and the many opportunities that come with them. The website offers a dynamic and engaging experience, inviting you to dive deeper into the world of tarot. By exploring the various spreads and unlocking additional card packs, you'll find that the website is constantly evolving, providing you with fresh insights and new ways to grow and learn.
 
 Finally, we have the <b>High Priestess</b>. She is a symbol of intuition and mystery, reminding us that there's more to the website than meets the eye. Through deciphering the secret variables that determine the energy associated with your questions, you can unlock a deeper understanding of the tarot and your own inner wisdom. The High Priestess invites you to trust your instincts and delve into the enigmatic aspects of this website.
 
-Peeking into the cards' wisdom, it's clear that this website offers an engaging and enlightening experience. With the power of AI-driven tarot readings, a wealth of scenarios, and hidden secrets to uncover, you'll find a dynamic and enriching journey ahead. So, my friend, let's embrace the tarot's guidance and unlock its mysteries together.`;
+Peeking into the cards' wisdom, it's clear that this website offers an engaging and enlightening experience. With the power of AI-driven tarot readings, a wealth of spreads, and hidden secrets to uncover, you'll find a dynamic and enriching journey ahead. So, my friend, let's embrace the tarot's guidance and unlock its mysteries together.`;
 
 	let landingTextArray = landingText.split(' ');
 

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import characters from '$lib/characters';
-	import readingScenarios from '$lib/readingScenarios';
+	import readingSpreads from '$lib/readingSpreads';
 	import { getTokenCost, objToMap } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import {
 		readingStore,
 		flippedCardsStore,
-		customScenariosStore,
+		customSpreadsStore,
 		achievementsStore,
 		menuStateStore
 	} from '../stores';
@@ -88,10 +88,10 @@
 		{#each new Array($flippedCardsStore?.length) as card, i}
 			<div>
 				<p class="text-center">
-					{(readingScenarios.get($readingStore.setting)?.positions &&
-						readingScenarios.get($readingStore.setting)?.positions[i]) ||
+					{(readingSpreads.get($readingStore.setting)?.positions &&
+						readingSpreads.get($readingStore.setting)?.positions[i]) ||
 						''}
-					{$customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)
+					{$customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
 						?.positions[i] || ''}
 				</p>
 				<div class="stacked">

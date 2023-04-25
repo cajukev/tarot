@@ -2,7 +2,7 @@
 	import type { CollectionCard } from '$lib/cards';
 	import { cards } from '$lib/cards';
 	import { energyGrid, energyMap } from '$lib/energies';
-	import readingScenarios from '$lib/readingScenarios';
+	import readingSpreads from '$lib/readingSpreads';
 	import { onMount } from 'svelte';
 	import characters from '$lib/characters';
 	import {
@@ -11,7 +11,7 @@
 		flippedCardsStore,
 		collectionStore,
 		menuStateStore,
-		customScenariosStore,
+		customSpreadsStore,
 		achievementsStore
 	} from '../stores';
 	import { goto, invalidateAll } from '$app/navigation';
@@ -39,7 +39,7 @@
 
 	$: if($page.data.profile.data){
 		console.log('profile data', $page.data.profile.data);
-		$customScenariosStore = $page.data.profile.data.custom_scenarios || [];
+		$customSpreadsStore = $page.data.profile.data.custom_spreads || [];
 	}
 
 	$: if($readingStore.ready){
@@ -49,10 +49,10 @@
 	// let tokenCost = 0;
 	// $: {
 	// 	let nbCards = 0;
-	// 	if (readingScenarios.get($readingStore.setting)) {
-	// 		nbCards = readingScenarios.get($readingStore.setting)!.positions.length;
-	// 	}else if ($customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)){
-	// 		nbCards = $customScenariosStore.find((scenario) => scenario.name === $readingStore.setting)!.positions.length
+	// 	if (readingSpreads.get($readingStore.setting)) {
+	// 		nbCards = readingSpreads.get($readingStore.setting)!.positions.length;
+	// 	}else if ($customSpreadsStore.find((spread) => spread.name === $readingStore.setting)){
+	// 		nbCards = $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)!.positions.length
 	// 	}else{
 	// 		// Deleted selected custom setting
 	// 		$readingStore.setting = 'qa';
@@ -145,15 +145,15 @@
 			energyMap.get(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)?.value || '';
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
-		// Check if custom scenario
-		const customScenario = $customScenariosStore.find(
-			(scenario) => scenario.name === $readingStore.setting
+		// Check if custom spread
+		const customSpread = $customSpreadsStore.find(
+			(spread) => spread.name === $readingStore.setting
 		);
-		if (customScenario) {
-			$flippedCardsStore = customScenario.positions.map((pos) => false);
+		if (customSpread) {
+			$flippedCardsStore = customSpread.positions.map((pos) => false);
 		} else {
 			$flippedCardsStore =
-				readingScenarios.get($readingStore.setting)?.positions.map((pos) => false) || [];
+				readingSpreads.get($readingStore.setting)?.positions.map((pos) => false) || [];
 		}
 		va.track('Draw');
 		fetch('/api/draw', {
@@ -164,8 +164,8 @@
 			body: JSON.stringify({
 				reading: $readingStore,
 				collectionDecks: $collectionStore,
-				customScenario: $customScenariosStore.find(
-					(scenario) => scenario.name === $readingStore.setting
+				customSpread: $customSpreadsStore.find(
+					(spread) => spread.name === $readingStore.setting
 				),
 				// tokenCost: tokenCost
 			})
@@ -215,8 +215,8 @@
 			},
 			body: JSON.stringify({
 				reading: $readingStore,
-				customScenario: $customScenariosStore.find(
-					(scenario) => scenario.name === $readingStore.setting
+				customSpread: $customSpreadsStore.find(
+					(spread) => spread.name === $readingStore.setting
 				),
 				tokenCost: tokenCost
 			})
@@ -238,8 +238,8 @@
 
 	let selectOption = (option: string) => {
 		$readingStore.setting = option;
-		$flippedCardsStore = readingScenarios.get(option)?.positions.map(() => false) || $customScenariosStore.find(
-			(scenario) => scenario.name === option
+		$flippedCardsStore = readingSpreads.get(option)?.positions.map(() => false) || $customSpreadsStore.find(
+			(spread) => spread.name === option
 		)?.positions.map(() => false) || [];
 	};
 
@@ -247,19 +247,19 @@
 		$readingStore.character = character;
 	};
 
-	let navigateToCustomScenarios = () => {
+	let navigateToCustomSpreads = () => {
 		$menuStateStore = { value: 5, change: true };
 	};
 
-	let deleteCustomScenario = (name: string) => {
-		$customScenariosStore = $customScenariosStore.filter((scenario) => scenario.name !== name);
-		fetch("/api/updateCustomScenarios", {
+	let deleteCustomSpread = (name: string) => {
+		$customSpreadsStore = $customSpreadsStore.filter((spread) => spread.name !== name);
+		fetch("/api/updateCustomSpreads", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        customScenarios: $customScenariosStore
+        customSpreads: $customSpreadsStore
       }
       ),
     })
@@ -315,7 +315,9 @@
 				<p>Choose a reader</p>
 				<div class="optionSelect character">
 					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						{#if !unlocks.get(character.character.name) || $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0)}
+						{#if character.character.pack === 'default' || 
+						character.character.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0) ||
+						character.character.pack === 'ReaderPack1' && $page.data.profile?.data.bought_items.includes('ReaderPack1')}
 							<button
 								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
 								on:click={() => selectCharacter(character.character.name)}
@@ -355,22 +357,22 @@
 			<div class="separator" />
 			
 			<div class="optionSelectWrapper">
-				<p>Choose a scenario</p>
-				<div class="optionSelect scenario">
-					{#each Array.from(readingScenarios).map( ([name, setting]) => ({ name, setting }) ) as scenario}
-					{#if !unlocks.get(scenario.name) || $page.data.profile?.data.experience >= (unlocks.get(scenario.name)?.exp || 0)}
+				<p>Choose a spread</p>
+				<div class="optionSelect spread">
+					{#each Array.from(readingSpreads).map( ([name, setting]) => ({ name, setting }) ) as spread}
+					{#if !unlocks.get(spread.name) || $page.data.profile?.data.experience >= (unlocks.get(spread.name)?.exp || 0)}
 					<button
-						class={'option ' + ($readingStore?.setting === scenario.name ? 'active' : '')}
-						on:click={() => selectOption(scenario.name)}
+						class={'option ' + ($readingStore?.setting === spread.name ? 'active' : '')}
+						on:click={() => selectOption(spread.name)}
 						on:keydown={(event) => {
-							if (event.key === 'Enter') selectOption(scenario.name);
+							if (event.key === 'Enter') selectOption(spread.name);
 						}}
 					>
 						<div class="imgWrapper">
-							<img src="/options/{scenario.name}.png" alt="" />
+							<img src="/options/{spread.name}.png" alt="" />
 						</div>
 						<div class="optionText">
-							<p>{scenario.setting.name}</p>
+							<p>{spread.setting.name}</p>
 						</div>
 					</button>
 					{:else}
@@ -385,28 +387,28 @@
 							<img src="/options/Lock.svg" alt="" />
 						</div>
 						<div class="optionText">
-							<p>{scenario.setting.name}</p>
+							<p>{spread.setting.name}</p>
 						</div>
 					</button>
 
 					{/if}
 					{/each}
-					{#each $customScenariosStore as scenario}
+					{#each $customSpreadsStore as spread}
 						<button
 							class={'option customOption ' +
-								($readingStore?.setting === scenario.name ? 'active' : '')}
-							on:click={() => selectOption(scenario.name)}
+								($readingStore?.setting === spread.name ? 'active' : '')}
+							on:click={() => selectOption(spread.name)}
 							on:keydown={(event) => {
-								if (event.key === 'Enter') selectOption(scenario.name);
+								if (event.key === 'Enter') selectOption(spread.name);
 							}}
 						>
 							<div class="imgWrapper">
 								<img src="/options/custom.png" alt="" />
 							</div>
 							<div class="optionText">
-								<p>{scenario.name}</p>
+								<p>{spread.name}</p>
 							</div>
-							<button class="delete" on:click={() => deleteCustomScenario(scenario.name)}>
+							<button class="delete" on:click={() => deleteCustomSpread(spread.name)}>
 								<p>Delete</p>
 							</button>
 						</button>
@@ -414,16 +416,16 @@
 					{#if !unlocks.get('custom') || $page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)}
 						<button
 							class="option"
-							on:click={() => navigateToCustomScenarios()}
+							on:click={() => navigateToCustomSpreads()}
 							on:keydown={(event) => {
-								if (event.key === 'Enter') navigateToCustomScenarios();
+								if (event.key === 'Enter') navigateToCustomSpreads();
 							}}
 						>
 							<div class="imgWrapper">
 								<img src="/options/Add.png" alt="" />
 							</div>
 							<div class="optionText">
-								<p>Add Custom Scenarios</p>
+								<p>Add Custom Spreads</p>
 							</div>
 						</button>
 					{:else}
@@ -438,7 +440,7 @@
 								<img src="/options/Lock.svg" alt="" />
 							</div>
 							<div class="optionText">
-								<p>Add Custom Scenarios</p>
+								<p>Add Custom Spreads</p>
 							</div>
 						</button>
 					{/if}
@@ -739,7 +741,7 @@
 				}
 			}
 		}
-		& .scenario {
+		& .spread {
 			& .option {
 				& .imgWrapper {
 					& img {

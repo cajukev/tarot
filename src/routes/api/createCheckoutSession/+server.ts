@@ -40,8 +40,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       ],
       metadata: {
         profileId: profileData.data!.id,
-        tokenAmount: shopItem!.amount,
+        essenceAmount: shopItem!.amount,
         amountPaid: shopItem!.cost,
+        extra: shopItem!.extra?.amount || 0,
       },
       payment_method_types: [
         'card',

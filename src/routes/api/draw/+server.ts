@@ -1,5 +1,5 @@
 import { openai } from "$lib/openai";
-import readingScenarios, { type ReadingScenarioType } from "$lib/readingScenarios";
+import readingSpreads, { type ReadingSpreadType } from "$lib/readingSpreads";
 import type { RequestHandler } from "@sveltejs/kit";
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
 import type { CollectionCard, CollectionDeck } from "$lib/cards";
@@ -11,17 +11,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const formData: {
     reading: ReadingType;
     collectionDecks: CollectionDeck[];
-    customScenario: ReadingScenarioType;
+    customSpread: ReadingSpreadType;
     // tokenCost: number;
   } = await request.json();
   
 
   let setting = formData.reading.setting!;
-  let scenario: ReadingScenarioType;
-  if(formData.customScenario){
-    scenario = formData.customScenario;
+  let spread: ReadingSpreadType;
+  if(formData.customSpread){
+    spread = formData.customSpread;
   }else{
-    scenario = readingScenarios.get(setting)!;
+    spread = readingSpreads.get(setting)!;
   }
   let energy = formData.reading.energy || "";
   let question = formData.reading.question || "No question";
@@ -88,7 +88,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   // Shuffle the cards
   energyCards = energyCards.sort(() => Math.random() - 0.5)
   otherCards = otherCards.sort(() => Math.random() - 0.5)
-  let cards = energyCards.concat(otherCards).slice(0, scenario?.positions.length).sort(() => Math.random() - 0.5);
+  let cards = energyCards.concat(otherCards).slice(0, spread?.positions.length).sort(() => Math.random() - 0.5);
   console.log('cards', energyCards, cards)
   return new Response(
     JSON.stringify({

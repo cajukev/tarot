@@ -1,11 +1,11 @@
-export type ReadingScenarioType = {
+export type ReadingSpreadType = {
   key?: string;
   name: string;
   positions: string[];
   instructions: string[];
 };
 
-export default new Map<string, ReadingScenarioType>([
+export default new Map<string, ReadingSpreadType>([
   ["qa", {
     key: "qa",
     name: "Question & Answer",

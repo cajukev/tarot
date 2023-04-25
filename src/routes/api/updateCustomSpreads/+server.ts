@@ -1,12 +1,12 @@
-import type { Actions } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import type { Actions, RequestHandler } from "@sveltejs/kit";
+
 
 export const POST: RequestHandler = async ({ request, locals }) => {
     const formData = await request.json();
     const response = await locals.sb
       .from("Profile")
       .update({
-        custom_scenarios: formData.customScenarios,
+        custom_spreads: formData.customSpreads,
       })
       .eq("id", locals.session?.user?.id)
       .then((response) => {

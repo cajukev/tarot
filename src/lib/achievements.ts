@@ -18,9 +18,9 @@ export const achievements: Map<string, Achievement> = new Map([
   }],
   ["ReadingWith3Preset", {
     name: "Learning the Basics",
-    description: "Completed a reading with all three preset scenarios",
+    description: "Completed a reading with all three preset spreads",
     progress: [],
-    progressType: "scenarios",
+    progressType: "spreads",
     experience: 50,
     completed: false
   }],

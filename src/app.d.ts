@@ -24,8 +24,10 @@ declare global {
 						description: string
 						experience: number
 					}[]
-					custom_scenarios: any[]
-					tokens: number
+					custom_spreads: any[]
+					tokens: number,
+					essence: number,
+					bought_items: string[],
 				}
 			}
 		}
