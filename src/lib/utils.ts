@@ -27,16 +27,16 @@ export let getTokenCost = (nbCards: number, model: string) => {
 	let modelMultiplier = 0;
 	switch (model) {
 		case 'gpt-3.5-turbo':
-			modelCost = 0.75;
-			modelMultiplier = 0.25;
+			modelCost = 1;
+			modelMultiplier = 0.5;
 			break;
 		case 'gpt-4':
-			modelCost = 4;
-			modelMultiplier = 1;
+			modelCost = 20;
+			modelMultiplier = 10;
 			break;
 	}
 
-	return (nbCards * modelMultiplier + modelCost);
+	return ((nbCards-1) * modelMultiplier + modelCost);
 }
 
 export let centsToDollars = (cents: number) => {

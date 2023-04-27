@@ -50,6 +50,8 @@ declare global {
 		energy: string,
 		setting: string,
 		character: string,
-		ready?: boolean | false
+		ready?: boolean | false,
+		incomplete?: boolean | false,
+		cardback: string,
 	}
 }

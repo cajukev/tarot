@@ -11,6 +11,7 @@ export type CollectionDeck = {
     abbrv: string;
     cards: CollectionCard[];
     available: boolean;
+    pack?: string
 };
 
 export const cards = new Map<string, CollectionDeck>([
@@ -248,7 +249,7 @@ export const cards = new Map<string, CollectionDeck>([
         {
             "name": "Suit of Wands",
             "abbrv": "Wands",
-            "available": true,
+            "available": false,
             "cards": [
                 {
                     "name": "Ace of Wands",
@@ -396,7 +397,7 @@ export const cards = new Map<string, CollectionDeck>([
         {
             "name": "Suit of Cups",
             "abbrv": "Cups",
-            "available": true,
+            "available": false,
             "cards": [
                 {
                     "name": "Ace of Cups",
@@ -544,7 +545,7 @@ export const cards = new Map<string, CollectionDeck>([
         {
             "name": "Suit of Swords",
             "abbrv": "Swords",
-            "available": true,
+            "available": false,
             "cards": [
                 {
                     "name": "Ace of Swords",
@@ -692,7 +693,7 @@ export const cards = new Map<string, CollectionDeck>([
         {
             "name": "Suit of Pentacles",
             "abbrv": "Pentacles",
-            "available": true,
+            "available": false,
             cards: [
                 {
                     "name": "Ace of Pentacles",
@@ -840,7 +841,7 @@ export const cards = new Map<string, CollectionDeck>([
         {
             "name": "Suit of Svelte",
             "abbrv": "Svelte",
-            "available": true,
+            "available": false,
             "cards": [
                 {
                     "name": "Simplicity of Svelte",
@@ -872,7 +873,193 @@ export const cards = new Map<string, CollectionDeck>([
                     "meaning": "The Reactivity of Svelte represents <b>Creativity</b> and <b>Adaptability</b>, symbolizing the ability to adapt to changing circumstances and the importance of maintaining an open mind.",
                     "reversedMeaning": "In reverse, the Reactivity of Svelte signifies <b>Restriction</b> and <b>Resistance</b>, indicating difficulty adapting to change or an unwillingness to consider new ideas."
                 }]
-        }]
+        }],
+    ["Crystal Vision",
+        {
+            "name": "Crystal Vision",
+            "abbrv": "Crystal",
+            "available": false,
+            "cards": [
+                {
+                    "name": "Clear Quartz",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Clarity", "Energy"],
+                        "reversed": ["Confusion", "Blocked emotions"]
+                    },
+                    "meaning": "The Clear Quartz represents <b>Clarity</b> and <b>Energy</b>, symbolizing mental focus and the ability to amplify and manifest intentions.",
+                    "reversedMeaning": "In reverse, the Clear Quartz signifies <b>Confusion</b> and <b>Blocked emotions</b>, indicating mental cloudiness and the need to clear emotional blockages."
+                },
+                {
+                    "name": "Green Aventurine",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Growth", "Luck"],
+                        "reversed": ["Missed opportunity", "Stagnation"]
+                    },
+                    "meaning": "The Green Aventurine represents <b>Growth</b> and <b>Luck</b>, symbolizing new beginnings, opportunities, and positive change.",
+                    "reversedMeaning": "In reverse, the Green Aventurine signifies <b>Missed opportunity</b> and <b>Stagnation</b>, indicating a lack of progress and potential unexplored paths."
+                },
+                {
+                    "name": "Black Tourmaline",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Protection", "Grounding"],
+                        "reversed": ["Fear", "Negativity"]
+                    },
+                    "meaning": "The Black Tourmaline represents <b>Protection</b> and <b>Grounding</b>, symbolizing the ability to shield oneself from negative energies and remain balanced.",
+                    "reversedMeaning": "In reverse, the Black Tourmaline signifies <b>Fear</b> and <b>Negativity</b>, indicating vulnerability to external influences and the need to strengthen personal boundaries."
+                },
+                {
+                    "name": "Sodalite",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Communication", "Intuition"],
+                        "reversed": ["Gossip", "Dishonesty"]
+                    },
+                    "meaning": "The Sodalite represents <b>Communication</b> and <b>Intuition</b>, symbolizing the importance of self-expression and trusting one's inner voice.",
+                    "reversedMeaning": "In reverse, the Sodalite signifies <b>Gossip</b> and <b>Dishonesty</b>, indicating a need for clearer communication and truthfulness in interactions."
+                },
+                {
+                    "name": "Rose Quartz",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Love", "Compassion"],
+                        "reversed": ["Blocked emotions", "Insecurity"]
+                    },
+                    "meaning": "The Rose Quartz represents <b>Love</b> and <b>Compassion</b>, symbolizing the importance of nurturing relationships, self-love, and emotional healing.",
+                    "reversedMeaning": "In reverse, the Rose Quartz signifies <b>Blocked emotions</b> and <b>Insecurity</b>, indicating a need for self-care and emotional expression."
+                },
+                {
+                    "name": "Lapis Lazuli",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Wisdom", "Spiritual guidance"],
+                        "reversed": ["Dogmatism", "Illusion"]
+                    },
+                    "meaning": "The Lapis Lazuli represents <b>Wisdom</b> and <b>Spiritual guidance</b>, symbolizing the importance of seeking deeper understanding and trusting one's inner truth.",
+                    "reversedMeaning": "In reverse, the Lapis Lazuli signifies <b>Dogmatism</b> and <b>Illusion</b>, indicating a need for open-mindedness and self-reflection."
+                },
+                {
+                    "name": "Citrine",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Abundance", "Manifestation"],
+                        "reversed": ["Greed", "Lack of motivation"]
+                    },
+                    "meaning": "The Citrine represents <b>Abundance</b> and <b>Manifestation</b>, symbolizing the potential for prosperity and the power to create desired outcomes.",
+                    "reversedMeaning": "In reverse, the Citrine signifies <b>Greed</b> and <b>Lack of motivation</b>, indicating an unhealthy attachment to wealth or a need to find renewed purpose."
+                },
+                {
+                    "name": "Amethyst",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Intuition", "Spiritual growth"],
+                        "reversed": ["Disconnection", "Fear of change"]
+                    },
+                    "meaning": "The Amethyst represents <b>Intuition</b> and <b>Spiritual growth</b>, symbolizing the importance of trusting one's psychic abilities and embracing personal development.",
+                    "reversedMeaning": "In reverse, the Amethyst signifies <b>Disconnection</b> and <b>Fear of change</b>, indicating a need to reconnect with inner wisdom and overcome resistance to transformation."
+                }
+            ],
+            pack: "ReaderPack1"
+        }],
+    ["Lunar Enligtenment",
+        {
+            "name": "Lunar Enlightenment",
+            "abbrv": "Moon",
+            "available": false,
+            "cards": [
+                {
+                    "name": "New Moon",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Beginnings", "Manifestation"],
+                        "reversed": ["Delay", "Lack of motivation"]
+                    },
+                    "meaning": "The New Moon represents <b>Beginnings</b> and <b>Manifestation</b>, symbolizing new opportunities and the potential for growth.",
+                    "reversedMeaning": "In reverse, the New Moon signifies <b>Delay</b> and <b>Lack of motivation</b>, indicating procrastination or challenges in starting new projects."
+                },
+
+                {
+                    "name": "Waxing Crescent",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Expansion", "Creativity"],
+                        "reversed": ["Restriction", "Anxiety"]
+                    },
+                    "meaning": "The Waxing Crescent represents <b>Expansion</b> and <b>Creativity</b>, symbolizing the nurturing of ideas and the initial stages of growth.",
+                    "reversedMeaning": "In reverse, the Waxing Crescent signifies <b>Restriction</b> and <b>Anxiety</b>, indicating challenges in moving forward or feelings of unease."
+                },
+
+                {
+                    "name": "First Quarter",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Decision-making", "Courage"],
+                        "reversed": ["Indecision", "Fear"]
+                    },
+                    "meaning": "The First Quarter Moon represents <b>Decision-making</b> and <b>Courage</b>, symbolizing the need to overcome obstacles and make choices.",
+                    "reversedMeaning": "In reverse, the First Quarter Moon signifies <b>Indecision</b> and <b>Fear</b>, indicating a lack of confidence or an inability to commit to a choice."
+                },
+
+                {
+                    "name": "Waxing Gibbous",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Focus", "Perseverance"],
+                        "reversed": ["Impatience", "Frustration"]
+                    },
+                    "meaning": "The Waxing Gibbous represents <b>Focus</b> and <b>Perseverance</b>, symbolizing the fine-tuning of plans and staying committed to your goals.",
+                    "reversedMeaning": "In reverse, the Waxing Gibbous signifies <b>Impatience</b> and <b>Frustration</b>, indicating feelings of restlessness or obstacles in achieving goals."
+                },
+
+                {
+                    "name": "Full Moon",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Intuition", "Harmony"],
+                        "reversed": ["Confusion", "Imbalance"]
+                    },
+                    "meaning": "The Full Moon represents <b>Intuition</b> and <b>Harmony</b>, symbolizing heightened psychic abilities and emotional balance.",
+                    "reversedMeaning": "In reverse, the Full Moon signifies <b>Confusion</b> and <b>Imbalance</b>, indicating a lack of clarity or emotional turmoil."
+                },
+                {
+                    "name": "Waning Gibbous",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Gratitude", "Reflection"],
+                        "reversed": ["Greed", "Neglect"]
+                    },
+                    "meaning": "The Waning Gibbous represents <b>Gratitude</b> and <b>Reflection</b>, symbolizing the importance of acknowledging accomplishments and learning from experiences.",
+                    "reversedMeaning": "In reverse, the Waning Gibbous signifies <b>Greed</b> and <b>Neglect</b>, indicating an unhealthy attachment to material possessions or a lack of attention to important matters."
+                },
+
+                {
+                    "name": "Third Quarter",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Release", "Forgiveness"],
+                        "reversed": ["Stagnation", "Denial"]
+                    },
+                    "meaning": "The Last Quarter Moon represents <b>Release</b> and <b>Forgiveness</b>, symbolizing the need to let go of what no longer serves you and to embrace change.",
+                    "reversedMeaning": "In reverse, the Last Quarter Moon signifies <b>Stagnation</b> and <b>Denial</b>, indicating an inability to move on or a refusal to accept reality."
+                },
+
+                {
+                    "name": "Waning Crescent",
+                    "reversed": false,
+                    "energy": {
+                        "upright": ["Rest", "Preparation"],
+                        "reversed": ["Exhaustion", "Resistance"]
+                    },
+                    "meaning": "The Waning Crescent represents <b>Rest</b> and <b>Preparation</b>, symbolizing the importance of taking time to recharge and plan for new beginnings.",
+                    "reversedMeaning": "In reverse, the Waning Crescent signifies <b>Exhaustion</b> and <b>Resistance</b>, indicating burnout or an unwillingness to embrace change and new opportunities."
+                }
+            ],
+            pack: "ReaderPack1"
+        }
+    ]
+
 ]);
 
 // Export the name of each  card of each suit as an array

@@ -3,7 +3,6 @@
 	- Add a way to save toggle state of decks
 	- update card in achievements on load
 	
-
 -->
 <script lang="ts">
 	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
@@ -15,35 +14,31 @@
 
 	export let landing = false;
 
-	// Save collection state
-
 	let decks: CollectionDeck[] = [];
 
-	$: {
-		if($collectionStore)
-		checkCollection();
-	}
-	
+
 	let checkCollection = () => {
-		if ($collectionStore?.length > 0) {
-			decks = $collectionStore;
-		}else{
-			decks = [];
-			for (let [key, deck] of cards.entries()) {
-					decks.push(deck);
-					deck.available = (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) )
-				
+		console.log('checkCollection');
+		decks = Array.from(cards.values())
+		// For each deck, check if it's available in the collectionStore, if so set the decks value to that
+		// If not, set it to true
+		decks.forEach((deck) => {
+			let inStorage = $collectionStore.find((d) => d.abbrv === deck.abbrv);
+			if (inStorage) {
+				deck.available = inStorage.available;
+			} else {
+				deck.available = false;
 			}
-		}
-
+		});
+		console.log(decks);
+		
 	}
-
 	checkCollection();
-
 	let toggleDeck = (deck: CollectionDeck) => {
 		deck.available = !deck.available;
 		collectionStore.set(decks);
-		checkCollection();
+		decks = $collectionStore;
+		
 	};
 
 	// Infobox state
@@ -78,7 +73,9 @@
 		{#each decks as deck}
 		<div class="deck">
 			
-			{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && (!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) }
+			{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && 
+			(!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) && 
+			(!deck.pack || $page.data.profile?.data.bought_items.includes(deck.pack))}
 	
 			<div class="header">
 				<h3>

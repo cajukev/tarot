@@ -45,6 +45,7 @@
 		$readingStore.ready = false;
 		$readingStore.conclusion = "";
 	}
+
 	let _getCardImgName = (name: string) => {
 		return name.replace(/ /g, '_').replace(/'/g, '');
 	};
@@ -108,7 +109,7 @@
 						<div class="stacked">
 							<div class={'card ' + ($flippedCardsStore[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
-									src="/cards/cardback-200.webp"
+									src={"/cards/"+$readingStore.cardback+"-200.webp"}
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									tabindex={$flippedCardsStore[i] ? -1 : 0}
@@ -215,8 +216,8 @@
 			<button class="cta" on:click={() => ($menuStateStore = { value: 6, change: true })}
 				>Buy More Tokens</button
 			>
-			{#if $page.data.profile.data.tokens < 10}
-				<p class="info">Regain up to 10 tokens at 12:00PM EST</p>
+			{#if $page.data.profile.data.tokens < 50}
+				<p class="info">Regain up to 50 tokens at 12:00PM EST</p>
 			{/if}
 		</div>
 	{/if}
@@ -226,11 +227,20 @@
 		{characters.get($readingStore.character)?.title}
 	</p>
 	{/if}
-	<p class="conclusion">{@html $readingStore.conclusion.trim()}</p>
+	<p class="conclusion">
+		{@html $readingStore.conclusion.trim()}
+		{#if $readingStore.incomplete }
+		<button class="btn-link" on:click={() => startReading()}>
+			Continue the reading
+		</button>
+		{/if}
+	</p>
 	<div class="actions">
-		<button class="btn-link" on:click={() => restart()}>Restart</button>
-		{#if !actionState }
+		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete}
+			{#if $readingStore.conclusion.length > 0}
 			<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+			{/if}
+			<button class="btn-link" on:click={() => restart()}>Restart</button>
 		{/if}
 
 	</div>
@@ -244,20 +254,12 @@
 <style lang="scss">
 	.reading {
 		margin-top: 2rem;
-		padding-bottom: 5rem;
+		padding-bottom: 0rem;
 		text-align: center;
 		& h2 {
 			margin-bottom: 0.5rem;
-			~ p {
-				font-size: $mini-font-size;
-				opacity: 0.8;
-				&:last-of-type {
-					margin-bottom: 2rem;
-				}
-			}
 		}
 		.actions {
-			margin-top: 2rem;
 			display: flex;
 			justify-content: center;
 			gap: 1rem;
@@ -393,6 +395,7 @@
 	}
 
 	.optionSelectWrapper {
+		margin-top: 1rem;
 			> p {
 				font-size: $h4-font-size;
 			}

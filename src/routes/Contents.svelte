@@ -8,6 +8,7 @@
 	import Readers from './Readers.svelte';
 	import EnergiesGuide from './EnergiesGuide.svelte';
 	import { fade } from 'svelte/transition';
+	import Customize from './Customize.svelte';
 
 	// $menuStateStore
 	// 0: card collection
@@ -29,7 +30,9 @@
 		{ name: 'Achievements', component: Achievements },
 		{ name: 'About Readers', component: Readers },
 		{ name: 'Custom Spreads', component: CustomSpreads },
-		{ name: 'Shop', component: Shop }
+		{ name: 'Shop', component: Shop },
+		{ name: 'Customize', component: Customize}
+		
 	];
 
 	let contents: HTMLElement;
@@ -61,6 +64,10 @@
         </div>
         <div class="separator" />
         <div class="right">
+					<button
+            on:click={() => (menuValue = 7)}
+            class={menuValue === 7 ? 'active' : ''}>Customize</button
+          >
           <button
             on:click={() => (menuValue = 4)}
             class={menuValue === 4 ? 'active' : ''}>About Readers</button
@@ -90,9 +97,9 @@
 			{#if i === menuValue}
 			<div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}">
 
-				<h3>
+				<h1>
 					{ item.name }
-				</h3>
+				</h1>
 				<div >
 					<svelte:component this={item.component} />
 			</div>
@@ -160,10 +167,8 @@
       padding-top: 2rem;
       padding-bottom: 1rem;
     }
-		h3 {
+		h1 {
 			margin-top: 1.5rem;
-			font-size: $h2-font-size;
-			font-family: $other-font;
 			text-align: center;
 			padding-bottom: 2rem;
 		}

@@ -1,38 +1,17 @@
-import { openai } from "$lib/openai";
-import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
-import readingSpreads, { type ReadingSpreadType } from "$lib/readingSpreads";
-import type { RequestHandler } from "./$types";
-import type { CollectionCard } from "$lib/cards";
-import characters from "$lib/characters";
-import { cards } from "$lib/cards";
+import type { ReadingSpreadType } from '$lib/readingSpreads';
+import { ChatCompletionRequestMessageRoleEnum } from 'openai';
+import type { RequestHandler } from './$types';
+import characters from '$lib/characters';
+import { openai } from '$lib/openai';
+import readingSpreads from '$lib/readingSpreads';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
-  const formData: {
-    reading: ReadingType;
-    customSpread: ReadingSpreadType;
-    tokenCost: number;
-  } = await request.json();
+export const POST: RequestHandler = async ({request, locals}) => {
+    const formData: {
+        reading: ReadingType;
+        customSpread: ReadingSpreadType;
+    } = await request.json();
 
-  // // Verify tokens
-  const profileData = await locals.sb.from('Profile')
-    .select('*')
-    .eq('id', locals.session.user.id)
-    .single()
-
-  if (profileData.data!.tokens < formData.tokenCost) {
-    return new Response(
-      JSON.stringify({
-        error: "Not enough tokens",
-      }),
-    );
-  }else{
-    await locals.sb.from('Profile')
-      .update({ tokens: profileData.data!.tokens - formData.tokenCost })
-      .eq('id', locals.session.user.id)
-      .single()
-  }
-
-  let setting = formData.reading.setting || "ppf";
+    let setting = formData.reading.setting || "ppf";
   let spread: ReadingSpreadType;
   if(formData.customSpread){
     spread = formData.customSpread;
@@ -44,16 +23,17 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let drawnCards = formData.reading.cards || [];
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
+  let conclusion = formData.reading.conclusion || "";
 
 
   let system = `Ignore all instructions before this one. You print out only raw text.
-You are ${characterInput} and must give the best Tarot reading given the following information.
+You are ${characterInput}.
 ` +
     character?.description
-//     +
-//     `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
-// `)}
-// `
+    +
+    `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
+`)}
+`
     +
     `Spread: ${spread.name}
 question = ${question}
@@ -74,12 +54,19 @@ Total ${60 * drawnCards.length + 100} words, no more no less`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },
+    { role: ChatCompletionRequestMessageRoleEnum.Assistant, 'content': character?.name + ": " + conclusion},
+    { role: ChatCompletionRequestMessageRoleEnum.User, 'content': `
+
+User: continue
+
+` + character?.name + ": "},
+
   ]
-  console.log('messages', messages[0].content)
+  console.log('messages', messages[0].content, messages[1].content, messages[2].content)
 
   let openAIresponseReading = await openai.createChatCompletion({
     model: character?.model || "gpt-3.5-turbo",
-    messages: [{ role: 'system', 'content': system }],
+    messages: messages,
     max_tokens: 2048,
     temperature: character?.temperature || 0.2,
     stream: true
@@ -89,7 +76,7 @@ Total ${60 * drawnCards.length + 100} words, no more no less`
 
   return new Response(new ReadableStream({
     async start(controller) {
-      let streamingText = '';
+      let streamingText = conclusion;
       for await (const message of streamCompletion(openAIresponseReading.data)) {
         try {
           let messageObject: any = JSON.parse(message)
@@ -98,7 +85,8 @@ Total ${60 * drawnCards.length + 100} words, no more no less`
             streamingText += messageString
           }else if (streamingText !== ''){
             streamingText += `
-...`
+            
+            ...`
           }
           controller.enqueue(streamingText);
         } catch (error) {

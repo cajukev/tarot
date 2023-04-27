@@ -77,7 +77,11 @@
 
 	$: if($readingStore.ready){
 		$readingStore.ready = false;
-		getReading();
+		if($readingStore.conclusion === ''){
+			getReading();
+		}else{
+			continueReading();
+		}
 	}
 
 	let tokenCost = 0;
@@ -223,18 +227,59 @@
 		}).then(async (res) => {
 			const reader = res.body?.getReader();
 			$achievementsStore = { action: 'StartReading', value: 'default' };
+			$readingStore.incomplete = false;
 			invalidateAll();
 			while (true && reader) {
 				const { done, value } = await reader.read();
 				const text = new TextDecoder('utf-8').decode(value);
 				if (text) $readingStore.conclusion = text;
 				if (done) {
-					$achievementsStore = { action: 'CompleteReading', value: 'default' };
+					// Does not end with ...
+					if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
+						$readingStore.incomplete = true;
+					}else{
+						$achievementsStore = { action: 'CompleteReading', value: 'default' };
+					}
 					break;
 				}
 			}
 		});
 	};
+
+	let continueReading = () => {
+		va.track('ContinueReading');
+		fetch('/api/continueReading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore,
+				customSpread: $customSpreadsStore.find(
+					(spread) => spread.name === $readingStore.setting
+				)
+			})
+		}).then(async (res) => {
+			const reader = res.body?.getReader();
+			$readingStore.incomplete = false;
+			invalidateAll();
+			while (true && reader) {
+				const { done, value } = await reader.read();
+				const text = new TextDecoder('utf-8').decode(value);
+				if (text) $readingStore.conclusion = text;
+				if (done) {
+					// Does not end with ...
+					if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
+						$readingStore.incomplete = true;
+					}else{
+						$achievementsStore = { action: 'CompleteReading', value: 'default' };
+					}
+					break;
+				}
+			}
+		});
+	};
+	
 
 	let selectOption = (option: string) => {
 		$readingStore.setting = option;
@@ -562,7 +607,7 @@
 					outline: none;
 					border: 1px solid transparent;
 					cursor: pointer;
-					transition: all 0.2s ease;
+					transition: background-color 0.2s ease;
 					&::-webkit-scrollbar {
 						display: none;
 					}
@@ -575,7 +620,7 @@
 						align-items: center;
 						justify-content: center;
 						img {
-							transition: all 1s ease;
+							transition: transform 1s ease;
 						}
 					}
 					&:hover {
@@ -623,7 +668,7 @@
 							font-size: $base-font-size;
 							opacity: 0;
 							pointer-events: none;
-							transition: all 0.25s ease;
+							transition: opacity 0.25s ease;
 							&:hover {
 								background-color: #be0000;
 								cursor: pointer;

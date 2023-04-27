@@ -11,7 +11,8 @@ export const readingStore = writable<ReadingType>(
     question: "",
     energy: "",
     setting: "",
-    character: ""
+    character: "",
+    cardback: "cardback",
   }
 );
 export const conclusionStore = writable<string>(undefined);
