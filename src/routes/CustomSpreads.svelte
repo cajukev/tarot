@@ -77,3 +77,12 @@
     <p>Custom spreads are unlocked at {unlocks.get("custom")?.exp} experience.</p>
   {/if}
 </div>
+
+<style lang="scss">
+  .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+</style>

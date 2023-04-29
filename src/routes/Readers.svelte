@@ -17,7 +17,7 @@
       <div class="info">
         <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
         <p class="model">AI Model: {character.character.model}</p>
-        <p class="description">{character.character.publicDescription}</p>
+        <p class="description">{@html character.character.publicDescription}</p>
         {#if unlocks.get(character.character.name) && $page.data.profile?.data.experience < (unlocks.get(character.character.name)?.exp || 0)}  
         <div class="locked">
           <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>

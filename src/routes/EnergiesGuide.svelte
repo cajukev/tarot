@@ -23,6 +23,11 @@ As the oracle's voice echoes from the abyss, I urge you, seeker of wisdom, to em
 </div>
 
 <style lang="scss">
+  .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .guide{
     max-width: 30rem;
     white-space: pre-wrap;
@@ -33,6 +38,7 @@ As the oracle's voice echoes from the abyss, I urge you, seeker of wisdom, to em
   .signature{
     margin-top: 1rem;
     text-align: right;
+    align-self: flex-end;
     font-size: $h3-font-size;
     font-family: $header-font;
   }

@@ -28,4 +28,9 @@
 </div>
 
 <style lang="scss">
+  .container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 </style>

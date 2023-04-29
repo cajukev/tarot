@@ -11,12 +11,13 @@
   export let collection: boolean = false;
 
 
-  $: if(isShown === true){
+  $: if(isShown === true && infoBox.classList.contains('visible') === false){
     infoBoxAppear(currentCard as CollectionCard);
   }
   let infoBox: HTMLDivElement;
 
   let infoBoxAppear = (card: CollectionCard) => {
+		console.log('infoBoxAppear', card);
 		infoBox.classList.add('visible');
 		infoBox.scrollTop = 0;
 		currentCard = card;
