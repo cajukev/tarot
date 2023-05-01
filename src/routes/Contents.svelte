@@ -161,6 +161,7 @@
 			background-color: #111C26;
 			padding-top: 1rem;
 			text-align: center;
+			box-shadow: 0px 0px 1rem 0px rgba(7, 13, 17, 0.75);
 		}
 		.contentsMenu {
 			animation: flyIn 0.3s 1s ease-out forwards;

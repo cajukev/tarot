@@ -189,8 +189,9 @@
 		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
+		console.log('handleSubmit2', pressedSegment - 1, scrollVar, $timeVariableStore);
 		$readingStore.energy =
-			energyList[(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)];
+			energyList[energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore]];
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		// Check if custom spread

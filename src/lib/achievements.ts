@@ -84,12 +84,12 @@ export const achievements: Map<string, Achievement> = new Map([
     experience: 50,
     completed: false
   }],
-  ["PerfectionismEnergy", {
-    name: "Perfectionist",
-    description: "Manifest Perfectionism twice in a row",
-    experience: 50,
-    completed: false
-  }],
+  // ["PerfectionismEnergy", {
+  //   name: "Perfectionist",
+  //   description: "Manifest Perfectionism twice in a row",
+  //   experience: 50,
+  //   completed: false
+  // }],
   ["AllMACards", {
     name: "Master of the Major Arcana",
     description: "Manifest all Major Arcana cards",
@@ -113,6 +113,6 @@ export const achievementsOrder = [
   "30Tokens",
   "ReadingWith3Preset",
   "SameEnergy",
-  "PerfectionismEnergy",
+  // "PerfectionismEnergy",
   "AllMACards"
 ]

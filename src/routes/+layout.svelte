@@ -31,6 +31,19 @@
 		if (matchMedia('(pointer:fine)').matches) {
 			$deviceStore.hasMouse = true;
 		}
+		// HANDLE ACHIEVEMENTS
+		if (!data.profile?.data?.achievements) {
+			userAchievements = achievements;
+		} else {
+			userAchievements = new Map([
+				...achievements,
+				...(objToMap(data.profile!.data.achievements) || [])
+			])
+			// console.log('userAchievements', userAchievements, achievements);
+			if (userAchievements.size !== achievements.size) {
+				updateAchievements();
+			}
+		}
 
 		// Supabase Auth
 		const {
@@ -44,20 +57,6 @@
 		};
 	});
 
-	// HANDLE ACHIEVEMENTS
-	$: if (!data.profile?.data?.achievements) {
-		userAchievements = achievements;
-	} else {
-		userAchievements = new Map([
-			...achievements,
-			...(objToMap(data.profile!.data.achievements) || [])
-		]);
-		// console.log('userAchievements', userAchievements, achievements);
-		if (userAchievements.size !== achievements.size) {
-			updateAchievements();
-		}
-	}
-
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 	let storedEnergy = '';
 	let completedExp = 0;
@@ -69,7 +68,7 @@
 		completedExp = 0;
 		let value;
 		let updateAchievementsFlag = false;
-		console.log('handleAchievements', $achievementsStore);
+		// console.log('handleAchievements', $achievementsStore);
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
 				value = $readingStore;
@@ -147,7 +146,7 @@
 				}
 				break;
 			case 'StartReading':
-				console.log('StartReading');
+				// console.log('StartReading');
 				value = $readingStore;
 				let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
 				userAchievements.get('30Tokens')!.progress =
@@ -180,7 +179,7 @@
 		} else {
 			invalidateAll();
 		}
-		console.log('handleAchievements', userAchievements);
+		// console.log('handleAchievements', userAchievements);
 	};
 	let completeAchievement = (achievement: string) => {
 		if (userAchievements.get(achievement)!.completed) return;
@@ -193,7 +192,7 @@
 			<i>+${userAchievements.get(achievement)!.experience} XP</i>`);
 	};
 	let updateAchievements = () => {
-		console.log('updateAchievements', mapToObj(userAchievements));
+		// console.log('updateAchievements', mapToObj(userAchievements));
 		fetch('/api/updateAchievements', {
 			method: 'POST',
 			headers: {
@@ -208,7 +207,7 @@
 	};
 
 	let addExperience = (amount: number) => {
-		console.log('addExperience', amount);
+		// console.log('addExperience', amount);
 		fetch('/api/addExperience', {
 			method: 'POST',
 			headers: {
