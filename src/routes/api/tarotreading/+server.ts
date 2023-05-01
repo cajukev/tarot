@@ -2,9 +2,34 @@ import { openai } from "$lib/openai";
 import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage } from "openai";
 import readingSpreads, { type ReadingSpreadType } from "$lib/readingSpreads";
 import type { RequestHandler } from "./$types";
-import type { CollectionCard } from "$lib/cards";
+import type { CollectionCard, CollectionDeck } from "$lib/cards";
 import characters from "$lib/characters";
 import { cards } from "$lib/cards";
+import { unlocks } from "$lib/unlocks";
+
+let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
+  let hasAll = true;
+
+  let decks = Array.from(cards.values());
+  let usedDecks = decks.filter((deck) => {
+    return deck.cards.some((card) => {
+      return usedCards.some((usedCard) => {
+        return usedCard.name === card.name;
+      })
+    })
+  })
+
+  console.log(usedDecks);
+
+  usedDecks.forEach((deck) => {
+    if (deck.exp){
+      if (profile.experience < unlocks.get(deck.abbrv)!.exp) {
+        hasAll = false;
+      }
+    }
+  })
+  return hasAll;
+}
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const formData: {
@@ -25,12 +50,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         error: "Not enough tokens",
       }),
     );
+
+   
+
   }else{
     await locals.sb.from('Profile')
       .update({ tokens: profileData.data!.tokens - formData.tokenCost })
       .eq('id', locals.session.user.id)
       .single()
   }
+  if(!hasAllUsedPacks(formData.reading.cards, profileData.data!)){
+    return new Response(
+      JSON.stringify({
+        error: "Cards not unlocked",
+      }),
+    );
+  }
+  
 
   let setting = formData.reading.setting || "ppf";
   let spread: ReadingSpreadType;

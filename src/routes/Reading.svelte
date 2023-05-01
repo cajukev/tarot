@@ -160,9 +160,9 @@
 				<p>Choose a reader</p>
 				<div class="optionSelect character">
 					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						{#if character.character.pack === 'default' || 
+						{#if !character.character.pack  || 
 						character.character.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0) ||
-						character.character.pack === 'ReaderPack1' && $page.data.profile?.data.bought_items.includes('ReaderPack1')}
+						character.character.pack && $page.data.profile?.data.bought_items.includes(character.character.pack)}
 							<button
 								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
 								on:click={() => selectCharacter(character.character.name)}
@@ -236,7 +236,7 @@
 		{/if}
 	</p>
 	<div class="actions">
-		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete}
+		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
 			{#if $readingStore.conclusion.length > 0}
 			<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
 			{/if}

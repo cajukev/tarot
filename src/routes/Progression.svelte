@@ -2,16 +2,15 @@
 	import { unlocks, type Unlock } from '$lib/unlocks';
 	import { page } from '$app/stores';
 	import { menuStateStore } from '../stores';
+	import Achievements from './Achievements.svelte';
 	let unlocksArray = Array.from(unlocks.entries());
 </script>
 
 <div class="container">
-	<p class="current">Current experience: {$page.data.profile.data.experience}<br>Gain experience by completing <span
-		tabindex="0"
-		on:click={() => $menuStateStore = {value: 3, change: true}} 
-		on:keydown={(e) => {if (e.key === 'Enter') $menuStateStore = {value: 3, change: true}}}
-		>achievements</span></p>
+	<p class="current">Current experience: {$page.data.profile.data.experience}</p>
+		<h2>Unlocks</h2>
 	<div class="unlocks">
+
 		{#each unlocksArray as unlock}
 			<div
 				class={'unlock ' + (unlock[1].exp <= $page.data.profile.data.experience ? 'completed' : '')}
@@ -54,15 +53,22 @@
 			</div>
 		{/each}
 	</div>
+	<div class="achievements">
+		<h2>Achievements</h2>
+		<Achievements />
+	</div>
 </div>
 
 <style lang="scss">
 	.container {
-		p {
+		p, h2 {
 			text-align: center;
 		}
-		.current{
+		h2{
+			margin-top: 2rem;
 			margin-bottom: 1rem;
+		}
+		.current{
 			span{
 				cursor: pointer;
 				text-decoration: underline;

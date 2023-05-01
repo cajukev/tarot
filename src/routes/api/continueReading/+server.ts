@@ -4,12 +4,52 @@ import type { RequestHandler } from './$types';
 import characters from '$lib/characters';
 import { openai } from '$lib/openai';
 import readingSpreads from '$lib/readingSpreads';
+import { cards, type CollectionCard } from '$lib/cards';
+import { unlocks } from '$lib/unlocks';
+
+let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
+  let hasAll = true;
+
+  let decks = Array.from(cards.values());
+  let usedDecks = decks.filter((deck) => {
+    return deck.cards.some((card) => {
+      return usedCards.some((usedCard) => {
+        return usedCard.name === card.name;
+      })
+    })
+  })
+
+  console.log(usedDecks);
+
+  usedDecks.forEach((deck) => {
+    if (deck.exp){
+      if (profile.experience < unlocks.get(deck.abbrv)!.exp) {
+        hasAll = false;
+      }
+    }
+  })
+  return hasAll;
+}
 
 export const POST: RequestHandler = async ({request, locals}) => {
     const formData: {
         reading: ReadingType;
         customSpread: ReadingSpreadType;
     } = await request.json();
+
+    // // Verify Used Packs
+  const profileData = await locals.sb.from('Profile')
+  .select('*')
+  .eq('id', locals.session.user.id)
+  .single()
+
+    if(!hasAllUsedPacks(formData.reading.cards, profileData.data!)){
+      return new Response(
+        JSON.stringify({
+          error: "Cards not unlocked",
+        }),
+      );
+    }
 
     let setting = formData.reading.setting || "ppf";
   let spread: ReadingSpreadType;

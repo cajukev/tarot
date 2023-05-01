@@ -16,10 +16,7 @@
     <img src={"/cards/"+cardback.image+"-200.webp"} />
     <div class="cardback-name">{cardback.name}</div>
     <div class="cardback-choose">
-      <button
-        class="btn btn-primary"
-        on:click={() => setCardback(cardback.image)}
-      >
+      <button class="btn btn-primary" on:click={() => setCardback(cardback.image)}>
         Choose
       </button>
     </div>

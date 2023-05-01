@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CollectionCard } from '$lib/cards';
 	import { cards } from '$lib/cards';
-	import { energyGrid, energyMap } from '$lib/energies';
+	import { energyGrid, energyList, energyMap } from '$lib/energies';
 	import readingSpreads from '$lib/readingSpreads';
 	import { onMount } from 'svelte';
 	import characters from '$lib/characters';
@@ -21,6 +21,7 @@
 	import { unlocks } from '$lib/unlocks';
 	import { getTokenCost } from '$lib/utils';
 	import va from '@vercel/analytics';
+	import ItemList from './ItemList.svelte';
 	export let state: number;
 	export let error = '';
 	let innerState = 1;
@@ -40,35 +41,78 @@
 	$: if($page.data.profile.data){
 		console.log('profile data', $page.data.profile.data);
 		$customSpreadsStore = $page.data.profile.data.custom_spreads || [];
+		setupItemList();
 	}
 
 	$: if($readingStore.ready){
 		getReading();
 	}
 
-	// let tokenCost = 0;
-	// $: {
-	// 	let nbCards = 0;
-	// 	if (readingSpreads.get($readingStore.setting)) {
-	// 		nbCards = readingSpreads.get($readingStore.setting)!.positions.length;
-	// 	}else if ($customSpreadsStore.find((spread) => spread.name === $readingStore.setting)){
-	// 		nbCards = $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)!.positions.length
-	// 	}else{
-	// 		// Deleted selected custom setting
-	// 		$readingStore.setting = 'qa';
-	// 		nbCards = 1;
-	// 	}
+	let listItems: ListItem[] = []
 
-	// 	let model = characters.get($readingStore.character)!.model;
 
-	// 	tokenCost = getTokenCost(nbCards, model);
-	// }
 	onMount(() => {
 		window.onscroll = function () {
 			scrollVar = oldScroll > scrollY ? 0 : 1;
 			oldScroll = scrollY;
 		};
+		// Setup list items
+		setupItemList();
 	});
+
+	let setupItemList = () => {
+		console.log('setupItemList', $readingStore.setting);
+		listItems = [];
+		Array.from(readingSpreads).forEach((spread) => {
+			if(!unlocks.get(spread[1].key as string) || $page.data.profile?.data.experience >= (unlocks.get(spread[1].key as string)?.exp || 0)){
+				listItems.push({
+					id: listItems.length,
+					name: spread[1].name,
+					img: `./options/${spread[0]}.png`,
+					action: () => {
+						selectOption(spread[0]);
+					},
+					selected: spread[0] === $readingStore.setting
+				});
+			}
+		});
+
+		// Add exisiting custom spreads
+		if($customSpreadsStore){
+			$customSpreadsStore.forEach((spread) => {
+				listItems.push({
+					id: listItems.length,
+					name: spread.name,
+					img: `./options/custom.png`,
+					action: () => {
+						selectOption(spread.name);
+					}
+				});
+			});
+		}
+
+		// Add custom spreads if unlocked
+		if(unlocks.get('custom') && $page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)){
+			listItems.push({
+				id: listItems.length,
+				name: 'Add Custom Spreads',
+				img: `./options/Add.png`,
+				action: () => {
+					navigateToCustomSpreads();
+				}
+			});
+		}else{
+			// Add button to navigate to progression
+			listItems.push({
+				id: listItems.length,
+				name: 'Unlock more spreads',
+				img: `./options/Lock.svg`,
+				action: () => {
+					$menuStateStore = {value: 2, change: true}
+				}
+			});
+		}
+	}
 
 	$: {
 		$readingStore.cards = drawnCards;
@@ -146,7 +190,7 @@
 		innerState = 1;
 		$readingStore.conclusion = '';
 		$readingStore.energy =
-			energyMap.get(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)?.value || '';
+			energyList[(energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore] + 1)];
 		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		// Check if custom spread
@@ -282,10 +326,12 @@
 	
 
 	let selectOption = (option: string) => {
+		console.log(option);
 		$readingStore.setting = option;
 		$flippedCardsStore = readingSpreads.get(option)?.positions.map(() => false) || $customSpreadsStore.find(
 			(spread) => spread.name === option
 		)?.positions.map(() => false) || [];
+		setupItemList();
 	};
 
 	
@@ -356,7 +402,8 @@
 		<div class="setup">
 			<div class="optionSelectWrapper">
 				<p>Choose a spread</p>
-				<div class="optionSelect spread">
+				<ItemList bind:items={listItems}></ItemList>
+				<!-- <div class="optionSelect spread">
 					{#each Array.from(readingSpreads).map( ([name, setting]) => ({ name, setting }) ) as spread}
 					{#if !unlocks.get(spread.name) || $page.data.profile?.data.experience >= (unlocks.get(spread.name)?.exp || 0)}
 					<button
@@ -442,7 +489,7 @@
 							</div>
 						</button>
 					{/if}
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<!-- {#if tokenCost <= $page.data.profile.data.tokens} -->

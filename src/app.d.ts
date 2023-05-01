@@ -54,4 +54,14 @@ declare global {
 		incomplete?: boolean | false,
 		cardback: string,
 	}
+
+	type ListItem = {
+    id: number;
+    name: string;
+    img: string;
+    cost?: number;
+    description?: string;
+    action? (): void;
+		selected?: boolean;
+  };
 }

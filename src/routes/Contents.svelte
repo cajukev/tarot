@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { menuStateStore } from '../stores';
 	import Progression from './Progression.svelte';
 	import Collection from './Collection.svelte';
@@ -9,7 +10,9 @@
 	import EnergiesGuide from './EnergiesGuide.svelte';
 	import { fade } from 'svelte/transition';
 	import Customize from './Customize.svelte';
-
+	import ItemList from './ItemList.svelte';
+	import { onMount } from 'svelte';
+	import { unlocks } from '$lib/unlocks';
 	// $menuStateStore
 	// 0: card collection
 	// 1: guide to energies
@@ -24,26 +27,60 @@
 	}
 
 	let menuItems = [
-		{ name: 'Card Collection', component: Collection },
-		{ name: 'Guide to Energies', component: EnergiesGuide },
-		{ name: 'Progression', component: Progression },
-		{ name: 'Achievements', component: Achievements },
-		{ name: 'About Readers', component: Readers },
-		{ name: 'Custom Spreads', component: CustomSpreads },
-		{ name: 'Shop', component: Shop },
-		{ name: 'Customize', component: Customize}
-		
+		{ name: 'Card Collection', component: Collection, img: '/menuOptions/Collection.svg' },
+		{ name: 'Guide to Energies', component: EnergiesGuide, img: '/menuOptions/Guide_To_Energies.svg' },
+		{ name: 'Progression', component: Progression, img: '/menuOptions/Progression.svg' },
+		{ name: 'About Readers', component: Readers, img: '/menuOptions/Readers.svg' },
+		{ name: 'Custom Spreads', component: CustomSpreads, img: '/menuOptions/Custom_Spreads.svg', exp: unlocks.get('custom')!.exp },
+		{ name: 'Shop', component: Shop, img: '/menuOptions/Shop.svg' },
+		{ name: 'Customize', component: Customize, img: '/menuOptions/Customize.svg'}
 	];
+
+	let navigate = (index: number) => {
+		menuValue = index;
+		setupItemList();
+	};
+
+	let itemList: ListItem[] = [
+	] 
+
+	let setupItemList = () => {
+		itemList = [];
+		menuItems.forEach((item, i) => {
+			if(item.exp && item.exp > $page.data.profile.data.experience) return;
+			itemList.push({
+				id: i,
+				name: menuItems[i].name,
+				img: menuItems[i].img,
+				action: () => {
+					navigate(i);
+				},
+				selected: i === menuValue
+			});
+		});
+	}
+
+	onMount(() => {
+		menuValue = 0
+		setupItemList();
+	});
+
 
 	let contents: HTMLElement;
 
-  let menuValue = 0;
+  let menuValue: number;
 </script>
 
 <div class="container">
-	<div bind:this={contents} class="contents screenPadding">
-    <div class="bp1">
-      <div class="contentsMenu">
+	<div bind:this={contents} class="contents ">
+		<div class="contentsMenuWrapper" >
+			<p class="info">Menu Of Contents</p>
+			<div class="contentsMenu">
+				<ItemList bind:items={itemList} />
+			</div>
+		</div>
+    <!-- <div class="bp1">
+			<div class="contentsMenu">
         <div class="left">
           <button
             on:click={() => (menuValue = 0)}
@@ -91,7 +128,7 @@
 					{/each}
         </select>
       </div>
-    </div>
+    </div> -->
 
 		{#each menuItems as item, i}
 			{#if i === menuValue}
@@ -100,7 +137,7 @@
 				<h1>
 					{ item.name }
 				</h1>
-				<div >
+				<div class="screenPadding">
 					<svelte:component this={item.component} />
 			</div>
 				</div>
@@ -118,59 +155,35 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-		.contentsMenu {
+		.contentsMenuWrapper{
+			width: 100%;
+			min-height: 15rem;
+			background-color: #111C26;
 			padding-top: 1rem;
-			display: grid;
-			width: fit-content;
-			grid-template-columns: 1fr 3rem 1fr;
-			place-items: center;
-			margin: auto;
-			& .left,
-			.right {
-				display: flex;
-				flex-direction: column;
-        justify-content: space-evenly;
-        height: 100%;
-			}
-			& .left {
-				align-items: end;
-			}
-			& .right {
-				place-self: start;
-			}
-			& .separator {
-				grid-area: 1 / 2 / 4 / 3;
-				height: 100%;
-				width: 1px;
-				background: white;
-			}
-			button {
-				width: fit-content;
-				background: none;
-				border: none;
-				color: white;
-				font-size: $base-font-size;
-				font-family: $other-font;
-				text-decoration: underline;
-				margin: 0.25rem 0;
-				&:hover {
-					cursor: pointer;
-				}
-				&.active {
-					text-decoration: none;
-					opacity: 0.5;
-					pointer-events: none;
-				}
-			}
+			text-align: center;
 		}
-    .mobileMenu{
-      padding-top: 2rem;
-      padding-bottom: 1rem;
-    }
+		.contentsMenu {
+			animation: flyIn 0.3s 1s ease-out forwards;
+			opacity: 0;
+			display: inline-flex;
+			justify-content: center;
+			margin: auto;
+		}
 		h1 {
 			margin-top: 1.5rem;
 			text-align: center;
 			padding-bottom: 2rem;
+		}
+	}
+
+	@keyframes flyIn {
+		from {
+			opacity: 0;
+			transform: translateY(1rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
 		}
 	}
 </style>

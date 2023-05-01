@@ -27,5 +27,11 @@ export const shopItems: Map<string, ShopItem> = new Map([
   }],
   ["ReaderPack1", {
     key: "ReaderPack1", name: "Reader Pack 1", cost: 100, description: "Unlock Luna The Moongazer", type: "ReaderPack",  
-  }]
+  }],
+  ["CrystalVisions", {
+    key: "CrystalVisions", name: "Crystal Visions", cost: 100, description: "Unlock Jewel The VIbrant and Crystal Visions Cards and Cardback", type: "ReaderPack",
+  }],
+  ["LunarEnlightenment", {
+    key: "LunarEnlightenment", name: "Lunar Enlightenment", cost: 100, description: "Unlock Luna The Moongazer and Lunar Enlightenment Cards and Cardback", type: "ReaderPack",
+  }],
 ])

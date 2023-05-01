@@ -45,18 +45,21 @@
 	let addColorsToMeaningText = (text: string) => {
 		let newText = text;
 		energyList.forEach((energy) => {
-			newText = newText.replace(
-				`<b>${energy}</b>`,
-				`<b><span style="color: ${_getEnergyColor(
-					energy
-				)}; text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25), 0px 0px 8px rgba(255, 255, 255, 0.35);">${energy}</span></b>`
-			);
+			if(newText.toLowerCase().includes(` ${energy.toLowerCase()} `) ||
+				newText.toLowerCase().includes(` ${energy.toLowerCase()}.`) ||
+				newText.toLowerCase().includes(` ${energy.toLowerCase()},`)){
+				newText = newText.replace(
+					`${energy.toLowerCase()}`,
+					`<b><span style="text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25), 0px 0px 8px rgba(255, 255, 255, 0.35);">${energy.toLowerCase()}</span></b>`
+				);
+			}
 		});
 		return newText;
 	};
 
 	export let _getEnergyColor = (energy: string) => {
-		return energyGroups.get(energyMap.get(energyList.indexOf(energy) + 1)?.group || 0)?.color;
+
+		return energyList.indexOf(energy) % 2 === 0 ? "green" : 'red';
 	};
 
   let reverseCard = () => {
@@ -97,6 +100,7 @@
 					alt=""
 				/>
 			{/if}
+			<p class="info">Click to reverse</p>
 			<h3>
 				{currentCard?.name}
         {#if !achiementMACompleted && achievementMAProgress.includes(currentCard?.name || '') && collection}

@@ -129,6 +129,7 @@
 <style lang="scss">
 	.container{
 		text-align: center;
+		display: relative;
 	}
 	h3 {
 		font-family: $header-font;
