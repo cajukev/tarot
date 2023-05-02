@@ -2,77 +2,98 @@
 	import { page } from '$app/stores';
 	import { achievements } from '$lib/achievements';
 	import type { CollectionCard } from '$lib/cards';
-  import { energyGroups, energyList, energyMap } from '$lib/energies';
+	import { energyGroups, energyList, energyMap } from '$lib/energies';
 	import { objToMap } from '$lib/utils';
+	import { onMount } from 'svelte';
+	import { prevent_default } from 'svelte/internal';
 	import { fade } from 'svelte/transition';
 
-  export let isShown = false;
-  export let currentCard: CollectionCard | undefined = undefined;
-  export let collection: boolean = false;
+	export let isShown = false;
+	export let currentCard: CollectionCard | undefined = undefined;
+	export let collection: boolean = false;
 
+	onMount(() => {
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape' && isShown === true) {
+				infoBoxHide();
+			}
+		});
+		window.addEventListener('keydown', (e) => {
+			// Spacebar
+			if (e.key === 'z') {
+				e.stopPropagation();
+				reverseCard();
+			}
+		});
+	});
 
-  $: if(isShown === true && infoBox.classList.contains('visible') === false){
-    infoBoxAppear(currentCard as CollectionCard);
-  }
-  let infoBox: HTMLDivElement;
+	$: if (isShown === true && infoBox.classList.contains('visible') === false) {
+		infoBoxAppear(currentCard as CollectionCard);
+	}
+	let infoBox: HTMLDivElement;
 
-  let infoBoxAppear = (card: CollectionCard) => {
+	let infoBoxAppear = (card: CollectionCard) => {
 		console.log('infoBoxAppear', card);
 		infoBox.classList.add('visible');
 		infoBox.scrollTop = 0;
 		currentCard = card;
+		infoBox.focus();
 		setTimeout(() => {
 			currentCard = card;
 		}, 250);
 	};
 
-  let infoBoxHide = () => {
-    isShown = false;
-    infoBox.classList.remove('visible');
-    setTimeout(() => {
-      currentCard = undefined;
-    }, 250);
-  };
+	let infoBoxHide = () => {
+		isShown = false;
+		infoBox.classList.remove('visible');
+		setTimeout(() => {
+			currentCard = undefined;
+		}, 250);
+	};
 
-  let _getCardImgName = (name: string) => {
+	let _getCardImgName = (name: string) => {
 		return name.replace(/ /g, '_').replace(/'/g, '');
 	};
 
 	let achievementsMap = objToMap($page.data.profile?.data.achievements) || achievements;
-	let achiementMACompleted: boolean = achievementsMap.get("AllMACards").completed;
-	let achievementMAProgress: string[] = achievementsMap.get("AllMACards").progress;
+	let achiementMACompleted: boolean = achievementsMap.get('AllMACards').completed;
+	let achievementMAProgress: string[] = achievementsMap.get('AllMACards').progress;
 
 	let addColorsToMeaningText = (text: string) => {
 		let newText = text;
+		let newTextBeforePeriod = text.split('.')[0];
 		energyList.forEach((energy) => {
-			if(newText.toLowerCase().includes(` ${energy.toLowerCase()} `) ||
-				newText.toLowerCase().includes(` ${energy.toLowerCase()}.`) ||
-				newText.toLowerCase().includes(` ${energy.toLowerCase()},`)){
-				newText = newText.replace(
+			if (
+				newTextBeforePeriod.toLowerCase().includes(` ${energy.toLowerCase()}`) ||
+				newTextBeforePeriod.toLowerCase().includes(` ${energy.toLowerCase()}.`) ||
+				newTextBeforePeriod.toLowerCase().includes(` ${energy.toLowerCase()},`)
+			) {
+				newTextBeforePeriod = newTextBeforePeriod.replace(
 					`${energy.toLowerCase()}`,
 					`<b><span style="text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25), 0px 0px 8px rgba(255, 255, 255, 0.35);">${energy.toLowerCase()}</span></b>`
 				);
 			}
 		});
-		return newText;
+		return newTextBeforePeriod + newText.split('.')[1];
 	};
 
 	export let _getEnergyColor = (energy: string) => {
-
-		return energyList.indexOf(energy) % 2 === 0 ? "green" : 'red';
+		return energyList.indexOf(energy) % 2 === 0 ? 'green' : 'red';
 	};
 
-  let reverseCard = () => {
-    if(currentCard && collection){
-      currentCard.reversed = !currentCard.reversed;
-    }
-  }
+	let reverseCard = () => {
+		if (currentCard && collection) {
+			currentCard.reversed = !currentCard.reversed;
+		}
+	};
 </script>
 
 <div class="container">
-  <div
+	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+	<div
 		bind:this={infoBox}
 		class={'infoBox '}
+		tabindex={isShown ? 0 : -1}
 		on:click={(e) => {
 			infoBoxHide();
 		}}
@@ -92,7 +113,7 @@
 					on:keydown={(e) => {
 						if (e.key === 'Enter') {
 							e.stopPropagation();
-							reverseCard()
+							reverseCard();
 						}
 					}}
 					class={currentCard?.reversed ? 'reversed' : ''}
@@ -100,10 +121,14 @@
 					alt=""
 				/>
 			{/if}
-			<p class="info">Click to reverse</p>
+			<p class="info">
+				{#if collection}
+				Click the card or press 'z' to reverse. 
+				{/if}
+				Click anywhere else or press Escape to close</p>
 			<h3>
 				{currentCard?.name}
-        {#if !achiementMACompleted && achievementMAProgress.includes(currentCard?.name || '') && collection}
+				{#if !achiementMACompleted && achievementMAProgress.includes(currentCard?.name || '') && collection}
 					<span class="achievementIndicator">✨</span>
 				{/if}
 			</h3>
@@ -121,13 +146,12 @@
 					<span class="dummy energy" />
 				</p>
 			{/if}
-			
 		</div>
 	</div>
 </div>
 
 <style lang="scss">
-  .infoBox {
+	.infoBox {
 		position: fixed;
 		height: 100%;
 		width: 100%;
@@ -170,7 +194,7 @@
 			}
 			& h3 {
 				font-family: $header-font;
-				.achievementIndicator{
+				.achievementIndicator {
 					opacity: 0.5;
 				}
 			}
@@ -186,6 +210,5 @@
 			transform: scale(0.9) translateY(1rem);
 			pointer-events: none;
 		}
-		
 	}
 </style>

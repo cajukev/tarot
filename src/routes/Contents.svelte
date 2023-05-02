@@ -22,8 +22,10 @@
 	// 5: Custom Spreads
 	// 6: Shop
 	$: if ($menuStateStore.change){
+		console.log('menuStateStore changed', $menuStateStore.value);
 		contents.scrollIntoView();
 		menuValue = $menuStateStore.value;
+		setupItemList();
 	}
 
 	let menuItems = [
@@ -37,6 +39,7 @@
 	];
 
 	let navigate = (index: number) => {
+		$menuStateStore = { value: index, change: false };
 		menuValue = index;
 		setupItemList();
 	};
@@ -79,57 +82,6 @@
 				<ItemList bind:items={itemList} />
 			</div>
 		</div>
-    <!-- <div class="bp1">
-			<div class="contentsMenu">
-        <div class="left">
-          <button
-            on:click={() => (menuValue = 0)}
-            class={menuValue === 0 ? 'active' : ''}>Card Collection</button
-          >
-          <button
-            on:click={() => (menuValue = 1)}
-            class={menuValue === 1 ? 'active' : ''}>Guide to Energies</button
-          >
-          <button
-            on:click={() => (menuValue = 2)}
-            class={menuValue === 2 ? 'active' : ''}>Progression</button
-          >
-          <button
-            on:click={() => (menuValue = 3)}
-            class={menuValue === 3 ? 'active' : ''}>Achievements</button
-          >
-        </div>
-        <div class="separator" />
-        <div class="right">
-					<button
-            on:click={() => (menuValue = 7)}
-            class={menuValue === 7 ? 'active' : ''}>Customize</button
-          >
-          <button
-            on:click={() => (menuValue = 4)}
-            class={menuValue === 4 ? 'active' : ''}>About Readers</button
-          >
-          <button
-            on:click={() => (menuValue = 5)}
-            class={menuValue === 5 ? 'active' : ''}>Custom Spreads</button
-          >
-          <button
-            on:click={() => (menuValue = 6)}
-            class={menuValue === 6 ? 'active' : ''}>Shop</button
-          >
-        </div>
-      </div>
-    </div>
-    <div class="ubp1">
-      <div class="mobileMenu">
-        <select bind:value={$menuStateStore.value} on:change={(e)=>{menuValue = parseInt(e.currentTarget.value)}}>
-					{#each menuItems as item, i}
-						<option value={i}>{item.name}</option>
-					{/each}
-        </select>
-      </div>
-    </div> -->
-
 		{#each menuItems as item, i}
 			{#if i === menuValue}
 			<div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}">

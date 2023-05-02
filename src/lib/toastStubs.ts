@@ -2,6 +2,7 @@ import { toast } from '@zerodevx/svelte-toast';
 
 export const achievement = (m:string, options?: object) => toast.push(m, {
   ...options,
+  initial: 0,
   theme: {
     '--toastBackground': '#F7DB5D;'
   }
@@ -22,5 +23,14 @@ export const secret = (m:string, options?: object) => toast.push(m, {
     '--toastBackground': '#5DF76C;'
   }
 });
+
+export const error = (m:string, options?: object) => toast.push(m, {
+  ...options,
+  
+  theme: {
+    '--toastBackground': '#F65D5D;'
+  }
+});
+
 
 

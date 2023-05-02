@@ -785,46 +785,46 @@ export const cards = new Map<string, CollectionDeck>([
                 }
             ]
         }],
-    ["Suit of Svelte",
+    // ["Suit of Svelte",
+    //     {
+    //         "name": "Suit of Svelte",
+    //         "abbrv": "Svelte",
+    //         "available": false,
+    //         "cards": [
+    //             {
+    //                 "name": "Simplicity of Svelte",
+    //                 "reversed": false,
+    //                 "energy": {
+    //                     "upright": ["New beginnings", "Inspiration"],
+    //                     "reversed": ["Lack of motivation", "Depression"]
+    //                 },
+    //                 "meaning": "The Simplicity of Svelte represents <b>New beginnings</b> and <b>Inspiration</b>, symbolizing the potential for growth and the desire to create something new.",
+    //                 "reversedMeaning": "In reverse, the Simplicity of Svelte signifies <b>Lack of motivation</b> and <b>Depression</b>, indicating a lack of enthusiasm or difficulty finding inspiration."
+    //             },
+    //             {
+    //                 "name": "Experience of Svelte",
+    //                 "reversed": false,
+    //                 "energy": {
+    //                     "upright": ["Balance", "Harmony"],
+    //                     "reversed": ["Burden", "Hardship"]
+    //                 },
+    //                 "meaning": "The Experience of Svelte represents <b>Balance</b> and <b>Harmony</b>, symbolizing the need for cooperation and the importance of maintaining a healthy lifestyle.",
+    //                 "reversedMeaning": "In reverse, the Experience of Svelte signifies <b>Burden</b> and <b>Hardship</b>, indicating a lack of harmony or difficulty maintaining a healthy lifestyle."
+    //             },
+    //             {
+    //                 "name": "Reactivity of Svelte",
+    //                 "reversed": false,
+    //                 "energy": {
+    //                     "upright": ["Creativity", "Adaptability"],
+    //                     "reversed": ["Restriction", "Resistance"]
+    //                 },
+    //                 "meaning": "The Reactivity of Svelte represents <b>Creativity</b> and <b>Adaptability</b>, symbolizing the ability to adapt to changing circumstances and the importance of maintaining an open mind.",
+    //                 "reversedMeaning": "In reverse, the Reactivity of Svelte signifies <b>Restriction</b> and <b>Resistance</b>, indicating difficulty adapting to change or an unwillingness to consider new ideas."
+    //             }]
+    //     }],
+    ["Crystal Visions",
         {
-            "name": "Suit of Svelte",
-            "abbrv": "Svelte",
-            "available": false,
-            "cards": [
-                {
-                    "name": "Simplicity of Svelte",
-                    "reversed": false,
-                    "energy": {
-                        "upright": ["New beginnings", "Inspiration"],
-                        "reversed": ["Lack of motivation", "Depression"]
-                    },
-                    "meaning": "The Simplicity of Svelte represents <b>New beginnings</b> and <b>Inspiration</b>, symbolizing the potential for growth and the desire to create something new.",
-                    "reversedMeaning": "In reverse, the Simplicity of Svelte signifies <b>Lack of motivation</b> and <b>Depression</b>, indicating a lack of enthusiasm or difficulty finding inspiration."
-                },
-                {
-                    "name": "Experience of Svelte",
-                    "reversed": false,
-                    "energy": {
-                        "upright": ["Balance", "Harmony"],
-                        "reversed": ["Burden", "Hardship"]
-                    },
-                    "meaning": "The Experience of Svelte represents <b>Balance</b> and <b>Harmony</b>, symbolizing the need for cooperation and the importance of maintaining a healthy lifestyle.",
-                    "reversedMeaning": "In reverse, the Experience of Svelte signifies <b>Burden</b> and <b>Hardship</b>, indicating a lack of harmony or difficulty maintaining a healthy lifestyle."
-                },
-                {
-                    "name": "Reactivity of Svelte",
-                    "reversed": false,
-                    "energy": {
-                        "upright": ["Creativity", "Adaptability"],
-                        "reversed": ["Restriction", "Resistance"]
-                    },
-                    "meaning": "The Reactivity of Svelte represents <b>Creativity</b> and <b>Adaptability</b>, symbolizing the ability to adapt to changing circumstances and the importance of maintaining an open mind.",
-                    "reversedMeaning": "In reverse, the Reactivity of Svelte signifies <b>Restriction</b> and <b>Resistance</b>, indicating difficulty adapting to change or an unwillingness to consider new ideas."
-                }]
-        }],
-    ["Crystal Vision",
-        {
-            "name": "Crystal Vision",
+            "name": "Crystal Visions",
             "abbrv": "Crystal",
             "available": false,
             "cards": [

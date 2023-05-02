@@ -11,14 +11,15 @@
 	import { unlocks } from '$lib/unlocks';
 	import { secrets } from '$lib/secrets';
 	import InfoBox from './InfoBox.svelte';
+	import ItemList from './ItemList.svelte';
+	import { cardbacks } from '$lib/cardbacks';
+	import { error } from '$lib/toastStubs';
 
 	export let landing = false;
 
 	let decks: CollectionDeck[] = [];
 
-
 	let checkCollection = () => {
-		console.log('checkCollection');
 		decks = Array.from(cards.values())
 		// For each deck, check if it's available in the collectionStore, if so set the decks value to that
 		// If not, set it to true
@@ -30,16 +31,50 @@
 				deck.available = false;
 			}
 		});
-		console.log(decks);
-		
 	}
 	checkCollection();
+
 	let toggleDeck = (deck: CollectionDeck) => {
+		// If there is only 1 available deck, don't allow it to be toggled off
+		if (decks.filter((d) => d.available).length === 1 && deck.available){
+			error("There must be at least one deck available!");
+			return;
+		}
 		deck.available = !deck.available;
 		collectionStore.set(decks);
 		decks = $collectionStore;
-		
+		setupItemList();
 	};
+
+	
+	let itemList: ListItem[] = [
+	]
+	let _getCardImgName = (card: CollectionCard) => {
+		return card.name.replace(/ /g, '_').replace(/'/g, '');
+	};
+	let setupItemList = () => {
+		itemList = [];
+		decks.forEach((deck, i) => {
+			let img = cardbacks.find((c) => c.name === deck.name)?.image || _getCardImgName(deck.cards[0]) ;
+			if((!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && 
+			(!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) && 
+			(!deck.pack || $page.data.profile?.data.bought_items.includes(deck.pack))){
+				console.log(deck.name);
+				itemList.push({
+					id: i,
+					name: deck.name,
+					img: "/cards/"+img+"-120.webp",
+					action: () => {
+						toggleDeck(deck);
+					},
+					selected: deck.available
+				});
+			}
+		});
+		console.log(itemList);
+	}
+	setupItemList();
+
 
 	// Infobox state
 
@@ -56,41 +91,38 @@
 		}, 250);
 	};
 
-	let _getCardImgName = (card: CollectionCard) => {
-		return card.name.replace(/ /g, '_').replace(/'/g, '');
-	};
+	
+	
 
 </script>
 
 <div class="container">
 	<div>
-	<p class="info">
-		You can click on a card to see more information about it. 
-		{#if !landing}
-		<br>You can click on the deck name to toggle a deck on or off.
-		{/if}
-	</p>
+		<ItemList items={itemList}></ItemList>
+		<p class="info">
+			You can click on a card to see more information about it.
+		</p>
 		{#each decks as deck}
 		<div class="deck">
 			
-			{#if (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && 
-			(!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) && 
-			(!deck.pack || $page.data.profile?.data.bought_items.includes(deck.pack))}
+			{#if deck.available}
 	
 			<div class="header">
 				<h3>
-					<label for={"check."+deck.name}>{deck.name} 
+					{deck.name} 
+					<!-- <label for={"check."+deck.name}>
 						{#if !landing}
 						<button id={"check."+deck.name} on:click={() => toggleDeck(deck)}>
 							{deck.available ? '✅' : '❌'}
 						</button>
 						{/if}
-					</label>
+					</label> -->
 				</h3>
 			</div>
 			<div class="cards">
 				{#each deck.cards as card}
 					<div
+						tabindex="0"
 						on:click={() => {
 							infoBoxAppear(card);
 						}}
@@ -152,17 +184,23 @@
 		gap: 0.75rem;
 		.card {
 			width: max(60px, 8%);
+			transition: all 0.1s ease;
+			&:focus {
+					cursor: pointer;
+					transform: translateY(-0.25rem);
+				}
 			img {
 				border-radius: 0.25rem;
 				border: 2px solid white;
-				width: 100%;
+				width: 100%; 
 				height: 100%;
 				object-fit: cover;
 				margin-top: -0.25rem;
 				box-shadow: 0 0.5rem 1rem rgba(black, 0.5);
 				transition: all 0.1s ease;
-				&:hover {
-					cursor: pointer;
+				
+				&:focus {
+					outline: none;
 					transform: translateY(-0.25rem);
 				}
 			}

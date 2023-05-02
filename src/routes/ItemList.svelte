@@ -72,18 +72,22 @@ onMount(() => {
 			border: 1px solid transparent;
 			
 			.item-img {
-				outline: none;
 				border: none;
 				background: rgba($color: #000000, $alpha: 0.3);
 				border-radius: 1rem;
 				width: 6rem;
 				height: 6rem;
-				transition: all 0.2s ease;
+				transition: all 0.2s ease, outline 0s;
         cursor: pointer;
 				img {
           transition: all 0.2s ease;
 					max-width: 80%;
 					max-height: 80%;
+				}
+				&:focus-visible {
+					outline: 2px solid rgba($color: #ffffff, $alpha: 0.5) !important;
+					outline-offset: 3px;
+
 				}
 				&:hover {
           background-color: rgba($color: #000000, $alpha: 0.4);
@@ -91,14 +95,13 @@ onMount(() => {
             transform: scale(1.05);
 					}
 				}
-				&:focus {
-          border: 1px solid white;
-          img {
-            transform: scale(1.05);
-					}
-				}
         &.selected{
-          background: rgba($color: #000000, $alpha: 0.8);
+					background: rgba($color: #000000, $alpha: 0.8);
+          border: 1px solid rgba($color: #ffffff, $alpha: 0.5);
+					img {
+						transform: scale(1.1);
+					}
+					
         }
 			}
 			.item-name {

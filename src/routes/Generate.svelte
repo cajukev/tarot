@@ -86,7 +86,8 @@
 					img: `./options/custom.png`,
 					action: () => {
 						selectOption(spread.name);
-					}
+					},
+					selected: spread.name === $readingStore.setting
 				});
 			});
 		}
@@ -338,7 +339,7 @@
 	
 
 	let navigateToCustomSpreads = () => {
-		$menuStateStore = { value: 5, change: true };
+		$menuStateStore = { value: 4, change: true };
 	};
 
 	let deleteCustomSpread = (name: string) => {
