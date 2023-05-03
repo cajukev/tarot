@@ -63,5 +63,6 @@ declare global {
     description?: string;
     action? (): void;
 		selected?: boolean;
+		exp?: number;
   };
 }

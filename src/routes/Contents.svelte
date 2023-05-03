@@ -101,7 +101,7 @@
 
 <style lang="scss">
 	.contents {
-		background: $bg2;
+		// background: $bg2;
 		margin-top: 2rem;
 		padding-bottom: 4rem;
     display: flex;

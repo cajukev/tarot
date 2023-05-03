@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import { onMount } from "svelte";
 
 	export let items: ListItem[];
@@ -40,11 +41,21 @@ onMount(() => {
 
 <div class="container" bind:this={container}>
 	{#each items as item}
-		<div class="item" on:click={item.action}>
-			<button class={"item-img " + (item.selected ? "selected" : "")}>
+		<div class="item" >
+			{#if item.exp}
+				{#if item.exp <= $page.data.profile.data.experience}
+					<p class="item-exp info">Acquired</p>
+				{:else}
+					<p class="item-exp info">{item.exp} exp</p>
+				{/if}
+			{/if}
+			<button on:click={item.action} class={"item-img " + (item.selected ? "selected" : "")}>
 				<img src={item.img} />
 			</button>
 			<p class="item-name info">{item.name}</p>
+			{#if item.description}
+				<p class="item-description info">{item.description}</p>
+			{/if}
 		</div>
 	{/each}
 </div>
@@ -70,7 +81,9 @@ onMount(() => {
 			justify-content: start;
 			width: min-content;
 			border: 1px solid transparent;
-			
+			.item-exp{
+				margin-bottom: 0.5rem;
+			}
 			.item-img {
 				border: none;
 				background: rgba($color: #000000, $alpha: 0.3);
@@ -81,8 +94,11 @@ onMount(() => {
         cursor: pointer;
 				img {
           transition: all 0.2s ease;
+					// border-radius: 0.5rem;
 					max-width: 80%;
 					max-height: 80%;
+					width: 100%;
+					object-fit: contain;
 				}
 				&:focus-visible {
 					outline: 2px solid rgba($color: #ffffff, $alpha: 0.5) !important;
@@ -105,6 +121,10 @@ onMount(() => {
         }
 			}
 			.item-name {
+				margin-top: 0.5rem;
+				text-align: center;
+			}
+			.item-description{
 				margin-top: 0.5rem;
 				text-align: center;
 			}

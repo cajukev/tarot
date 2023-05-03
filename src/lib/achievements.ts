@@ -103,16 +103,16 @@ export const achievements: Map<string, Achievement> = new Map([
 )
 
 export const achievementsOrder = [
-  "FirstCompletedReading",
-  "SameQuestion",
-  "5Tokens",
-  "10Tokens",
-  "15Tokens",
-  "20Tokens",
-  "25Tokens",
-  "30Tokens",
-  "ReadingWith3Preset",
-  "SameEnergy",
+  "Tarot Beginner",
+  "Tarot fan",
+  "Tarot novice",
+  "Tarot amateur",
+  "Tarot joyer",
+  "Tarot enthousiast",
+  "Tarot expert",
+  "Learning the Basics",
+  "Let's try again...",
+  "Beginnings of a pattern",
   // "PerfectionismEnergy",
-  "AllMACards"
+  "Master of the Major Arcana"
 ]

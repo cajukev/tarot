@@ -98,6 +98,9 @@
 
 <div class="container">
 	<div>
+		<p class="info">
+			You can click on a deck to enable / disable it for your next reading.
+		</p>
 		<ItemList items={itemList}></ItemList>
 		<p class="info">
 			You can click on a card to see more information about it.

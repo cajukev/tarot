@@ -256,6 +256,8 @@
 			);
 	};
 
+	let storedConclusion = "";
+
 	let getReading = () => {
 		va.track('GetReading');
 		fetch('/api/tarotreading', {
@@ -278,7 +280,13 @@
 			while (true && reader) {
 				const { done, value } = await reader.read();
 				const text = new TextDecoder('utf-8').decode(value);
-				if (text) $readingStore.conclusion = text;
+				if (text) {
+					// Duplication glitch fix attemmpt
+					if(!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+						$readingStore.conclusion = text;
+						storedConclusion = text;
+					}
+				}
 				if (done) {
 					// Does not end with ...
 					if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {

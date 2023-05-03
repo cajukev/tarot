@@ -4,6 +4,9 @@
 	import { centsToDollars } from '$lib/utils';
   import { page } from '$app/stores';
 	import { toast } from '@zerodevx/svelte-toast';
+  import characters from '$lib/characters';
+	import ItemList from './ItemList.svelte';
+	import { cardbacks } from '$lib/cardbacks';
 	let goToCheckout = (item: string) => {
 		fetch('/api/createCheckoutSession', {
 			method: 'POST',
@@ -32,17 +35,105 @@
       .then((response) => {
         console.log(response);
         if (response.status === 200) {
-          invalidateAll();
+          invalidateAll()
+          .then(() => {
+            setupItemList();
+          });
           toast.push('Item purchased with essence');
         }
       });
   }
+  // Shop items in a ItemList, only one can be selected at a time
+  // When one is selected, the item info is displayed and the buy button is enabled
+
+  let listItems: ListItem[] = [];
+
+  let setupItemList = () => {
+    listItems = [];
+    let img = '';
+    
+    for (let i = 0; i < Array.from(shopItems.entries()).length; i++) {
+      if($page.data.profile.data.bought_items.includes(Array.from(shopItems.entries())[i][1].key)){
+        continue;
+      }
+      switch(Array.from(shopItems.entries())[i][1].type){
+        case 'ReaderPack':
+          img = '/cards/' + cardbacks.find(c => c.name === Array.from(shopItems.entries())[i][1].name)?.image + '-200.webp';
+          break;
+        case 'Reader':
+          img = '/options/' + Array.from(shopItems.entries())[i][1].name + '-200.webp';
+          break;
+        case 'Essence':
+          img = '/resources/Essence-120.webp';
+          break;
+        case 'Tokens':
+          img = '/resources/Token-120.webp';
+          break;
+      }
+
+      listItems.push({
+        id: i,
+        name: Array.from(shopItems.entries())[i][1].name,
+        img: img,
+        selected: false,
+        action: () => {
+          selectItem(i);
+        }
+      });
+    }
+  };
+  setupItemList();
+
+  let selected = -1;
+
+  let selectItem = (id: number) => {
+    if (selected === id) {
+      selected = -1;
+    } else {
+      selected = id;
+    }
+    for (let i = 0; i < listItems.length; i++) {
+      if (i === id) {
+        listItems[i].selected = true;
+      } else {
+        listItems[i].selected = false;
+      }
+    }
+  };
+
 </script>
 
 <div class="container screenPadding">
 	<p class="prices">All prices are in USD.<p>
   <p class="essence">You currently have <span>{$page.data.profile.data.essence}</span> essence</p>
-  <div class="items">
+
+  <ItemList items={listItems} />
+
+  <!-- Shop item info -->
+  {#if selected !== -1}
+    <div class="itemInfo">
+      <p class="name">{Array.from(shopItems.entries())[selected][1].name}</p>
+      <p class="description">{Array.from(shopItems.entries())[selected][1].description}</p>
+      {#if Array.from(shopItems.entries())[selected][1].type === 'Essence'}
+        {#if Array.from(shopItems.entries())[selected][1].extra?.amount }
+          <p>+ {Array.from(shopItems.entries())[selected][1].extra?.amount} tokens</p>
+        {/if}
+        <p class="cost">Costs ${centsToDollars(Array.from(shopItems.entries())[selected][1].cost)}</p>
+        <button on:click={() => goToCheckout(Array.from(shopItems.entries())[selected][0])}>Buy</button>
+      {:else}
+        <!-- Pay with Essence -->
+        <p>Costs {Array.from(shopItems.entries())[selected][1].cost} Essence</p>
+        <button class="cost" on:click={ 
+          () => {
+            buyWithEssence(Array.from(shopItems.entries())[selected][1]);
+          }
+        }>Buy</button>
+      {/if}
+    </div>
+  {/if}
+
+
+  <!-- <div class="items">
 
     {#each Array.from(shopItems.entries()) as item}
 		<div>
@@ -54,7 +145,7 @@
 			  <p class="cost">${centsToDollars(item[1].cost)}</p>
 			  <button on:click={() => goToCheckout(item[0])}>Buy</button>
         {:else}
-        <!-- Pay with Essence -->
+        <-- Pay with Essence ->
         {item[1].cost} Essence
         <button class="cost" on:click={ 
           () => {
@@ -64,45 +155,22 @@
       {/if}
 		</div>
     {/each}
-  </div>
+  </div> -->
 </div>
 
 <style lang="scss">
   .container{
     text-align: center;
-    .prices{
-      padding-bottom: 1rem;
+    p{
+      margin-bottom: 1rem;
     }
-    .essence{
-      padding-bottom: 1rem;
-      span{
-        font-weight: bold;
-      }
-    }
-    .items{
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto;
-      gap: 1rem;
-      div{
-        background: $bg;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        width: 8rem;
-        button{
-          background-color: #000;
-          border: none;
-          border-radius: 5px;
-          color: #fff;
-          cursor: pointer;
-          font-size: 1.2rem;
-          margin-top: 10px;
-          padding: 5px;
-          width: 100%;
-        }
-      }
+    button{
+      background-color: #F7DB5D;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-family: serif;
+    font-size: clamp(20px, 2.3vw, 26px);
+    cursor: pointer;
     }
   }
     
