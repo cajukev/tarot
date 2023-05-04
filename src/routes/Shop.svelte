@@ -7,6 +7,7 @@
   import characters from '$lib/characters';
 	import ItemList from './ItemList.svelte';
 	import { cardbacks } from '$lib/cardbacks';
+	import { achievement as achievementToast } from '$lib/toastStubs';
 	let goToCheckout = (item: string) => {
 		fetch('/api/createCheckoutSession', {
 			method: 'POST',
@@ -37,9 +38,10 @@
         if (response.status === 200) {
           invalidateAll()
           .then(() => {
+            selected = -1;
             setupItemList();
           });
-          toast.push('Item purchased with essence');
+          achievementToast(`Bought ${item.name}`, {});
         }
       });
   }
@@ -53,9 +55,6 @@
     let img = '';
     
     for (let i = 0; i < Array.from(shopItems.entries()).length; i++) {
-      if($page.data.profile.data.bought_items.includes(Array.from(shopItems.entries())[i][1].key)){
-        continue;
-      }
       switch(Array.from(shopItems.entries())[i][1].type){
         case 'ReaderPack':
           img = '/cards/' + cardbacks.find(c => c.name === Array.from(shopItems.entries())[i][1].name)?.image + '-200.webp';
@@ -78,7 +77,8 @@
         selected: false,
         action: () => {
           selectItem(i);
-        }
+        },
+        bought: $page.data.profile.data.bought_items.includes(Array.from(shopItems.entries())[i][1].key)  
       });
     }
   };
@@ -100,6 +100,7 @@
       }
     }
   };
+  selectItem(0);
 
 </script>
 

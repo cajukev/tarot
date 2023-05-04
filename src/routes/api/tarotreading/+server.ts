@@ -3,7 +3,7 @@ import { ChatCompletionRequestMessageRoleEnum, type ChatCompletionRequestMessage
 import readingSpreads, { type ReadingSpreadType } from "$lib/readingSpreads";
 import type { RequestHandler } from "./$types";
 import type { CollectionCard, CollectionDeck } from "$lib/cards";
-import characters from "$lib/characters";
+import characters, { type Character } from "$lib/characters";
 import { cards } from "$lib/cards";
 import { unlocks } from "$lib/unlocks";
 
@@ -31,6 +31,12 @@ let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
   return hasAll;
 }
 
+let hasReader = (character: Character, profile: any) => {
+  return !character.pack  || 
+		character.pack === 'unlock' && profile.data.experience >= (unlocks.get(character.name)?.exp || 0) ||
+		character.pack && profile.data.bought_items.includes(character.pack)
+}
+
 export const POST: RequestHandler = async ({ request, locals }) => {
   const formData: {
     reading: ReadingType;
@@ -50,10 +56,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         error: "Not enough tokens",
       }),
     );
-
-   
-
+  }else if(!hasReader(characters.get(formData.reading.character) as Character, profileData)){
+    return new Response(
+      JSON.stringify({
+        error: "Reader not unlocked",
+      }),
+    );
   }else{
+
     await locals.sb.from('Profile')
       .update({ tokens: profileData.data!.tokens - formData.tokenCost })
       .eq('id', locals.session.user.id)

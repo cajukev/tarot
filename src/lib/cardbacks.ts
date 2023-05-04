@@ -6,15 +6,17 @@ export type Cardback = {
 
 export const cardbacks = [
   {
-    "name": "AITarot",
-    "image": "cardback"
+    name: "AITarot",
+    image: "cardback"
   },
   {
-    "name": "Crystal Visions",
-    "image": "crystal_cardback"
+    name: "Crystal Visions",
+    image: "crystal_cardback",
+    pack: "CrystalVisions"
   },
   {
-    "name": "Lunar Enlightenment",
-    "image": "moon_cardback"
+    name: "Lunar Enlightenment",
+    image: "moon_cardback",
+    pack: "LunarEnlightenment"
   }
 ]

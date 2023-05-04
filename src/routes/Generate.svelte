@@ -288,11 +288,18 @@
 					}
 				}
 				if (done) {
-					// Does not end with ...
-					if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
-						$readingStore.incomplete = true;
+					// Is wrapped in {}
+					if($readingStore.conclusion && $readingStore.conclusion.startsWith('{') && $readingStore.conclusion.endsWith('}')) {
+						$readingStore.incomplete = false;
+						$readingStore.conclusion = '...';
+			
 					}else{
-						$achievementsStore = { action: 'CompleteReading', value: 'default' };
+						// Does not end with ...
+						if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
+							$readingStore.incomplete = true;
+						}else{
+							$achievementsStore = { action: 'CompleteReading', value: 'default' };
+						}
 					}
 					break;
 				}

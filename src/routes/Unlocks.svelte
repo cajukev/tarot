@@ -27,7 +27,8 @@
         name: unlocksArray[i][1].name,
         img: img,
 				exp: unlocksArray[i][1].exp,
-				selected: false
+				selected: false,
+				completed: unlocksArray[i][1].exp > $page.data.profile.data.experience
       });
     }
   };

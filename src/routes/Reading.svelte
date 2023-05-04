@@ -14,6 +14,8 @@
 	import type { CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
 	import { unlocks } from '$lib/unlocks';
+	import { set } from '@fern-api/openai/core/schemas';
+	import ItemList from './ItemList.svelte';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -82,6 +84,42 @@
 
 	let selectCharacter = (character: string) => {
 		$readingStore.character = character;
+	};
+
+	// ItemList, 1 selected at a time
+
+	let listItems: ListItem[] = [];
+	let selected = 0
+
+	let setupItemList = () => {
+		listItems = [];
+		for (let i = 0; i < characters.size; i++) {
+			let available = false;
+			if((!characters.get([...characters.keys()][i])?.pack  || characters.get([...characters.keys()][i])?.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(characters.get([...characters.keys()][i])?.name + "")?.exp || 0) ||
+				characters.get([...characters.keys()][i])?.pack && $page.data.profile?.data.bought_items.includes(characters.get([...characters.keys()][i])?.pack + ""))){
+				available = true;
+				}
+			
+			listItems.push({
+				id: i,
+				name: characters.get([...characters.keys()][i])?.name || '',
+				description: characters.get([...characters.keys()][i])?.title || '',
+				selected: i === selected,
+				img: "/options/"+characters.get([...characters.keys()][i])?.name+"-200.webp" || '',
+				available: available,
+				action() {
+					selectItem(i);
+				},
+			});
+		}
+	};
+	setupItemList();
+
+	let selectItem = (id: number) => {
+		listItems[id].selected = !listItems[id].selected;
+		selected = id;
+		selectCharacter([...characters.keys()][id]);
+		setupItemList();
 	};
 	
 </script>
@@ -158,45 +196,7 @@
 		<div transition:fade>
 			<div class="optionSelectWrapper">
 				<p>Choose a reader</p>
-				<div class="optionSelect character">
-					{#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-						{#if !character.character.pack  || 
-						character.character.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(character.character.name)?.exp || 0) ||
-						character.character.pack && $page.data.profile?.data.bought_items.includes(character.character.pack)}
-							<button
-								class={'option ' + ($readingStore?.character === character.character.name ? 'active' : '')}
-								on:click={() => selectCharacter(character.character.name)}
-								on:keydown={(event) => {
-									if (event.key === 'Enter') selectCharacter(character.character.name);
-								}}
-							>
-								<div class="imgWrapper">
-									<img src="/options/{character.character.name}-300.webp" alt="" />
-								</div>
-								<div class="optionText">
-									<p><b>{character.character.name}</b></p>
-									<p><i>{character.character.title}</i></p>
-								</div>
-							</button>
-						{:else}
-							<button
-								class="option lockedOption"
-								on:click={() => $menuStateStore = { value: 2, change: true }}
-								on:keydown={(event) => {
-									if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
-								}}
-							>
-								<div class="imgWrapper">
-									<img src="/options/Lock.svg" alt="" />
-								</div>
-								<div class="optionText">
-									<p><b>{character.character.name}</b></p>
-									<p><i>{character.character.title}</i></p>
-								</div>
-							</button>
-						{/if}
-					{/each}
-				</div>
+				<ItemList items={listItems} />
 			</div>
 			{#if tokenCost <= $page.data.profile.data.tokens}
 				<div>

@@ -55,10 +55,9 @@
 	let setupItemList = () => {
 		itemList = [];
 		decks.forEach((deck, i) => {
+			// _getCardImgName(deck.cards[ random card??? ])
 			let img = cardbacks.find((c) => c.name === deck.name)?.image || _getCardImgName(deck.cards[0]) ;
-			if((!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && 
-			(!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) && 
-			(!deck.pack || $page.data.profile?.data.bought_items.includes(deck.pack))){
+			
 				console.log(deck.name);
 				itemList.push({
 					id: i,
@@ -67,9 +66,12 @@
 					action: () => {
 						toggleDeck(deck);
 					},
-					selected: deck.available
+					selected: deck.available,
+					available: (!unlocks.get(deck.abbrv) || $page.data.profile?.data.experience >= (unlocks.get(deck.abbrv)?.exp || 0)) && 
+						(!secrets.has(deck.abbrv) || $page.data.profile?.data.secrets.includes(deck.abbrv) ) && 
+						(!deck.pack || $page.data.profile?.data.bought_items.includes(deck.pack))
 				});
-			}
+			
 		});
 		console.log(itemList);
 	}

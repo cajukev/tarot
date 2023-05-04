@@ -16,9 +16,10 @@
       listItems.push({
         id: i,
         name: achievementsArray[i].name,
-        img: achievementsArray[i].completed ? "check.svg" : "/options/Lock.svg",
+        img: achievementsArray[i].completed ? "check.svg" : "50XP.svg",
         selected: false,
         description: achievementsArray[i].description,
+        completed: achievementsArray[i].completed,
       });
     }
   };

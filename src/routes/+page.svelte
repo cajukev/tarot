@@ -30,7 +30,7 @@
 			<p class="loading">Let us see what the cards have in store...</p>
 		</div>
 	
-		<div class={'sidePadding ' + (state !== 3 ? 'hidden' : '')}>
+		<div class={'' + (state !== 3 ? 'hidden' : '')}>
 			{#if $readingStore}
 				<Reading bind:state ></Reading>
 				<!-- <p>Are there any inaccuracies?</p>

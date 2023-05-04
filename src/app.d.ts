@@ -64,5 +64,8 @@ declare global {
     action? (): void;
 		selected?: boolean;
 		exp?: number;
+		bought?: boolean;
+		completed?: boolean;
+		available?: boolean | true;
   };
 }

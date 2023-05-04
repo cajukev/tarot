@@ -3,11 +3,54 @@
   import { unlocks } from "$lib/unlocks";
   import { page } from "$app/stores";
 	import { get } from "svelte/store";
+	import ItemList from "./ItemList.svelte";
   let charactersArray = Array.from(characters.entries());
+
+  let listItems: ListItem[] = [];
+  
+  let setupItemList = () => {
+    listItems = [];
+    for (let i = 0; i < charactersArray.length; i++) {
+      listItems.push({
+        id: i,
+        name: charactersArray[i][1].name,
+        img: "/options/" + charactersArray[i][1].name + "-200.webp",
+        selected: false,
+        action() {
+          selectItem(i);
+        }
+      });
+    }
+  };
+  setupItemList();
+
+  let selected = -1;
+
+  let selectItem = (id: number) => {
+    if (selected === id) {
+      return;
+    } else{
+      selected = id;
+      for (let i = 0; i < listItems.length; i++) {
+        if (i === id) {
+          listItems[i].selected = true;
+        } else {
+          listItems[i].selected = false;
+        }
+      }
+    }
+  };
+  selectItem(0);
+
 </script>
 
 <div class="container">
+  <p class="info">
+    Click on a character to learn more about them.
+  </p>
+  <ItemList items={listItems} />
   {#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
+   {#if listItems[selected]?.name === character.character.name}
     <div class="character">
       <div class="imgWrapper stacked">
         <img src={"/options/"+character.name+"-1024.webp"} alt={character.character.name} />
@@ -17,15 +60,19 @@
       <div class="info">
         <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
         <p class="model">AI Model: {character.character.model}</p>
-        <p class="description">{@html character.character.publicDescription}</p>
+        {#if character.character.pack && character.character.pack !== 'unlock' && !$page.data.profile?.data.bought_items.includes(character.character.pack)}
+          <p class="unlock">{character.character.name} {character.character.title} is available for purchase in the shop.</p>
+        {/if}
         {#if unlocks.get(character.character.name) && $page.data.profile?.data.experience < (unlocks.get(character.character.name)?.exp || 0)}  
-        <div class="locked">
+        <div class="unlock">
           <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>
         </div>
         {/if}
+        <p class="description">{@html character.character.publicDescription}</p>
         <p class="imgBy">Image created by {character.character.imageCreator}</p>
       </div>
     </div>
+    {/if}
   {/each}
 </div>
 
@@ -33,7 +80,8 @@
   .container{
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    gap: 0.5rem;
     .character{
       // Responsive display
       // Mobile
@@ -111,7 +159,12 @@
           }
         }
         .model{
-          margin-bottom: 2rem;
+          margin-bottom: 1rem;
+        }
+        .unlock{
+          margin-bottom: 1rem;
+          font-weight: 700;
+          color: rgb(255, 114, 114);
         }
         .description{
           margin-bottom: 2rem;
