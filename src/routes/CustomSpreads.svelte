@@ -100,7 +100,7 @@
         name: $customSpreadsStore[i].name,
         description: $customSpreadsStore[i].positions.join(", "),
         id: i,
-        img: "",
+        img: "/options/custom.png",
         selected: i === selected,
         action() {
           selectItem(i);
@@ -111,7 +111,7 @@
     listItems.push({
       name: "Create a new spread",
       id: $customSpreadsStore.length,
-      img: "",
+      img: "/options/Add.png",
       selected: $customSpreadsStore.length === selected,
       action() {
         selectItem($customSpreadsStore.length);
@@ -133,25 +133,18 @@
       setupItemList();
     }
   };
+  selectItem($customSpreadsStore.length);
 
 </script>
 
 <div class="container">
-
-
-  <!-- {#each $page.data.profile.data.custom_spreads as spread}
-    <div class="card">
-      <h2>{spread.name}</h2>
-      <p>{spread.positions.join(", ")}</p>
-    </div>
-  {/each} -->
 
   {#if (unlocks.get("custom")?.exp || 10000) <= $page.data.profile.data.experience}
 
   <ItemList items={listItems} />
 
   <div class="newSpread">
-    <label for="spreadName">Spread Name: </label>
+    <label class="" for="spreadName">Spread Name: </label>
     <input type="text" id="spreadName" bind:value={newSpread.name} />
     {#each newSpread.positions as position, i }
       <div class="card">
@@ -163,17 +156,17 @@
         <button on:click={() => {
           newSpread.positions.splice(i, 1); 
           newSpread = { ...newSpread }
-          }}>Delete</button>
+          }}>Delete Card</button>
       </div>
     {/each}
     <div class="addCard">
-      <button on:click={() => addNewCard()}>+ Add Card</button>
+      <button class="add" on:click={() => addNewCard()}>+ Add Card</button>
     </div>
 
-    <button on:click={() => saveSpread()}>Submit</button>
+    <button class="save" on:click={() => saveSpread()}>Save Spread</button>
     <!-- Delete -->
     {#if selected !== $customSpreadsStore.length}
-      <button on:click={() => deleteSpread()}>Delete</button>
+      <button class="delete" on:click={() => deleteSpread()}>Delete Spread</button>
     {/if}
   </div>
   {:else}
@@ -189,9 +182,21 @@
     justify-content: center;
   }
   .newSpread{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
+    width: 35rem;
+    max-width: 90vw;
+    .card, .add, .save, .delete{
+      margin-top: 1rem;
+    }
+    .delete{
+      margin-left: 0.5rem;
+    }
+    button{
+      cursor: pointer;
+		  background-color: $accent;
+		  border: none;
+		  padding: 0.25rem 0.5rem;
+		  font-family: $other-font;
+		  font-weight: 700;
+    }
   }
 </style>

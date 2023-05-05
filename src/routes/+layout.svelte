@@ -253,15 +253,17 @@
 	<!-- Title: Call Upon The Power Of Tarot -->
 	<title>Call Upon The Power Of Tarot</title>
 </svelte:head>
-<Menu />
 <div class="toastWrapper">
 	<SvelteToast />
 </div>
 <div class="topShadow" />
 <div class="app">
+	<p class="title">AITarot.website</p> 
+	<Menu />
 	<div class="bg" />
 	<Title />
 	<slot />
+	<p class="title">AITarot.website</p>
 </div>
 
 <div class="dummy hidden" />
@@ -294,6 +296,15 @@
 		background: linear-gradient(180deg, #050607 0%, rgba(5, 6, 7, 0) 100%);
 		z-index: -1;
 	}
+	.title{
+      font-family: $header-font;
+			text-align: center;
+			margin: 1rem 0;
+      font-size: 2rem;
+      font-weight: 300;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
 
 	// Toast
 	.toastWrapper {

@@ -54,6 +54,9 @@
 	};
 	let setupItemList = () => {
 		itemList = [];
+		if(landing){
+			decks = [decks[0] as CollectionDeck]
+		}
 		decks.forEach((deck, i) => {
 			// _getCardImgName(deck.cards[ random card??? ])
 			let img = cardbacks.find((c) => c.name === deck.name)?.image || _getCardImgName(deck.cards[0]) ;
@@ -100,10 +103,12 @@
 
 <div class="container">
 	<div>
+		{#if !landing}
 		<p class="info">
 			You can click on a deck to enable / disable it for your next reading.
 		</p>
 		<ItemList items={itemList}></ItemList>
+		{/if}
 		<p class="info">
 			You can click on a card to see more information about it.
 		</p>
@@ -177,8 +182,11 @@
 			font-size: $h4-font-size;
 		}
 	}
+	.info{
+		margin: 0.5rem 0;
+	}
 	.deck:not(:first-of-type){
-		margin-top: 2rem;
+		margin-top: 1.5rem;
 	}
 	.cards {
 		margin-top: 1rem;
@@ -190,6 +198,10 @@
 		.card {
 			width: max(60px, 8%);
 			transition: all 0.1s ease;
+			&:hover {
+					cursor: pointer;
+					transform: translateY(-0.25rem);
+				}
 			&:focus {
 					cursor: pointer;
 					transform: translateY(-0.25rem);

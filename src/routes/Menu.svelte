@@ -24,19 +24,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    form{
+      margin-left: 1rem;
+      display: inline;
+      & input{
+        font-family: $other-font;
+        font-size: $base-font-size;
+        border: none;
+        background: none;
+        font-weight: 300;
+        cursor: pointer;
+        color: white;
+      }
+    }
   }
-	form{
-		margin-left: 1rem;
-		display: inline;
-		& input{
-			font-family: $other-font;
-			font-size: $base-font-size;
-			border: none;
-			background: none;
-			font-weight: 300;
-			cursor: pointer;
-      color: white;
-		}
-	}
 </style>

@@ -22,7 +22,6 @@
 
 <style lang="scss">
   h1 {
-			padding-top: 1rem;
 			text-align: center;
 			text-shadow: 0rem 0rem 0.4rem rgba(255, 255, 255, 0.137);
 			span {

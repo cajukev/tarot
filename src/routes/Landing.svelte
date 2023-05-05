@@ -67,7 +67,8 @@
 		question: 'What is this website?',
 		setting: '',
 		conclusion: '',
-		character: ''
+		character: '',
+		cardback: 'AITarot'
 	};
 
 	let flippedCards = [false, false, false];
@@ -210,8 +211,8 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 
 	</div>
 </div>
-<div class="collection screenPadding">
-	<h2>Collection</h2>
+<div class="collection">
+	<h1>Collection</h1>
 	<Collection landing={true} />
 </div>
 
@@ -257,7 +258,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 	}
 	.reading {
 		margin-top: 2rem;
-		padding-bottom: 5rem;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
@@ -345,7 +345,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 	.collection {
 		padding-top: 2rem;
 		padding-bottom: 4rem;
-		background-color: $bg2;
+		// background-color: $bg2;
 		text-align: center;
 	}
 </style>
