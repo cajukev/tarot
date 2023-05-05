@@ -34,7 +34,7 @@
     })
       .then((res) => res.json())
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         if (response.status === 200) {
           invalidateAll()
           .then(() => {
@@ -88,7 +88,7 @@
 
   let selectItem = (id: number) => {
     if (selected === id) {
-      selected = -1;
+      return;
     } else {
       selected = id;
     }
@@ -117,7 +117,7 @@
       <p class="description">{Array.from(shopItems.entries())[selected][1].description}</p>
       {#if Array.from(shopItems.entries())[selected][1].type === 'Essence'}
         {#if Array.from(shopItems.entries())[selected][1].extra?.amount }
-          <p>+ {Array.from(shopItems.entries())[selected][1].extra?.amount} tokens</p>
+          <p>+ {Array.from(shopItems.entries())[selected][1].extra?.amount} bonus tokens</p>
         {/if}
         <p class="cost">Costs ${centsToDollars(Array.from(shopItems.entries())[selected][1].cost)}</p>
         <button on:click={() => goToCheckout(Array.from(shopItems.entries())[selected][0])}>Buy</button>

@@ -4,7 +4,7 @@
   import { objToMap } from "$lib/utils";
 	import ItemList from "./ItemList.svelte";
   let achievementsArray: Achievement[] = Array.from((objToMap($page.data.profile.data.achievements) || achievements).values()) ;
-  console.log("achievementsArray", achievementsArray);
+  // console.log("achievementsArray", achievementsArray);
   // AchievementsOrder is an array of achievement IDs in the order they should be displayed
   achievementsArray.sort((a, b) => achievementsOrder.indexOf(a.name) - achievementsOrder.indexOf(b.name));
 

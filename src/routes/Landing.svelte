@@ -75,7 +75,7 @@
 
 	let flipCard = (index: number) => {
 		flippedCards[index] = !flippedCards[index];
-		console.log(flippedCards);
+		// console.log(flippedCards);
 		if (flippedCards.every((card) => card)) {
 			setTimeout(() => {
 				onReadingStart();

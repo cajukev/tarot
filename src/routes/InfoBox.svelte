@@ -33,7 +33,7 @@
 	let infoBox: HTMLDivElement;
 
 	let infoBoxAppear = (card: CollectionCard) => {
-		console.log('infoBoxAppear', card);
+		// console.log('infoBoxAppear', card);
 		infoBox.classList.add('visible');
 		infoBox.scrollTop = 0;
 		currentCard = card;

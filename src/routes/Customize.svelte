@@ -6,7 +6,7 @@
 
   let setCardback = (cardback: string) => {
     $readingStore.cardback = cardback;
-    console.log($readingStore.cardback);
+    // console.log($readingStore.cardback);
   }
 
   let listItems: ListItem[] = [];

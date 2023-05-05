@@ -1022,8 +1022,8 @@ let generateDailyEnergies = () => {
         }
     }
 
-    console.log(uprightCards)
-    console.log(reversedCards)
+    // console.log(uprightCards)
+    // console.log(reversedCards)
 }
 
 generateDailyEnergies()

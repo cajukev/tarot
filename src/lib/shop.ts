@@ -6,6 +6,7 @@ export type ShopItem = {
   cost: number,
   description: string,
   type: string,
+  stripeDescription?: string,
   amount?: number,
   extra?: ShopExtra,
 }
@@ -18,11 +19,11 @@ export type ShopExtra = {
 export const shopItems: Map<string, ShopItem> = new Map([
   ["200Essence", { key: "200Essence", name: "200 Essence", cost: 199, description: "", amount: 200, type: "Essence" }],
   ["500Essence", {
-    key: "500Essence", name: "500 Essence", amount: 500, cost: 499, description: "", type: "Essence",
+    key: "500Essence", name: "500 Essence", amount: 500, cost: 499, stripeDescription: "+200 bonus tokens" , description: "", type: "Essence",
     extra: { name: "200 tokens", amount: 200, type: "Tokens" }
   }],
   ["1000Essence", { 
-    key: "1000Essence", name: "1000 Essence", amount: 1000, cost: 999, description: "", type: "Essence",
+    key: "1000Essence", name: "1000 Essence", amount: 1000, cost: 999, stripeDescription: "+500 bonus tokens", description: "", type: "Essence",
     extra: { name: "500 tokens", amount: 500, type: "Tokens" }}],
   ["500tokens", {
     key: "500tokens", name: "500 Tokens", amount: 500, cost: 100, description: "", type: "Tokens",

@@ -90,7 +90,7 @@ ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card
 `)}
 p${(spread.positions.length || 1) + 2}: conclusion & reopening or closing words
 separate each p with a line break
-Total ${60 * drawnCards.length + 100} words, no more no less`
+Total ${60 * drawnCards.length + 120} words, no more no less`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },
@@ -108,7 +108,7 @@ User: continue
     model: character?.model || "gpt-3.5-turbo",
     messages: messages,
     max_tokens: 2048,
-    temperature: character?.temperature || 0.2,
+    temperature: character?.temperature || 1,
     stream: true
   },
     { responseType: "stream" })

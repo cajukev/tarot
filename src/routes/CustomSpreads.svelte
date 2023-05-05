@@ -12,7 +12,7 @@
     positions: [],
     instructions: [],
   };
-  console.log(newSpread);
+  // console.log(newSpread);
 
   let addNewCard = () => {
     newSpread.positions.push("");

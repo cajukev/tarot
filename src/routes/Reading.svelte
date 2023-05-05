@@ -257,7 +257,7 @@
 		padding-bottom: 0rem;
 		text-align: center;
 		& h2 {
-			margin-bottom: 0.5rem;
+			margin: 0.5rem;
 		}
 		.actions {
 			display: flex;
@@ -324,7 +324,8 @@
 			}
 		}
 		.conclusion {
-			margin: 1rem auto 0rem;
+			margin: 1rem auto;
+			padding: 0 1rem;
 			max-width: 40rem;
 			white-space: break-spaces;
 		}

@@ -39,7 +39,7 @@
 	let oldScroll = 0;
 
 	$: if($page.data.profile.data){
-		console.log('profile data', $page.data.profile.data);
+		// console.log('profile data', $page.data.profile.data);
 		$customSpreadsStore = $page.data.profile.data.custom_spreads || [];
 		setupItemList();
 	}
@@ -61,7 +61,7 @@
 	});
 
 	let setupItemList = () => {
-		console.log('setupItemList', $readingStore.setting);
+		// console.log('setupItemList', $readingStore.setting);
 		listItems = [];
 		Array.from(readingSpreads).forEach((spread) => {
 			if(!unlocks.get(spread[1].key as string) || $page.data.profile?.data.experience >= (unlocks.get(spread[1].key as string)?.exp || 0)){
@@ -190,7 +190,7 @@
 		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
-		console.log('handleSubmit2', pressedSegment - 1, scrollVar, $timeVariableStore);
+		// console.log('handleSubmit2', pressedSegment - 1, scrollVar, $timeVariableStore);
 		$readingStore.energy =
 			energyList[energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore]];
 		$readingStore.conclusion = '';
@@ -230,7 +230,7 @@
 					if (body.error) {
 						state = 4;
 						error = body.error;
-						console.log(error);
+						// console.log(error);
 						return;
 					}
 					if (body.cards) {
@@ -239,7 +239,7 @@
 						drawnCards.forEach((drawnCard) => {
 							for (let [key, value] of cards.entries()) {
 								value.cards.forEach((card) => {
-									console.log(card.name === drawnCard.name);
+									// console.log(card.name === drawnCard.name);
 									if (drawnCard.name === card.name) {
 										card.reversed = drawnCard.reversed;
 										returnCards.push(card);
@@ -247,7 +247,7 @@
 								});
 							}
 						});
-						console.log(returnCards);
+						// console.log(returnCards);
 						$readingStore.cards = returnCards;
 						invalidateAll();
 						state = 3;
@@ -343,7 +343,7 @@
 	
 
 	let selectOption = (option: string) => {
-		console.log(option);
+		// console.log(option);
 		$readingStore.setting = option;
 		$flippedCardsStore = readingSpreads.get(option)?.positions.map(() => false) || $customSpreadsStore.find(
 			(spread) => spread.name === option

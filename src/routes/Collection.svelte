@@ -61,7 +61,7 @@
 			// _getCardImgName(deck.cards[ random card??? ])
 			let img = cardbacks.find((c) => c.name === deck.name)?.image || _getCardImgName(deck.cards[0]) ;
 			
-				console.log(deck.name);
+				// console.log(deck.name);
 				itemList.push({
 					id: i,
 					name: deck.name,
@@ -76,7 +76,7 @@
 				});
 			
 		});
-		console.log(itemList);
+		// console.log(itemList);
 	}
 	setupItemList();
 

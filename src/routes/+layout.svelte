@@ -31,25 +31,13 @@
 		if (matchMedia('(pointer:fine)').matches) {
 			$deviceStore.hasMouse = true;
 		}
-		// HANDLE ACHIEVEMENTS
-		if (!data.profile?.data?.achievements) {
-			userAchievements = achievements;
-		} else {
-			userAchievements = new Map([
-				...achievements,
-				...(objToMap(data.profile!.data.achievements) || [])
-			])
-			// console.log('userAchievements', userAchievements, achievements);
-			if (userAchievements.size !== achievements.size) {
-				updateAchievements();
-			}
-		}
 
 		// Supabase Auth
 		const {
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
+			
 		});
 
 		return () => {
@@ -65,6 +53,17 @@
 		if ($achievementsStore?.value) handleAchievements();
 	}
 	let handleAchievements = () => {
+		if(!userAchievements){
+			if (!data.profile?.data?.achievements) {
+				userAchievements = achievements;
+			} else {
+				userAchievements = new Map([
+					...achievements,
+					...(objToMap(data.profile!.data.achievements) || [])
+				])
+			}
+		}
+
 		completedExp = 0;
 		let value;
 		let updateAchievementsFlag = false;
@@ -250,7 +249,6 @@
 		href="https://fonts.googleapis.com/css2?family=Quintessential&display=swap"
 		rel="stylesheet"
 	/>
-	<!-- Title: Call Upon The Power Of Tarot -->
 	<title>Call Upon The Power Of Tarot</title>
 </svelte:head>
 <div class="toastWrapper">

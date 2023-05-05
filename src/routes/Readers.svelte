@@ -4,6 +4,7 @@
   import { page } from "$app/stores";
 	import { get } from "svelte/store";
 	import ItemList from "./ItemList.svelte";
+	import { fade } from "svelte/transition";
   let charactersArray = Array.from(characters.entries());
 
   let listItems: ListItem[] = [];
@@ -41,7 +42,6 @@
     }
   };
   selectItem(0);
-
 </script>
 
 <div class="container">
@@ -49,31 +49,34 @@
     Click on a character to learn more about them.
   </p>
   <ItemList items={listItems} />
-  {#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
-   {#if listItems[selected]?.name === character.character.name}
-    <div class="character">
-      <div class="imgWrapper stacked">
-        <img src={"/options/"+character.name+"-1024.webp"} alt={character.character.name} />
-        <div class="shadow top-bottom" />
-        <div class="shadow left-right" />
-      </div>
-      <div class="info">
-        <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
-        <p class="model">AI Model: {character.character.model}</p>
-        {#if character.character.pack && character.character.pack !== 'unlock' && !$page.data.profile?.data.bought_items.includes(character.character.pack)}
-          <p class="unlock">{character.character.name} {character.character.title} is available for purchase in the shop.</p>
-        {/if}
-        {#if unlocks.get(character.character.name) && $page.data.profile?.data.experience < (unlocks.get(character.character.name)?.exp || 0)}  
-        <div class="unlock">
-          <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>
+  <div class="stacked">
+
+    {#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
+     {#if listItems[selected]?.name === character.character.name}
+      <div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}" class="character">
+        <div class="imgWrapper stacked">
+          <img src={"/options/"+character.name+"-1024.webp"} alt={character.character.name} />
+          <div class="shadow top-bottom" />
+          <div class="shadow left-right" />
         </div>
-        {/if}
-        <p class="description">{@html character.character.publicDescription}</p>
-        <p class="imgBy">Image created by {character.character.imageCreator}</p>
+        <div class="info">
+          <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
+          <p class="model">AI Model: {character.character.model}</p>
+          {#if character.character.pack && character.character.pack !== 'unlock' && !$page.data.profile?.data.bought_items.includes(character.character.pack)}
+            <p class="unlock">{character.character.name} {character.character.title} is available for purchase in the shop.</p>
+          {/if}
+          {#if unlocks.get(character.character.name) && $page.data.profile?.data.experience < (unlocks.get(character.character.name)?.exp || 0)}  
+          <div class="unlock">
+            <p>{character.character.name} {character.character.title} is unlocked at {unlocks.get(character.character.name)?.exp} experience.</p>
+          </div>
+          {/if}
+          <p class="description">{@html character.character.publicDescription}</p>
+          <p class="imgBy">Image created by {character.character.imageCreator}</p>
+        </div>
       </div>
-    </div>
-    {/if}
-  {/each}
+      {/if}
+    {/each}
+  </div>
 </div>
 
 <style lang="scss">
@@ -101,6 +104,7 @@
       .imgWrapper{
         position: relative;
         width: fit-content;
+        height: fit-content;
         img{
           width: 100%;
           height: auto;

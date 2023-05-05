@@ -31,7 +31,7 @@
 			const x = e.pageX - container.offsetLeft;
 			const walk = (x - startX) * 2; //scroll-fast
 			container.scrollLeft = scrollLeft - walk;
-			console.log(walk);
+			// console.log(walk);
 		});
 	});
 
@@ -108,6 +108,8 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				border: 3px solid rgba($color: #ffffff, $alpha: 0.0);
+
 				img {
 					transition: all 0.2s ease;
 					border-radius: 0.5rem;
@@ -118,7 +120,7 @@
 				}
 
 				&:focus-visible {
-					outline: 2px solid rgba($color: #ffffff, $alpha: 0.5) !important;
+					outline: 2px solid rgba($color: #ffffff, $alpha: 0.75) !important;
 					outline-offset: 3px;
 				}
 				&:hover {
@@ -129,7 +131,7 @@
 				}
 				&.selected {
 					background: rgba($color: #000000, $alpha: 0.8);
-					border: 1px solid rgba($color: #ffffff, $alpha: 0.5);
+					border: 3px solid rgba($color: #ffffff, $alpha: 0.75);
 					img {
 						transform: scale(1.1) translateX(1px);
 					}

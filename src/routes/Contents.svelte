@@ -22,7 +22,7 @@
 	// 5: Custom Spreads
 	// 6: Shop
 	$: if ($menuStateStore.change){
-		console.log('menuStateStore changed', $menuStateStore.value);
+		// console.log('menuStateStore changed', $menuStateStore.value);
 		contents.scrollIntoView();
 		menuValue = $menuStateStore.value;
 		setupItemList();
@@ -82,19 +82,21 @@
 				<ItemList bind:items={itemList} />
 			</div>
 		</div>
-		{#each menuItems as item, i}
-			{#if i === menuValue}
-			<div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}">
-
-				<h1>
-					{ item.name }
-				</h1>
-				<div class="screenPadding">
-					<svelte:component this={item.component} />
-			</div>
+		<div class="stacked">
+			{#each menuItems as item, i}
+				{#if i === menuValue}
+				<div in:fade="{{duration:150, delay: 150}}" out:fade="{{duration:150, delay: 0}}">
+	
+					<h1>
+						{ item.name }
+					</h1>
+					<div class="screenPadding">
+						<svelte:component this={item.component} />
 				</div>
-			{/if}
-		{/each}
+					</div>
+				{/if}
+			{/each}
+		</div>
 		
 	</div>
 </div>
@@ -103,7 +105,7 @@
 	.contents {
 		// background: $bg2;
 		margin-top: 2rem;
-		padding-bottom: 4rem;
+		padding-bottom: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;

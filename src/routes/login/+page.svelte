@@ -18,7 +18,7 @@
 			use:enhance={({ form }) => {
 				loading = true;
 				return async ({ result, update }) => {
-					console.log(result);
+					// console.log(result);
 					if(result.data){
 						error = result.data.body;
 						loading = false;

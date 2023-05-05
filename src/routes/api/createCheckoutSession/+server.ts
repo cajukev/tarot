@@ -31,7 +31,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${shopItem?.description}`,
+              name: `${shopItem?.name}`,
+              description: `${shopItem?.stripeDescription}`,
             },
             unit_amount: shopItem?.cost,
           },
