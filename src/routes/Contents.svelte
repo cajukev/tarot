@@ -23,9 +23,11 @@
 	// 6: Shop
 	$: if ($menuStateStore.change){
 		// console.log('menuStateStore changed', $menuStateStore.value);
-		contents.scrollIntoView();
 		menuValue = $menuStateStore.value;
 		setupItemList();
+		setTimeout(() => {
+			contents.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+		}, 151);
 	}
 
 	let menuItems = [
