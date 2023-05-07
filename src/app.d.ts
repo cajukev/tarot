@@ -53,6 +53,8 @@ declare global {
 		ready?: boolean | false,
 		incomplete?: boolean | false,
 		cardback: string,
+		art: string,
+		model: string,
 	}
 
 	type ListItem = {

@@ -45,9 +45,9 @@
     })
   };
 
-  let updateSpread = () => {
+  let duplicateSpread = () => {
     customSpreadsStore.update((spreads) => {
-      spreads[selected] = newSpread;
+      spreads.push(newSpread);
       return spreads;
     });
     fetch("/api/updateCustomSpreads", {
@@ -164,6 +164,12 @@
     </div>
 
     <button class="save" on:click={() => saveSpread()}>Save Spread</button>
+
+    <!-- Duplicate -->
+    {#if selected !== $customSpreadsStore.length}
+      <button class="duplicate" on:click={() => duplicateSpread()}>Duplicate Spread</button>
+    {/if}
+
     <!-- Delete -->
     {#if selected !== $customSpreadsStore.length}
       <button class="delete" on:click={() => deleteSpread()}>Delete Spread</button>
@@ -187,9 +193,6 @@
     .card, .add, .save, .delete{
       margin-top: 1rem;
     }
-    .delete{
-      margin-left: 0.5rem;
-    }
     button{
       cursor: pointer;
 		  background-color: $accent;
@@ -197,6 +200,9 @@
 		  padding: 0.25rem 0.5rem;
 		  font-family: $other-font;
 		  font-weight: 700;
+      &:not(:last-child){
+        margin-right: 0.5rem;
+      }
     }
   }
 </style>

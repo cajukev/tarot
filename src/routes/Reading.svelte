@@ -11,11 +11,12 @@
 		achievementsStore,
 		menuStateStore
 	} from '../stores';
-	import type { CollectionCard } from '$lib/cards';
+	import { getCardsPack, type CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
 	import { unlocks } from '$lib/unlocks';
 	import { set } from '@fern-api/openai/core/schemas';
 	import ItemList from './ItemList.svelte';
+	import { art } from '$lib/customization';
 	export let state: number;
 
 	let flipCard = (index: number) => {
@@ -56,7 +57,7 @@
 	$: {
 		tokenCost = getTokenCost(
 			$flippedCardsStore?.length,
-			characters.get($readingStore.character)?.model || 'default'
+			$readingStore.model || 'default'
 		);
 	}
 	let loading = false;
@@ -166,7 +167,7 @@
 
 							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
-									src="/cards/{_getCardImgName($readingStore.cards[i].name)}-200.webp"
+									src={"/cards/"+_getCardImgName($readingStore.cards[i].name)+"-200"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(getCardsPack($readingStore.cards[i].name) || "anythingElse") ? "-"+$readingStore.art : "")+".webp"}
 									alt=""
 									tabindex={$flippedCardsStore[i] ? 0 : -1}
 									class={'white ' +
@@ -198,11 +199,38 @@
 				<p>Choose a reader</p>
 				<ItemList items={listItems} />
 			</div>
+			<!-- Model select radio button, gpt-3.5-turbo && gpt-4 -->
+			<div class="modelSelect">
+				<p>Choose a model</p>
+				<div class="radio">
+					<input
+						type="radio"
+						id="gpt-3.5-turbo"
+						name="model"
+						value="gpt-3.5-turbo"
+						checked={$readingStore.model === 'gpt-3.5-turbo'}
+						on:change={() => ($readingStore.model = 'gpt-3.5-turbo')}
+					/>
+					<label for="gpt-3.5-turbo">GPT-3.5 Turbo</label>
+				</div>
+				<div class="radio">
+					<input
+						type="radio"
+						id="gpt-4"
+						name="model"
+						value="gpt-4"
+						checked={$readingStore.model === 'gpt-4'}
+						on:change={() => ($readingStore.model = 'gpt-4')}
+					/>
+					<label for="gpt-4">GPT-4</label>
+				</div>
+				</div>
 			{#if tokenCost <= $page.data.profile.data.tokens}
 				<div>
 					<button class="startReading" on:click={() => startReading()}>
 						{'Get ' + $readingStore.character + "'s interpretation"}
 					</button>
+					
 				</div>
 			{:else}
 				<div>

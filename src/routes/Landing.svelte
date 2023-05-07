@@ -6,6 +6,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
+	import { readingStore } from '../stores';
 
 	let recursiveInvalidate = (count: number) => {
 		switch (count) {
@@ -68,7 +69,9 @@
 		setting: '',
 		conclusion: '',
 		character: '',
-		cardback: 'AITarot'
+		cardback: 'AITarot',
+		art: 'AITarot',
+		model: ''
 	};
 
 	let flippedCards = [false, false, false];
@@ -151,7 +154,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 							<div class="stacked">
 								<div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
 									<img
-										src="/cards/cardback-200.webp"
+										src={"/cards/cardback-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
 										class={landingReading.cards[i].reversed
 											? 'reversed cardGrowReversed'
@@ -170,7 +173,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 
 								<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
 									<img
-										src="/cards/{_getCardImgName(landingReading.cards[i].name)}-200.webp"
+										src={"/cards/"+_getCardImgName(landingReading.cards[i].name)+"-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
 										class={'white ' +
 											(landingReading.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}

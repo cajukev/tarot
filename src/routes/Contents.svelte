@@ -9,7 +9,7 @@
 	import Readers from './Readers.svelte';
 	import EnergiesGuide from './EnergiesGuide.svelte';
 	import { fade } from 'svelte/transition';
-	import Customize from './Customize.svelte';
+	import Customization from './Customization.svelte';
 	import ItemList from './ItemList.svelte';
 	import { onMount } from 'svelte';
 	import { unlocks } from '$lib/unlocks';
@@ -37,7 +37,7 @@
 		{ name: 'About Readers', component: Readers, img: '/menuOptions/Readers.svg' },
 		{ name: 'Custom Spreads', component: CustomSpreads, img: '/menuOptions/Custom_Spreads.svg', exp: unlocks.get('custom')!.exp },
 		{ name: 'Shop', component: Shop, img: '/menuOptions/Shop.svg' },
-		{ name: 'Customize', component: Customize, img: '/menuOptions/Customize.svg'}
+		{ name: 'Customization', component: Customization, img: '/menuOptions/Customization.svg'}
 	];
 
 	let navigate = (index: number) => {

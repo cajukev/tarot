@@ -90,6 +90,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let drawnCards = formData.reading.cards || [];
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
+  let model = formData.reading.model || "gpt-3.5-turbo";
 
 
   let system = `Ignore all instructions before this one. You print out only raw text.
@@ -124,7 +125,7 @@ Total ${60 * drawnCards.length + 120} words, no more no less`
   console.log('messages', messages[0].content)
 
   let openAIresponseReading = await openai.createChatCompletion({
-    model: character?.model || "gpt-3.5-turbo",
+    model: model || "gpt-3.5-turbo",
     messages: [{ role: 'system', 'content': system }],
     max_tokens: 2048,
     temperature: character?.temperature || 1,

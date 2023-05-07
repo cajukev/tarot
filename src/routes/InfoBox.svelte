@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { achievements } from '$lib/achievements';
-	import type { CollectionCard } from '$lib/cards';
+	import { getCardsPack, type CollectionCard } from '$lib/cards';
 	import { energyGroups, energyList, energyMap } from '$lib/energies';
 	import { objToMap } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { prevent_default } from 'svelte/internal';
 	import { fade } from 'svelte/transition';
+	import { readingStore } from '../stores';
+	import { art } from '$lib/customization';
 
 	export let isShown = false;
 	export let currentCard: CollectionCard | undefined = undefined;
@@ -117,7 +119,7 @@
 						}
 					}}
 					class={currentCard?.reversed ? 'reversed' : ''}
-					src="/cards/{_getCardImgName(currentCard.name)}-400.webp"
+					src={"/cards/"+_getCardImgName(currentCard.name)+"-400"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(getCardsPack(currentCard.name) || "anythingElse") ? "-"+$readingStore.art : "")+".webp"}
 					alt=""
 				/>
 			{/if}

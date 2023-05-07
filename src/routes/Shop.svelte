@@ -6,7 +6,7 @@
 	import { toast } from '@zerodevx/svelte-toast';
   import characters from '$lib/characters';
 	import ItemList from './ItemList.svelte';
-	import { cardbacks } from '$lib/cardbacks';
+	import { cardbacks } from '$lib/customization';
 	import { achievement as achievementToast } from '$lib/toastStubs';
 	let goToCheckout = (item: string) => {
 		fetch('/api/createCheckoutSession', {

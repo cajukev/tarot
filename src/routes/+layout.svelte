@@ -261,7 +261,7 @@
 	<div class="bg" />
 	<Title />
 	<slot />
-	<p class="title">AITarot.website</p>
+	<p class="title end">AITarot.website</p>
 </div>
 
 <div class="dummy hidden" />
@@ -302,6 +302,9 @@
       font-weight: 300;
       color: white;
       margin-bottom: 0.5rem;
+			&.end{
+				margin-bottom: 2rem;
+			}
     }
 
 	// Toast

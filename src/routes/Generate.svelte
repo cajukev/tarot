@@ -133,7 +133,7 @@
 	$: {
 		tokenCost = getTokenCost(
 			$readingStore.cards.length,
-			characters.get($readingStore.character)?.model || 'default'
+			$readingStore.model || 'default'
 		);
 	}
 

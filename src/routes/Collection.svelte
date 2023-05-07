@@ -5,14 +5,14 @@
 	
 -->
 <script lang="ts">
-	import { cards, type CollectionCard, type CollectionDeck } from '$lib/cards';
-	import { collectionStore } from '../stores';
+	import { cards, getCardsPack, type CollectionCard, type CollectionDeck } from '$lib/cards';
+	import { collectionStore, readingStore } from '../stores';
 	import { page } from '$app/stores';
 	import { unlocks } from '$lib/unlocks';
 	import { secrets } from '$lib/secrets';
 	import InfoBox from './InfoBox.svelte';
 	import ItemList from './ItemList.svelte';
-	import { cardbacks } from '$lib/cardbacks';
+	import { art, cardbacks } from '$lib/customization';
 	import { error } from '$lib/toastStubs';
 
 	export let landing = false;
@@ -58,14 +58,13 @@
 			decks = [decks[0] as CollectionDeck]
 		}
 		decks.forEach((deck, i) => {
-			// _getCardImgName(deck.cards[ random card??? ])
 			let img = cardbacks.find((c) => c.name === deck.name)?.image || _getCardImgName(deck.cards[0]) ;
-			
-				// console.log(deck.name);
+
+				console.log(art.find(a => a.suffix === $readingStore.art )?.decks, $readingStore.art, deck.name,);
 				itemList.push({
 					id: i,
 					name: deck.name,
-					img: "/cards/"+img+"-120.webp",
+					img: "/cards/"+img+"-120"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(getCardsPack(img.replaceAll("_", " ")) as string) ? "-"+$readingStore.art : "")+".webp",
 					action: () => {
 						toggleDeck(deck);
 					},
@@ -131,6 +130,7 @@
 			</div>
 			<div class="cards">
 				{#each deck.cards as card}
+					<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 					<div
 						tabindex="0"
 						on:click={() => {
@@ -144,18 +144,9 @@
 						class="card"
 					>
 						<img
-							src="/cards/{_getCardImgName(card)}-120.webp"
-							srcset={`/cards/${_getCardImgName(card)}-120.webp 120w, /cards/${_getCardImgName(
-								card
-							)}-200.webp 200w`}
+							src={"/cards/"+_getCardImgName(card)+"-120"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(deck.name) ? "-"+$readingStore.art : "")+".webp"}
+							srcset={"/cards/"+_getCardImgName(card)+"-120"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(deck.name) ? "-"+$readingStore.art : "")+".webp 120w, /cards/"+_getCardImgName(card)+"-200"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(deck.name) ? "-"+$readingStore.art : "")+".webp 200w"}
 							alt={card?.name}
-						/>
-					</div>
-					<div class="hiddenImg">
-						<img
-							src="/cards/{_getCardImgName(card)}-400.webp"
-							alt={card?.name}
-							loading="lazy"
 						/>
 					</div>
 				{/each}
