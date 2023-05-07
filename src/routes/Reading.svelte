@@ -211,7 +211,7 @@
 						checked={$readingStore.model === 'gpt-3.5-turbo'}
 						on:change={() => ($readingStore.model = 'gpt-3.5-turbo')}
 					/>
-					<label for="gpt-3.5-turbo">GPT-3.5 Turbo</label>
+					<label for="gpt-3.5-turbo">GPT-3.5 Turbo {characters.get($readingStore.character)?.model === "gpt-3.5-turbo" ? "(suggested)" : "" }</label>
 				</div>
 				<div class="radio">
 					<input
@@ -222,7 +222,7 @@
 						checked={$readingStore.model === 'gpt-4'}
 						on:change={() => ($readingStore.model = 'gpt-4')}
 					/>
-					<label for="gpt-4">GPT-4</label>
+					<label for="gpt-4">GPT-4 {characters.get($readingStore.character)?.model === "gpt-4" ? "(suggested)" : "" }</label>
 				</div>
 				</div>
 			{#if tokenCost <= $page.data.profile.data.tokens}

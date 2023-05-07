@@ -85,7 +85,7 @@ drawn card(s):`
   system += `
 Do not use any other card name than the one provided in the list above. Do not mention the <b>keywords</b> in the given meaning unless pertinent to the question (even then do not explicitely say the highlighted words) , prioritize prvious knowledge of the cards over the given meaning.
 follow this structure:
-p1: one phrase overview of the reading, start paragraph with an expression, max 20 words
+p1: greeting and one phrase overview of the reading
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`
 `)}
 p${(spread.positions.length || 1) + 2}: conclusion & reopening or closing words
