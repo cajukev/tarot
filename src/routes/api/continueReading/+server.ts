@@ -64,16 +64,17 @@ export const POST: RequestHandler = async ({request, locals}) => {
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
   let conclusion = formData.reading.conclusion || "";
+  let model = formData.reading.model || "gpt-3.5-turbo";
 
 
   let system = `Ignore all instructions before this one. You print out only raw text.
-You are ${characterInput}.
+You are ${characterInput} and must give the best Tarot reading given the following information.
 ` +
     character?.description
-    +
-    `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
-`)}
-`
+//     +
+//     `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
+// `)}
+// `
     +
     `Spread: ${spread.name}
 question = ${question}
@@ -83,29 +84,25 @@ drawn card(s):`
   ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${spread.positions[i]}", special instruction: ${spread.instructions[i]}, "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
   })
   system += `
-Do not use any other card name than the one provided in the list above. Do not mention the <b>keywords</b> in the given meaning unless pertinent to the question (even then do not explicitely say the highlighted words) , prioritize prvious knowledge of the cards over the given meaning.
+Do not use any other card name than the one provided in the list above. Do not repeat the meaning, prioritize previous knowledge of the cards over the given meaning.
 follow this structure:
-p1: greeting and one phrase overview of the reading
+p1: greeting and one phrase overview of the reading to come
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`
 `)}
-p${(spread.positions.length || 1) + 2}: conclusion & reopening or closing words
+p${(spread.positions.length || 1) + 2}: conclude by relating the cards together and to the question, reopening or closing words
 separate each p with a line break
 Total ${60 * drawnCards.length + 120} words, no more no less`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },
     { role: ChatCompletionRequestMessageRoleEnum.Assistant, 'content': character?.name + ": " + conclusion},
-    { role: ChatCompletionRequestMessageRoleEnum.User, 'content': `
-
-User: continue
-
-` + character?.name + ": "},
+    { role: ChatCompletionRequestMessageRoleEnum.User, 'content': ""},
 
   ]
   console.log('messages', messages[0].content, messages[1].content, messages[2].content)
 
   let openAIresponseReading = await openai.createChatCompletion({
-    model: character?.model || "gpt-3.5-turbo",
+    model: model || "gpt-3.5-turbo",
     messages: messages,
     max_tokens: 2048,
     temperature: character?.temperature || 1,

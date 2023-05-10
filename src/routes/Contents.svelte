@@ -92,7 +92,7 @@
 					<h1>
 						{ item.name }
 					</h1>
-					<div class="screenPadding">
+					<div class="">
 						<svelte:component this={item.component} />
 				</div>
 					</div>

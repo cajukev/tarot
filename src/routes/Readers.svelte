@@ -49,7 +49,7 @@
     Click on a character to learn more about them.
   </p>
   <ItemList items={listItems} />
-  <div class="stacked">
+  <div class="stacked screenPadding">
 
     {#each Array.from(characters).map( ([name, character]) => ({ name, character }) ) as character}
      {#if listItems[selected]?.name === character.character.name}
@@ -61,7 +61,7 @@
         </div>
         <div class="info">
           <p class="name">{character.character.name} - <span class="title">{character.character.title}</span></p>
-          <p class="model">AI Model: {character.character.model}</p>
+          <p class="model">Suggested AI Model: {character.character.model}</p>
           {#if character.character.pack && character.character.pack !== 'unlock' && !$page.data.profile?.data.bought_items.includes(character.character.pack)}
             <p class="unlock">{character.character.name} {character.character.title} is available for purchase in the shop.</p>
           {/if}
@@ -154,6 +154,7 @@
         display: flex;
         flex-direction: column;
         max-width: 30rem;
+        margin: 0 auto;
         .name{
           font-family: $header-font;
           font-size: $h3-font-size;

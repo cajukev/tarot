@@ -45,7 +45,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
               console.log('tokens')
               const r1 = locals.sb.from('Profile').update({
                 essence: data.essence - (formData.item.cost || 0),
-                tokens: data.tokens + (formData.item.amount || 0)
+                tokens: data.tokens + (formData.item.amount || 0),
+                purchase_history: [...data.purchase_history, {item: formData.item.amount+" Tokens", date: new Date().toLocaleString()}]
               }).eq('id', data.id)
                 .then((response) => {
                   return JSON.stringify({
@@ -59,7 +60,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
               console.log('default')
               const r2 = locals.sb.from('Profile').update({
                 essence: data.essence - (formData.item.cost || 0),
-                bought_items: [...data.bought_items, formData.item.key]
+                bought_items: [...data.bought_items, formData.item.key],
+                purchase_history: [...data.purchase_history, {item: formData.item.name, date: new Date().toLocaleString()}]
               }).eq('id', data.id)
                 .then((response) => {
                   return JSON.stringify({

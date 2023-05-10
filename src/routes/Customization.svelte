@@ -1,7 +1,7 @@
 <script lang="ts">
   import { cardbacks, art } from "$lib/customization";
   import { page } from "$app/stores";
-  import { readingStore } from "../stores";
+  import { readingStore, textSizeStore } from "../stores";
 	import ItemList from "./ItemList.svelte";
 
   let setCardback = (cardback: string) => {
@@ -68,6 +68,13 @@
   }
   selectItemArt($readingStore.art ? art.findIndex(a => a.suffix === $readingStore.art) : 0);
 
+  let textSize = 1;
+  $: textSizeTrigger(textSize);
+
+  let textSizeTrigger = (textSize: number) => {
+    document.body.style.fontSize = textSize + "rem";
+  }
+
 </script>
 
 <div class="container">
@@ -76,6 +83,13 @@
 
   Choose your art
   <ItemList items={listItemsArt} />
+<!-- 
+  Change text size
+  <select bind:value={textSize}>
+    <option value=1>Regular</option>
+    <option value=1.5>1.5x</option>
+    <option value=2>2x</option>
+  </select> -->
   
 </div>
 

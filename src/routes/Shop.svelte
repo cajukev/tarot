@@ -8,7 +8,11 @@
 	import ItemList from './ItemList.svelte';
 	import { cardbacks } from '$lib/customization';
 	import { achievement as achievementToast } from '$lib/toastStubs';
+
+  let loading = false;
+
 	let goToCheckout = (item: string) => {
+    loading = true;
 		fetch('/api/createCheckoutSession', {
 			method: 'POST',
 			headers: {
@@ -19,12 +23,14 @@
 			.then((res) => res.json())
 			.then((response) => {
 				if (response.sessionUrl) {
+          loading = false;
 					goto(response.sessionUrl);
 				}
 			});
 	};
 
   let buyWithEssence = (item: ShopItem) => {
+    loading = true;
     fetch('/api/buyWithEssence', {
       method: 'POST',
       headers: {
@@ -38,7 +44,10 @@
         if (response.status === 200) {
           invalidateAll()
           .then(() => {
-            selected = -1;
+            if(item.type !== 'Tokens'){
+              selected = -1;
+            }
+            loading = false;
             setupItemList();
           });
           achievementToast(`Bought ${item.name}`, {});
@@ -81,6 +90,16 @@
         bought: $page.data.profile.data.bought_items.includes(Array.from(shopItems.entries())[i][1].key)  
       });
     }
+    // Purchase History Item
+    listItems.push({
+      id: listItems.length,
+      name: 'Purchase History',
+      img: '',
+      selected: false,
+      action: () => {
+        selectItem(listItems.length - 1);
+      },
+    });
   };
   setupItemList();
 
@@ -105,13 +124,13 @@
 </script>
 
 <div class="container screenPadding">
-	<p class="prices">All prices are in USD.<p>
+	<p class="prices info">All prices are in USD <br> All purchases are non-refundable<p>
   <p class="essence">You currently have <span>{$page.data.profile.data.essence}</span> essence</p>
 
   <ItemList items={listItems} />
 
   <!-- Shop item info -->
-  {#if selected !== -1}
+  {#if selected !== -1 && selected !== listItems.length - 1}
     <div class="itemInfo">
       <p class="name">{Array.from(shopItems.entries())[selected][1].name}</p>
       <p class="description">{Array.from(shopItems.entries())[selected][1].description}</p>
@@ -124,7 +143,7 @@
       {:else}
         <!-- Pay with Essence -->
         <p>Costs {Array.from(shopItems.entries())[selected][1].cost} Essence</p>
-        <button class="cost" on:click={ 
+        <button class="cost" disabled={loading} on:click={ 
           () => {
             buyWithEssence(Array.from(shopItems.entries())[selected][1]);
           }
@@ -132,31 +151,16 @@
       {/if}
     </div>
   {/if}
-
-
-  <!-- <div class="items">
-
-    {#each Array.from(shopItems.entries()) as item}
-		<div>
-      <p class="name">{item[1].name}</p>
-      {#if item[1].type === 'Essence'}
-        {#if item[1].extra?.amount }
-          <p>+ {item[1].extra.amount} tokens</p>
-        {/if}
-			  <p class="cost">${centsToDollars(item[1].cost)}</p>
-			  <button on:click={() => goToCheckout(item[0])}>Buy</button>
-        {:else}
-        <-- Pay with Essence ->
-        {item[1].cost} Essence
-        <button class="cost" on:click={ 
-          () => {
-            buyWithEssence(item[1]);
-          }
-        }>Buy</button>
-      {/if}
-		</div>
-    {/each}
-  </div> -->
+  <!-- Purchase History -->
+  {#if selected === listItems.length - 1}
+    <div class="itemInfo">
+      <p class="name">Purchase History</p>
+      {#each $page.data.profile.data.purchase_history as boughtItem }
+        <!-- html table date and name -->
+        <p>{boughtItem.date} - {boughtItem.item}</p>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -172,6 +176,11 @@
     font-family: serif;
     font-size: clamp(20px, 2.3vw, 26px);
     cursor: pointer;
+    &:disabled{
+      background-color: #F7DB5D;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     }
   }
     

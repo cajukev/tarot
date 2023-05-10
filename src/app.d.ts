@@ -28,6 +28,7 @@ declare global {
 					tokens: number,
 					essence: number,
 					bought_items: string[],
+					purchase_history: {item: string, date: string}[]
 				}
 			}
 		}

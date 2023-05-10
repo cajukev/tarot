@@ -153,6 +153,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 						{#if landingReading.cards[i]}
 							<div class="stacked">
 								<div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
+									<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 									<img
 										src={"/cards/cardback-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
@@ -172,6 +173,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 								</div>
 
 								<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
+									<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 									<img
 										src={"/cards/"+_getCardImgName(landingReading.cards[i].name)+"-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
@@ -214,7 +216,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 
 	</div>
 </div>
-<div class="collection">
+<div class="collection screenPadding">
 	<h1>Collection</h1>
 	<Collection landing={true} />
 </div>
@@ -297,9 +299,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 					width: 100%;
 					text-align: center;
 					white-space: break-spaces;
-					& li {
-						margin: 0.5rem 0rem;
-					}
 				}
 				& img {
 					margin: 1rem 0rem;
@@ -320,14 +319,6 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 				&.notready {
 					cursor: not-allowed;
 					pointer-events: none;
-				}
-				& h3 {
-					font-family: $header-font;
-					& span {
-						font-size: $base-font-size;
-						opacity: 0.8;
-						font-weight: 100;
-					}
 				}
 			}
 		}

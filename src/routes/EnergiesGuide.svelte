@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<div class="container">
+<div class="container screenPadding">
   <p class="guide">
     Greetings, seeker of truth. Within the enigmatic realm of the Tarot lies a labyrinthine tapestry, interwoven with the intricate threads of arcane energies. These sacred forces whisper their secrets to those who dare to embark upon the path of self-discovery, beckoning the courageous to delve deep into the shadows of their souls.
 

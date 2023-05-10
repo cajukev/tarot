@@ -71,7 +71,7 @@
 		overflow: auto;
 		display: inline-flex;
 		gap: 1rem;
-		padding: 1rem;
+		padding: 1rem clamp(1rem, 8vw, 5rem);
 		cursor: grab;
 		&::-webkit-scrollbar {
 			display: none;

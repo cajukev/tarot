@@ -76,7 +76,7 @@
 				);
 			}
 		});
-		return newTextBeforePeriod + newText.split('.')[1];
+		return newTextBeforePeriod + "." + newText.split('.')[1];
 	};
 
 	export let _getEnergyColor = (energy: string) => {

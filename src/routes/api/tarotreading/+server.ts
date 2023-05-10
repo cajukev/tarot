@@ -110,12 +110,12 @@ drawn card(s):`
   ${card.name} - "reversed": ${card.reversed || "false"}, "position": "${spread.positions[i]}", special instruction: ${spread.instructions[i]}, "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
   })
   system += `
-Do not use any other card name than the one provided in the list above. Do not mention the <b>keywords</b> in the given meaning unless pertinent to the question (even then do not explicitely say the highlighted words) , prioritize prvious knowledge of the cards over the given meaning.
+Do not use any other card name than the one provided in the list above. Do not repeat the meaning, prioritize previous knowledge of the cards over the given meaning.
 follow this structure:
-p1: greeting and one phrase overview of the reading
+p1: greeting and one phrase overview of the reading to come
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name}, explain`).join(`
 `)}
-p${(spread.positions.length || 1) + 2}: conclusion & reopening or closing words
+p${(spread.positions.length || 1) + 2}: conclude by relating the cards together and to the question, reopening or closing words
 separate each p with a line break
 Total ${60 * drawnCards.length + 120} words, no more no less`
 
