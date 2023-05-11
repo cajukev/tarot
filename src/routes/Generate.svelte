@@ -849,8 +849,7 @@
 			display: grid;
 			grid-template-columns: repeat(5, 1fr);
 			grid-template-rows: repeat(2, 1fr);
-			width: 16rem;
-			height: 5rem;
+			min-height: 5rem;
 			position: relative;
 			overflow-x: hidden;
 			overflow-y: hidden;

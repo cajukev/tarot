@@ -3,7 +3,7 @@
 	import { db } from '$lib/db';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { achievementsStore, deviceStore, readingStore, menuStateStore } from '../stores';
+	import { achievementsStore, deviceStore, readingStore, menuStateStore, textSizeStore } from '../stores';
 	import type { PageData } from './$types';
 	import { SvelteToast, toast } from '@zerodevx/svelte-toast';
 	import { achievement as achievementToast, unlock as unlockToast } from '$lib/toastStubs';
@@ -31,6 +31,8 @@
 		if (matchMedia('(pointer:fine)').matches) {
 			$deviceStore.hasMouse = true;
 		}
+		// Text size
+		document.documentElement.style.setProperty('--fontMultiplier', $textSizeStore+"");
 
 		// Supabase Auth
 		const {
@@ -43,7 +45,9 @@
 		return () => {
 			subscription.unsubscribe();
 		};
+
 	});
+
 
 	let storedQuestion = 'This is definitely not a question 1234567890987654321';
 	let storedEnergy = '';
@@ -148,25 +152,25 @@
 				// console.log('StartReading');
 				value = $readingStore;
 				let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
-				userAchievements.get('30Tokens')!.progress =
-					userAchievements.get('30Tokens')!.progress + spentTokens;
-				if (userAchievements.get('30Tokens')!.progress >= 30) {
-					completeAchievement('30Tokens');
+				userAchievements.get('250Tokens')!.progress =
+					userAchievements.get('250Tokens')!.progress + spentTokens;
+				if (userAchievements.get('250Tokens')!.progress >= 250) {
+					completeAchievement('250Tokens');
 				}
-				if (userAchievements.get('30Tokens')!.progress >= 25) {
+				if (userAchievements.get('250Tokens')!.progress >= 200) {
+					completeAchievement('200Tokens');
+				}
+				if (userAchievements.get('250Tokens')!.progress >= 150) {
+					completeAchievement('150Tokens');
+				}
+				if (userAchievements.get('250Tokens')!.progress >= 100) {
+					completeAchievement('100Tokens');
+				}
+				if (userAchievements.get('250Tokens')!.progress >= 50) {
+					completeAchievement('50Tokens');
+				}
+				if (userAchievements.get('250Tokens')!.progress >= 25) {
 					completeAchievement('25Tokens');
-				}
-				if (userAchievements.get('30Tokens')!.progress >= 20) {
-					completeAchievement('20Tokens');
-				}
-				if (userAchievements.get('30Tokens')!.progress >= 15) {
-					completeAchievement('15Tokens');
-				}
-				if (userAchievements.get('30Tokens')!.progress >= 10) {
-					completeAchievement('10Tokens');
-				}
-				if (userAchievements.get('30Tokens')!.progress >= 5) {
-					completeAchievement('5Tokens');
 				}
 				updateAchievementsFlag = true;
 				break;

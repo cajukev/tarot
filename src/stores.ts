@@ -25,4 +25,4 @@ export const collectionStore = persisted<CollectionDeck[]>('collectionStore', []
 export const menuStateStore = writable<{value: number, change: boolean}>({value:0, change:false});
 export const customSpreadsStore = writable<ReadingSpreadType[]>([]);
 export const achievementsStore = writable<{action: string, value: any}>();
-export const textSizeStore = writable<number>(1);
+export const textSizeStore = persisted<number>('textSizeStore', 1);

@@ -30,49 +30,49 @@ export const achievements: Map<string, Achievement> = new Map([
     experience: 50,
     completed: false
   }],
-  ["5Tokens", {
-    name: "Tarot fan",
-    description: "Spent 5 tokens",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
-  ["10Tokens", {
-    name: "Tarot novice",
-    description: "Spent 10 tokens",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
-  ["15Tokens", {
-    name: "Tarot amateur",
-    description: "Spent 15 tokens",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
-  ["20Tokens", {
-    name: "Tarot joyer",
-    description: "Spent 20 tokens",
-    progress: 0,
-    progressType: "number",
-    experience: 50,
-    completed: false
-  }],
   ["25Tokens", {
-    name: "Tarot enthousiast",
+    name: "Tarot fan",
     description: "Spent 25 tokens",
     progress: 0,
     progressType: "number",
     experience: 50,
     completed: false
   }],
-  ["30Tokens", {
+  ["50Tokens", {
+    name: "Tarot novice",
+    description: "Spent 50 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["100Tokens", {
+    name: "Tarot amateur",
+    description: "Spent 100 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["150Tokens", {
+    name: "Tarot joyer",
+    description: "Spent 150 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["200Tokens", {
+    name: "Tarot enthousiast",
+    description: "Spent 200 tokens",
+    progress: 0,
+    progressType: "number",
+    experience: 50,
+    completed: false
+  }],
+  ["250Tokens", {
     name: "Tarot expert",
-    description: "Spent 30 tokens",
+    description: "Spent 250 tokens",
     progress: 0,
     progressType: "number",
     experience: 50,

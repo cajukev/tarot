@@ -68,11 +68,12 @@
   }
   selectItemArt($readingStore.art ? art.findIndex(a => a.suffix === $readingStore.art) : 0);
 
-  let textSize = 1;
+  let textSize = $textSizeStore;
   $: textSizeTrigger(textSize);
 
   let textSizeTrigger = (textSize: number) => {
-    document.body.style.fontSize = textSize + "rem";
+    document.documentElement.style.setProperty('--fontMultiplier', textSize+"");
+    $textSizeStore = textSize;
   }
 
 </script>
@@ -83,13 +84,15 @@
 
   Choose your art
   <ItemList items={listItemsArt} />
-<!-- 
-  Change text size
+
+  <p class="conclusion">
+    Change text size
+  </p> 
   <select bind:value={textSize}>
-    <option value=1>Regular</option>
-    <option value=1.5>1.5x</option>
-    <option value=2>2x</option>
-  </select> -->
+    <option value={1}>1x</option>
+    <option value={1.25}>1.25x</option>
+    <option value={1.5}>1.5x</option>
+  </select>
   
 </div>
 
