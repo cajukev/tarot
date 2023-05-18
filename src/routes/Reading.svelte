@@ -39,14 +39,17 @@
 		loading = false;
 	}
 
+	let readingElem: HTMLDivElement;
 	let restart = () => {
 		state = 1;
 		document.body.scrollIntoView();
 	};
+
 	let reset = () => {
 		actionState = 0;
 		$readingStore.ready = false;
 		$readingStore.conclusion = "";
+		readingElem.scrollIntoView();
 	}
 
 	let _getCardImgName = (name: string) => {
@@ -125,7 +128,7 @@
 	
 </script>
 
-<div class="reading">
+<div class="reading" bind:this={readingElem}>
 	<div class="header">
 		<h2>"{$readingStore.question}"</h2>
 		<p class="info">Energy: {$readingStore.energy}</p>
@@ -257,11 +260,11 @@
 	{/if}
 	<p class="conclusion">
 		{@html $readingStore.conclusion.trim()}
-		{#if $readingStore.incomplete }
+		<!-- {#if $readingStore.incomplete }
 		<button class="btn-link" on:click={() => startReading()}>
 			Continue the reading
 		</button>
-		{/if}
+		{/if} -->
 	</p>
 	<div class="actions">
 		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
@@ -275,7 +278,7 @@
 </div>
 
 <div>
-	<InfoBox bind:isShown bind:currentCard></InfoBox>
+	<InfoBox bind:isShown currentCard={currentCard}></InfoBox>
 </div>
 
 
@@ -316,9 +319,6 @@
 					width: 100%;
 					text-align: center;
 					white-space: break-spaces;
-					& li {
-						margin: 0.5rem 0rem;
-					}
 				}
 				& img {
 					margin: 1rem 0rem;
@@ -341,14 +341,7 @@
 					cursor: not-allowed;
 					pointer-events: none;
 				}
-				& h3 {
-					font-family: $header-font;
-					& span {
-						font-size: $base-font-size;
-						opacity: 0.8;
-						font-weight: 100;
-					}
-				}
+				
 			}
 		}
 		.conclusion {

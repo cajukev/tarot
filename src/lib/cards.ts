@@ -1,6 +1,6 @@
 export type CollectionCard = {
     name: string;
-    reversed: boolean;
+    reversed?: boolean | false;
     energy: { "upright": string[], reversed: string[] };
     meaning: string;
     reversedMeaning: string;
@@ -24,7 +24,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "The Fool",
-                    reversed: false,
                     energy: {
                         "upright": ["Beginnings", "Innocence", "Spontaneity"],
                         reversed: ["Naivety", "Recklessness", "Irresponsibility"]
@@ -34,7 +33,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "The Magician",
-                    reversed: false,
                     energy: {
                         "upright": ["Manifestation", "Resourcefulness", "Power"],
                         reversed: ["Manipulation", "Deception", "Untapped Potential"]
@@ -43,7 +41,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Magician indicates manipulation, deception, and untapped potential. It suggests that one may be using their abilities for selfish or dishonest purposes or not utilizing their full potential."
                 }, {
                     name: "The High Priestess",
-                    reversed: false,
                     energy: {
                         "upright": ["Intuition", "Mystery", "Subconscious"],
                         reversed: ["Secrets", "Repressed Emotions", "Lack of Intuition"]
@@ -52,7 +49,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The High Priestess indicates secrets, repressed emotions, and a lack of intuition. It suggests that one may be ignoring their inner wisdom or hiding something important."
                 }, {
                     name: "The Empress",
-                    reversed: false,
                     energy: {
                         "upright": ["Nurturing", "Abundance", "Creativity"],
                         reversed: ["Dependency", "Smothering", "Creative Block"]
@@ -61,7 +57,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Empress indicates dependency, smothering, and creative block. It suggests that one may be overly dependent on others or stifling growth and creativity."
                 }, {
                     name: "The Emperor",
-                    reversed: false,
                     energy: {
                         "upright": ["Authority", "Stability", "Discipline"],
                         reversed: ["Tyranny", "Rigidity", "Lack of Control"]
@@ -70,7 +65,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Emperor indicates tyranny, rigidity, and lack of control. It suggests that one may be abusing their power or struggling to maintain order and stability."
                 }, {
                     name: "The Hierophant",
-                    reversed: false,
                     energy: {
                         "upright": ["Tradition", "Spirituality", "Guidance"],
                         reversed: ["Dogmatism", "Restriction", "Unconventional"]
@@ -79,7 +73,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Hierophant indicates dogmatism, restriction, and unconventional approaches. It suggests that one may be overly rigid in their beliefs or seeking alternative paths outside of traditional norms."
                 }, {
                     name: "The Lovers",
-                    reversed: false,
                     energy: {
                         "upright": ["Union", "Harmony", "Choices"],
                         reversed: ["Imbalance", "Misalignment", "Indecision"]
@@ -88,7 +81,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Lovers indicate imbalance, misalignment, and indecision. It suggests that one may be struggling to make a choice or experiencing disharmony in their relationships."
                 }, {
                     name: "The Chariot",
-                    reversed: false,
                     energy: {
                         "upright": ["Determination", "Willpower", "Victory"],
                         reversed: ["Aggression", "Lack of Direction", "Defeat"]
@@ -97,7 +89,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Chariot indicates aggression, lack of direction, and defeat. It suggests that one may be using force inappropriately or struggling to find their way forward."
                 }, {
                     name: "Strength",
-                    reversed: false,
                     energy: {
                         "upright": ["Courage", "Patience", "Compassion"],
                         reversed: ["Insecurity", "Impatience", "Lack of Confidence"]
@@ -106,7 +97,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Strength indicates insecurity, impatience, and lack of confidence. It suggests that one may be struggling to find their inner strength or acting out of fear and self-doubt."
                 }, {
                     name: "The Hermit",
-                    reversed: false,
                     energy: {
                         "upright": ["Introspection", "Wisdom", "Solitude"],
                         reversed: ["Isolation", "Loneliness", "Withdrawal"]
@@ -115,7 +105,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Hermit indicates isolation, loneliness, and withdrawal. It suggests that one may be retreating from the world out of fear or avoiding necessary self-examination."
                 }, {
                     name: "Wheel of Fortune",
-                    reversed: false,
                     energy: {
                         "upright": ["Luck", "Karma", "Destiny"],
                         reversed: ["Misfortune", "Resistance", "Unpredictability"]
@@ -124,7 +113,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Wheel of Fortune indicates misfortune, resistance, and unpredictability. It suggests that one may be experiencing setbacks or struggling to accept the natural flow of life."
                 }, {
                     name: "Justice",
-                    reversed: false,
                     energy: {
                         "upright": ["Fairness", "Truth", "Balance"],
                         reversed: ["Injustice", "Dishonesty", "Imbalance"]
@@ -133,7 +121,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Justice indicates injustice, dishonesty, and imbalance. It suggests that one may be experiencing unfair treatment or struggling to find balance and truth in a situation."
                 }, {
                     name: "The Hanged Man",
-                    reversed: false,
                     energy: {
                         "upright": ["Surrender", "Perspective", "Sacrifice"],
                         reversed: ["Stagnation", "Resistance", "Indecision"]
@@ -142,7 +129,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Hanged Man indicates stagnation, resistance, and indecision. It suggests that one may be unwilling to let go or struggling to make necessary changes."
                 }, {
                     name: "Death",
-                    reversed: false,
                     energy: {
                         "upright": ["Transformation", "Endings", "Renewal"],
                         reversed: ["Resistance", "Stagnation", "Fear of Change"]
@@ -151,7 +137,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Death indicates resistance, stagnation, and fear of change. It suggests that one may be clinging to the past or avoiding necessary transformations."
                 }, {
                     name: "Temperance",
-                    reversed: false,
                     energy: {
                         "upright": ["Balance", "Harmony", "Moderation"],
                         reversed: ["Imbalance", "Excess", "Lack of Harmony"]
@@ -160,7 +145,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Temperance indicates imbalance, excess, and lack of harmony. It suggests that one may be overindulging or struggling to find balance in their life."
                 }, {
                     name: "The Devil",
-                    reversed: false,
                     energy: {
                         "upright": ["Temptation", "Bondage", "Materialism"],
                         reversed: ["Release", "Breaking Free", "Overcoming"]
@@ -169,7 +153,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Devil indicates release, breaking free, and overcoming. It suggests that one may be in the process of breaking free from unhealthy patterns or attachments and finding liberation from their past limitations."
                 }, {
                     name: "The Tower",
-                    reversed: false,
                     energy: {
                         "upright": ["Sudden Change", "Chaos", "Revelation"],
                         reversed: ["Resistance", "Fear of Change", "Avoiding Disaster"]
@@ -178,7 +161,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Tower indicates resistance, fear of change, and avoiding disaster. It suggests that one may be clinging to the status quo or trying to prevent inevitable change, which may ultimately be detrimental."
                 }, {
                     name: "The Star",
-                    reversed: false,
                     energy: {
                         "upright": ["Hope", "Inspiration", "Guidance"],
                         reversed: ["Despair", "Disillusionment", "Lack of Faith"]
@@ -187,7 +169,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Star indicates despair, disillusionment, and lack of faith. It suggests that one may be struggling to maintain hope or feeling disconnected from their spiritual path."
                 }, {
                     name: "The Moon",
-                    reversed: false,
                     energy: {
                         "upright": ["Intuition", "Mystery", "Illusion"],
                         reversed: ["Confusion", "Fear", "Misinterpretation"]
@@ -196,7 +177,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Moon indicates confusion, fear, and misinterpretation. It suggests that one may be struggling to see the truth or allowing fear to cloud their judgement and intuition."
                 }, {
                     name: "The Sun",
-                    reversed: false,
                     energy: {
                         "upright": ["Joy", "Success", "Vitality"],
                         reversed: ["Temporary Setback", "Lack of Clarity", "Diminished Joy"]
@@ -205,7 +185,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, The Sun indicates temporary setbacks, lack of clarity, and diminished joy. It suggests that one may be experiencing challenges or struggling to see the bright side of a situation."
                 }, {
                     name: "Judgement",
-                    reversed: false,
                     energy: {
                         "upright": ["Renewal", "Redemption", "Awakening"],
                         reversed: ["Denial", "Stagnation", "Unresolved Issues"]
@@ -214,7 +193,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Judgement indicates denial, stagnation, and unresolved issues. It suggests that one may be avoiding necessary self-examination or struggling to move forward from past mistakes."
                 }, {
                     name: "The World",
-                    reversed: false,
                     energy: {
                         "upright": ["Completion", "Wholeness", "Achievement"],
                         reversed: ["Incompletion", "Lack of Closure", "Unresolved"]
@@ -235,7 +213,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "Ace of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Inspiration", "Creativity", "New Beginnings"],
                         reversed: ["Delays", "Lack of Motivation", "Blocked Creativity"]
@@ -245,7 +222,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Two of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Planning", "Progress", "Decisions"],
                         reversed: ["Lack of Planning", "Disorganization", "Bad Decisions"]
@@ -255,7 +231,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Three of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Progress", "Expansion", "Opportunity"],
                         reversed: ["Obstacles", "Delays", "Frustration"]
@@ -265,7 +240,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Four of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Celebration", "Harmony", "Homecoming"],
                         reversed: ["Disagreement", "Unstable", "Lack of Support"]
@@ -275,7 +249,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Five of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Conflict", "Disagreement", "Competition"],
                         reversed: ["Avoidance", "Resentment", "Conflict Resolution"]
@@ -285,7 +258,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Six of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Victory", "Success", "Recognition"],
                         reversed: ["Failure", "Setbacks", "Lack of Recognition"]
@@ -295,7 +267,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Seven of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Challenge", "Perseverance", "Defensiveness"],
                         reversed: ["Giving Up", "Exhaustion", "Overwhelm"]
@@ -305,7 +276,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Eight of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Action", "Movement", "Fast Paced"],
                         reversed: ["Delays", "Frustration", "Halted Progress"]
@@ -315,7 +285,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Nine of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Resilience", "Persistence", "Test of Faith"],
                         reversed: ["Exhaustion", "Fatigue", "Lack of Confidence"]
@@ -325,7 +294,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Ten of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Burden", "Responsibility", "Hard Work"],
                         reversed: ["Release", "Relief", "Overwhelm"]
@@ -335,7 +303,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Page of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Inspiration", "Exploration", "Excitement"],
                         reversed: ["Lack of Direction", "Distraction", "Lack of Commitment"]
@@ -345,7 +312,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Knight of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Action", "Adventure", "Fearlessness"],
                         reversed: ["Haste", "Recklessness", "Impulsiveness"]
@@ -355,7 +321,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Queen of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Courage", "Determination", "Independence"],
                         reversed: ["Selfishness", "Jealousy", "Insecurity"]
@@ -365,7 +330,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "King of Wands",
-                    reversed: false,
                     energy: {
                         upright: ["Natural Born Leader", "Visionary", "Entrepreneur"],
                         reversed: ["Impulsiveness", "Hot Temper", "Impatience"]
@@ -384,7 +348,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "Ace of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Love", "Emotional Fulfillment", "New Beginnings"],
                         reversed: ["Blocked Emotions", "Unrequited Love", "Emotional Loss"]
@@ -393,7 +356,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ace of Cups indicates blocked emotions, unrequited love, and emotional loss. It suggests that one may be struggling to express their feelings or experiencing a lack of emotional connection."
                 }, {
                     name: "Two of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Partnership", "Attraction", "Harmony"],
                         reversed: ["Imbalance", "Miscommunication", "Separation"]
@@ -402,7 +364,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Two of Cups indicates imbalance, miscommunication, and separation. It suggests that one may be experiencing challenges in their relationships or struggling to find common ground with others."
                 }, {
                     name: "Three of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Celebration", "Friendship", "Joy"],
                         reversed: ["Isolation", "Excess", "Lack of Support"]
@@ -411,7 +372,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Three of Cups indicates isolation, excess, and lack of support. It suggests that one may be feeling disconnected from their social circle or struggling to find balance in their relationships."
                 }, {
                     name: "Four of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Apathy", "Contemplation", "Discontent"],
                         reversed: ["Action", "New Opportunities", "Gratitude"]
@@ -420,7 +380,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Four of Cups indicates action, new opportunities, and gratitude. It suggests that one is taking steps to improve their emotional well-being and embracing the positive aspects of their life."
                 }, {
                     name: "Five of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Loss", "Grief", "Regret"],
                         reversed: ["Acceptance", "Forgiveness", "Moving On"]
@@ -429,7 +388,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Five of Cups indicates acceptance, forgiveness, and moving on. It suggests that one is finding the courage to let go of past pain and embrace the healing process."
                 }, {
                     name: "Six of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Nostalgia", "Reunion", "Innocence"],
                         reversed: ["Stuck in the Past", "Unrealistic Expectations", "Resistance to Change"]
@@ -439,7 +397,6 @@ export const cards = new Map<string, CollectionDeck>([
                 }
                 , {
                     name: "Seven of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Choices", "Fantasy", "Daydreaming"],
                         reversed: ["Decision-making", "Clarity", "Focused Goals"]
@@ -448,7 +405,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Seven of Cups indicates decision-making, clarity, and focused goals. It suggests that one is gaining a clearer understanding of their desires and taking steps to achieve their objectives."
                 }, {
                     name: "Eight of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Departure", "Letting Go", "Emotional Growth"],
                         reversed: ["Fear of Change", "Stagnation", "Clinging to the Past"]
@@ -457,7 +413,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Eight of Cups indicates fear of change, stagnation, and clinging to the past. It suggests that one may be struggling to move forward or resisting the necessary process of growth and transformation."
                 }, {
                     name: "Nine of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Contentment", "Gratitude", "Wishes Fulfilled"],
                         reversed: ["Dissatisfaction", "Greed", "Unfulfilled Desires"]
@@ -466,7 +421,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Nine of Cups indicates dissatisfaction, greed, and unfulfilled desires. It suggests that one may be focusing on what they lack or allowing materialistic pursuits to overshadow their emotional well-being."
                 }, {
                     name: "Ten of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Happiness", "Harmony", "Family"],
                         reversed: ["Broken Relationships", "Disconnection", "Unhappiness"]
@@ -475,7 +429,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ten of Cups indicates broken relationships, disconnection, and unhappiness. It suggests that one may be experiencing emotional turmoil or struggling to maintain harmony within their relationships."
                 }, {
                     name: "Page of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Creativity", "Intuition", "Emotional Expression"],
                         reversed: ["Blocked Emotions", "Insecurity", "Lack of Inspiration"]
@@ -484,7 +437,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Page of Cups indicates blocked emotions, insecurity, and lack of inspiration. It suggests that one may be struggling to express their feelings or experiencing self-doubt and creative blocks."
                 }, {
                     name: "Knight of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Romance", "Chivalry", "Idealism"],
                         reversed: ["Moodiness", "Disillusionment", "Unrealistic Expectations"]
@@ -493,7 +445,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Knight of Cups indicates moodiness, disillusionment, and unrealistic expectations. It suggests that one may be experiencing emotional instability or struggling to maintain a balanced perspective on their relationships."
                 }, {
                     name: "Queen of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Empathy", "Intuition", "Compassion"],
                         reversed: ["Emotional Instability", "Manipulation", "Insecurity"]
@@ -503,7 +454,6 @@ export const cards = new Map<string, CollectionDeck>([
                 }
                 , {
                     name: "King of Cups",
-                    reversed: false,
                     energy: {
                         "upright": ["Emotional Wisdom", "Diplomacy", "Calmness"],
                         reversed: ["Emotional Suppression", "Moodiness", "Manipulation"]
@@ -522,7 +472,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "Ace of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Clarity", "Breakthrough", "Truth"],
                         reversed: ["Confusion", "Miscommunication", "Blocked Ideas"]
@@ -531,7 +480,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ace of Swords indicates confusion, miscommunication, and blocked ideas. It suggests that one may be struggling to find clarity or experiencing obstacles in communication and understanding."
                 }, {
                     name: "Two of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Indecision", "Balance", "Stalemate"],
                         reversed: ["Confusion", "Overwhelm", "Avoidance"]
@@ -540,7 +488,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Two of Swords indicates confusion, overwhelm, and avoidance. It suggests that one may be struggling to make a decision or facing emotional turmoil that prevents them from finding clarity."
                 }, {
                     name: "Three of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Heartbreak", "Sorrow", "Painful Truth"],
                         reversed: ["Healing", "Forgiveness", "Moving On"]
@@ -549,7 +496,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Three of Swords indicates healing, forgiveness, and moving on. It suggests that one is in the process of recovering from emotional pain and finding the strength to let go and move forward."
                 }, {
                     name: "Four of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Rest", "Meditation", "Recovery"],
                         reversed: ["Restlessness", "Burnout", "Lack of Progress"]
@@ -558,7 +504,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Four of Swords indicates restlessness, burnout, and lack of progress. It suggests that one may be struggling to find the necessary rest or feeling stuck in a stagnant situation."
                 }, {
                     name: "Five of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Conflict", "Defeat", "Win at All Costs"],
                         reversed: ["Reconciliation", "Learning from Mistakes", "Forgiveness"]
@@ -567,7 +512,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Five of Swords indicates reconciliation, learning from mistakes, and forgiveness. It suggests that one may be finding resolution to conflicts or gaining valuable insights from past experiences."
                 }, {
                     name: "Six of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Transition", "Moving On", "Emotional Healing"],
                         reversed: ["Resistance", "Unresolved Issues", "Stagnation"]
@@ -576,7 +520,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Six of Swords indicates resistance, unresolved issues, and stagnation. It suggests that one may be struggling to let go of the past or facing obstacles that prevent them from moving forward."
                 }, {
                     name: "Seven of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Deception", "Strategy", "Stealth"],
                         reversed: ["Revealed Secrets", "Accountability", "Honesty"]
@@ -585,7 +528,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Seven of Swords indicates revealed secrets, accountability, and honesty. It suggests that hidden truths may be coming to light or that one is taking responsibility for their actions and embracing honesty."
                 }, {
                     name: "Eight of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Restriction", "Trapped", "Self-imposed Limitations"],
                         reversed: ["Freedom", "Self-discovery", "Breaking Free"]
@@ -594,7 +536,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Eight of Swords indicates freedom, self-discovery, and breaking free. It suggests that one is in the process of overcoming limitations and finding the courage to explore new possibilities."
                 }, {
                     name: "Nine of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Anxiety", "Worry", "Nightmares"],
                         reversed: ["Overcoming Fear", "Finding Solutions", "Hope"]
@@ -603,7 +544,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Nine of Swords indicates overcoming fear, finding solutions, and hope. It suggests that one is in the process of addressing their anxieties and finding ways to cope with challenges."
                 }, {
                     name: "Ten of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Endings", "Betrayal", "Loss"],
                         reversed: ["Recovery", "Resilience", "New Beginnings"]
@@ -612,7 +552,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ten of Swords indicates recovery, resilience, and new beginnings. It suggests that one is in the process of healing from past wounds and finding the strength to move forward with renewed hope."
                 }, {
                     name: "Page of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Curiosity", "Mental Agility", "Communication"],
                         reversed: ["Gossip", "Hasty Decisions", "Miscommunication"]
@@ -621,7 +560,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Page of Swords indicates gossip, hasty decisions, and miscommunication. It suggests that one may be engaging in harmful or unproductive communication or making impulsive choices without considering the consequences."
                 }, {
                     name: "Knight of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Ambition", "Action", "Assertiveness"],
                         reversed: ["Impulsiveness", "Recklessness", "Aggression"]
@@ -630,7 +568,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Knight of Swords indicates impulsiveness, recklessness, and aggression. It suggests that one may be acting without forethought, taking unnecessary risks, or approaching situations with hostility."
                 }, {
                     name: "Queen of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Intelligence", "Independence", "Honesty"],
                         reversed: ["Coldness", "Manipulation", "Harsh Judgement"]
@@ -639,7 +576,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Queen of Swords indicates coldness, manipulation, and harsh judgement. It suggests that one may be acting insensitively, using their intellect for selfish purposes, or being overly critical of others."
                 }, {
                     name: "King of Swords",
-                    reversed: false,
                     energy: {
                         "upright": ["Wisdom", "Authority", "Clarity"],
                         reversed: ["Tyranny", "Manipulation", "Ruthlessness"]
@@ -658,7 +594,6 @@ export const cards = new Map<string, CollectionDeck>([
             cards: [
                 {
                     name: "Ace of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Prosperity", "Opportunity", "New Beginnings"],
                         reversed: ["Missed Opportunities", "Financial Loss", "Instability"]
@@ -667,7 +602,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ace of Pentacles indicates missed opportunities, financial loss, and instability. It suggests that one may be experiencing setbacks or failing to capitalize on opportunities for growth and success."
                 }, {
                     name: "Two of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Balance", "Adaptability", "Prioritization"],
                         reversed: ["Imbalance", "Overwhelm", "Disorganization"]
@@ -676,7 +610,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Two of Pentacles indicates imbalance, overwhelm, and disorganization. It suggests that one may be struggling to manage their responsibilities or facing difficulties in maintaining balance in their life."
                 }, {
                     name: "Three of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Teamwork", "Collaboration", "Skill"],
                         reversed: ["Lack of Cooperation", "Miscommunication", "Incompetence"]
@@ -685,7 +618,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Three of Pentacles indicates a lack of cooperation, miscommunication, and incompetence. It suggests that one may be experiencing difficulties in working with others or facing challenges due to poor communication or lack of skill."
                 }, {
                     name: "Four of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Security", "Stability", "Possessiveness"],
                         reversed: ["Greed", "Insecurity", "Materialism"]
@@ -694,7 +626,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Four of Pentacles indicates greed, insecurity, and materialism. It suggests that one may be overly focused on accumulating wealth or struggling with feelings of insecurity and a lack of control."
                 }, {
                     name: "Five of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Hardship", "Loss", "Isolation"],
                         reversed: ["Recovery", "Hope", "Support"]
@@ -703,7 +634,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Five of Pentacles indicates recovery, hope, and support. It suggests that one may be finding the strength to overcome challenges, seeking help, and finding hope in the midst of adversity."
                 }, {
                     name: "Six of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Generosity", "Charity", "Sharing"],
                         reversed: ["Selfishness", "Debt", "Exploitation"]
@@ -712,7 +642,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Six of Pentacles indicates selfishness, debt, and exploitation. It suggests that one may be acting out of self-interest, struggling with financial obligations, or taking advantage of others."
                 }, {
                     name: "Seven of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Patience", "Growth", "Investment"],
                         reversed: ["Impatience", "Lack of Progress", "Wasted Effort"]
@@ -721,7 +650,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Seven of Pentacles indicates impatience, lack of progress, and wasted effort. It suggests that one may be feeling frustrated with slow growth or struggling to see the results of their hard work."
                 }, {
                     name: "Eight of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Diligence", "Skill Development", "Perseverance"],
                         reversed: ["Laziness", "Lack of Focus", "Unfinished Work"]
@@ -730,7 +658,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Eight of Pentacles indicates laziness, lack of focus, and unfinished work. It suggests that one may be neglecting their responsibilities, failing to develop their skills, or struggling to complete tasks."
                 }, {
                     name: "Nine of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Abundance", "Independence", "Luxury"],
                         reversed: ["Financial Dependency", "Materialism", "Loneliness"]
@@ -739,7 +666,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Nine of Pentacles indicates financial dependency, materialism, and loneliness. It suggests that one may be overly focused on wealth, relying on others for support, or feeling isolated despite their success."
                 }, {
                     name: "Ten of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Wealth", "Legacy", "Family"],
                         reversed: ["Financial Loss", "Broken Family", "Instability"]
@@ -748,7 +674,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Ten of Pentacles indicates financial loss, broken family, and instability. It suggests that one may be experiencing setbacks, struggling with family issues, or facing challenges to their sense of security."
                 }, {
                     name: "Page of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Ambition", "Learning", "Opportunity"],
                         reversed: ["Procrastination", "Lack of Direction", "Missed Opportunities"]
@@ -757,7 +682,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Page of Pentacles indicates procrastination, lack of direction, and missed opportunities. It suggests that one may be struggling to take action, lacking focus, or failing to capitalize on potential opportunities."
                 }, {
                     name: "Knight of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Responsibility", "Determination", "Steadfastness"],
                         reversed: ["Stagnation", "Laziness", "Resistance to Change"]
@@ -766,7 +690,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Knight of Pentacles indicates stagnation, laziness, and resistance to change. It suggests that one may be struggling to make progress, lacking motivation, or unwilling to adapt to new circumstances."
                 }, {
                     name: "Queen of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Nurturing", "Abundance", "Practicality"],
                         reversed: ["Materialism", "Neglect", "Insecurity"]
@@ -775,7 +698,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Queen of Pentacles indicates materialism, neglect, and insecurity. It suggests that one may be overly focused on material possessions, failing to care for themselves or others, or struggling with feelings of inadequacy."
                 }, {
                     name: "King of Pentacles",
-                    reversed: false,
                     energy: {
                         "upright": ["Prosperity", "Stability", "Leadership"],
                         reversed: ["Greed", "Stubbornness", "Misuse of Power"]
@@ -830,7 +752,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "Clear Quartz",
-                    reversed: false,
                     energy: {
                         "upright": ["Amplification", "Healing", "Clarity"],
                         reversed: ["Dilution", "Blocked Energy", "Uncertainty"]
@@ -840,7 +761,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Green Aventurine",
-                    reversed: false,
                     energy: {
                         "upright": ["Luck", "Opportunity", "Growth"],
                         reversed: ["Misfortune", "Missed Opportunities", "Stagnation"]
@@ -850,7 +770,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Black Tourmaline",
-                    reversed: false,
                     energy: {
                         "upright": ["Protection", "Grounding", "Purification"],
                         reversed: ["Vulnerability", "Disconnection", "Negativity"]
@@ -860,7 +779,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Sodalite",
-                    reversed: false,
                     energy: {
                         "upright": ["Clarity", "Balance", "Rationality"],
                         reversed: ["Confusion", "Imbalance", "Emotional Turmoil"]
@@ -869,7 +787,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, Sodalite indicates confusion, imbalance, and emotional turmoil. It suggests that one may be struggling to find clarity or experiencing difficulties in maintaining balance and rationality."
                 }, {
                     name: "Rose Quartz",
-                    reversed: false,
                     energy: {
                         "upright": ["Love", "Compassion", "Healing"],
                         reversed: ["Heartache", "Indifference", "Unresolved Pain"]
@@ -879,7 +796,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Lapis Lazuli",
-                    reversed: false,
                     energy: {
                         "upright": ["Wisdom", "Truth", "Self-expression"],
                         reversed: ["Ignorance", "Deception", "Suppression"]
@@ -890,7 +806,6 @@ export const cards = new Map<string, CollectionDeck>([
 
                 {
                     name: "Citrine",
-                    reversed: false,
                     energy: {
                         "upright": ["Abundance", "Creativity", "Optimism"],
                         reversed: ["Scarcity", "Blocked Creativity", "Pessimism"]
@@ -900,7 +815,6 @@ export const cards = new Map<string, CollectionDeck>([
                 },
                 {
                     name: "Amethyst",
-                    reversed: false,
                     energy: {
                         "upright": ["Spirituality", "Calm", "Intuition"],
                         reversed: ["Disconnection", "Restlessness", "Doubt"]
@@ -919,7 +833,6 @@ export const cards = new Map<string, CollectionDeck>([
             "cards": [
                 {
                     name: "New Moon",
-                    reversed: false,
                     energy: {
                         "upright": ["Beginnings", "Potential", "Manifestation"],
                         reversed: ["Hesitation", "Doubt", "Missed Opportunities"]
@@ -928,7 +841,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the New Moon indicates hesitation, doubt, and missed opportunities. It suggests that one may be holding back or struggling to take advantage of the potential for growth and transformation."
                 }, {
                     name: "Waxing Crescent",
-                    reversed: false,
                     energy: {
                         "upright": ["Expansion", "Determination", "Progress"],
                         reversed: ["Impatience", "Obstacles", "Lack of Direction"]
@@ -937,7 +849,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Waxing Crescent indicates impatience, obstacles, and lack of direction. It suggests that one may be feeling frustrated or struggling to maintain focus and momentum in their endeavors."
                 }, {
                     name: "First Quarter",
-                    reversed: false,
                     energy: {
                         "upright": ["Decision-making", "Action", "Commitment"],
                         reversed: ["Indecision", "Procrastination", "Inconsistency"]
@@ -946,7 +857,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the First Quarter indicates indecision, procrastination, and inconsistency. It suggests that one may be struggling to make choices or follow through on their commitments."
                 }, {
                     name: "Waxing Gibbous",
-                    reversed: false,
                     energy: {
                         "upright": ["Refinement", "Perseverance", "Anticipation"],
                         reversed: ["Doubt", "Burnout", "Lack of Focus"]
@@ -955,7 +865,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Waxing Gibbous indicates doubt, burnout, and lack of focus. It suggests that one may be questioning their path or struggling to maintain the energy and dedication required to achieve their goals."
                 }, {
                     name: "Full Moon",
-                    reversed: false,
                     energy: {
                         "upright": ["Completion", "Illumination", "Celebration"],
                         reversed: ["Disappointment", "Unfulfilled Expectations", "Overwhelm"]
@@ -964,7 +873,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Full Moon indicates disappointment, unfulfilled expectations, and overwhelm. It suggests that one may be feeling let down or struggling to cope with the intensity of their emotions and experiences."
                 }, {
                     name: "Waning Gibbous",
-                    reversed: false,
                     energy: {
                         "upright": ["Reflection", "Gratitude", "Release"],
                         reversed: ["Regret", "Resentment", "Resistance to Change"]
@@ -973,7 +881,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Waning Gibbous indicates regret, resentment, and resistance to change. It suggests that one may be struggling to accept the past or release negative emotions and experiences."
                 }, {
                     name: "Third Quarter",
-                    reversed: false,
                     energy: {
                         "upright": ["Transition", "Reevaluation", "Adjustment"],
                         reversed: ["Stagnation", "Inflexibility", "Fear of Change"]
@@ -982,7 +889,6 @@ export const cards = new Map<string, CollectionDeck>([
                     reversedMeaning: "In reverse, the Third Quarter indicates stagnation, inflexibility, and fear of change. It suggests that one may be struggling to adapt or resisting the natural flow of life and growth."
                 }, {
                     name: "Waning Crescent",
-                    reversed: false,
                     energy: {
                         "upright": ["Rest", "Renewal", "Preparation"],
                         reversed: ["Exhaustion", "Resistance to Rest", "Anxiety"]

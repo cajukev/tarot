@@ -75,6 +75,11 @@
 		switch ($achievementsStore?.action) {
 			case 'CompleteReading':
 				value = $readingStore;
+				// Daily Challenge
+				if (!data.profile?.data?.daily){
+					completeDailyReading();
+				}
+
 				// FirstCompletedReading
 				completeAchievement('FirstCompletedReading');
 				// ReadingWith3Preset
@@ -221,6 +226,20 @@
 			})
 		}).then(() => {
 			checkUnlocks(data.profile?.data?.experience, data.profile?.data?.experience + amount);
+			invalidateAll();
+		});
+	};
+	let completeDailyReading = () => {
+		// console.log('completeDailyReading');
+		fetch('/api/completeDailyReading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({})
+		}).then(() => {
+			achievementToast(`<b>Daily Reading Complete!</b><br>
+			<i>+5 Essence</i>`);
 			invalidateAll();
 		});
 	};

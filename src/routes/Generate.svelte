@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { CollectionCard } from '$lib/cards';
 	import { cards } from '$lib/cards';
-	import { energyGrid, energyList, energyMap } from '$lib/energies';
+	import { energyGrid, energyList } from '$lib/energies';
 	import readingSpreads from '$lib/readingSpreads';
 	import { onMount } from 'svelte';
 	import characters from '$lib/characters';
@@ -122,11 +122,7 @@
 
 	$: if($readingStore.ready){
 		$readingStore.ready = false;
-		if($readingStore.conclusion === ''){
-			getReading();
-		}else{
-			continueReading();
-		}
+		getReading();
 	}
 
 	let tokenCost = 0;
@@ -181,19 +177,17 @@
 	let clickSegment = (segment: number) => {
 		pressedSegment = segment;
 		innerState = 2;
-		handleSubmit2();
+		draw();
 	};
 
-	let handleSubmit2 = () => {
+	let draw = () => {
 		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
 		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
-		// console.log('handleSubmit2', pressedSegment - 1, scrollVar, $timeVariableStore);
 		$readingStore.energy =
 			energyList[energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore]];
-		$readingStore.conclusion = '';
 		$readingStore.cards = [];
 		// Check if custom spread
 		const customSpread = $customSpreadsStore.find(
@@ -242,7 +236,7 @@
 									// console.log(card.name === drawnCard.name);
 									if (drawnCard.name === card.name) {
 										card.reversed = drawnCard.reversed;
-										returnCards.push(card);
+										returnCards.push(JSON.parse(JSON.stringify(card)));
 									}
 								});
 							}
@@ -257,8 +251,10 @@
 	};
 
 	let storedConclusion = "";
-
+	
 	let getReading = () => {
+		$readingStore.conclusion = "";
+		storedConclusion = "";
 		va.track('GetReading');
 		fetch('/api/tarotreading', {
 			method: 'POST',
@@ -279,12 +275,15 @@
 			invalidateAll();
 			while (true && reader) {
 				const { done, value } = await reader.read();
-				const text = new TextDecoder('utf-8').decode(value);
-				if (text) {
-					// Duplication glitch fix attemmpt
+				const res = new TextDecoder('utf-8').decode(value);
+				console.log(res.substring(res.indexOf('{'),res.lastIndexOf('}') + 1));
+				let text = chunksToText(res);
+				// let text = res.slice(res.indexOf('"choices":[{"delta":{"content":"') + 32 , res.indexOf('"}',res.indexOf('"choices":[{"delta":{"content":"') + 32))
+				if (text && !text.includes('"finish_reason":"stop')) {
+					// Duplication glitch fix attempt
 					if(!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-						$readingStore.conclusion = text;
-						storedConclusion = text;
+						$readingStore.conclusion += text.replaceAll('\\n','<br>').replaceAll('\\','');
+						storedConclusion = $readingStore.conclusion;
 					}
 				}
 				if (done) {
@@ -294,51 +293,9 @@
 						$readingStore.conclusion = '...';
 			
 					}else{
-						// Does not end with ...
-						if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
-							$readingStore.incomplete = true;
-						}else{
-							$achievementsStore = { action: 'CompleteReading', value: 'default' };
-						}
-					}
-					break;
-				}
-			}
-		});
-	};
-
-	let continueReading = () => {
-		va.track('ContinueReading');
-		fetch('/api/continueReading', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				reading: $readingStore,
-				customSpread: $customSpreadsStore.find(
-					(spread) => spread.name === $readingStore.setting
-				)
-			})
-		}).then(async (res) => {
-			const reader = res.body?.getReader();
-			$readingStore.incomplete = false;
-			invalidateAll();
-			while (true && reader) {
-				const { done, value } = await reader.read();
-				const text = new TextDecoder('utf-8').decode(value);
-				if (text){
-					// Duplication glitch fix attemmpt
-					if(!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-						$readingStore.conclusion = text;
-						storedConclusion = text;
-					}
-				}
-				if (done) {
-					// Does not end with ...
-					if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
-						$readingStore.incomplete = true;
-					}else{
+						$readingStore.conclusion += `
+						
+...`;
 						$achievementsStore = { action: 'CompleteReading', value: 'default' };
 					}
 					break;
@@ -346,7 +303,56 @@
 			}
 		});
 	};
+
+	// let continueReading = () => {
+	// 	va.track('ContinueReading');
+	// 	fetch('/api/continueReading', {
+	// 		method: 'POST',
+	// 		headers: {
+	// 			'Content-Type': 'application/json'
+	// 		},
+	// 		body: JSON.stringify({
+	// 			reading: $readingStore,
+	// 			customSpread: $customSpreadsStore.find(
+	// 				(spread) => spread.name === $readingStore.setting
+	// 			)
+	// 		})
+	// 	}).then(async (res) => {
+	// 		const reader = res.body?.getReader();
+	// 		$readingStore.incomplete = false;
+	// 		invalidateAll();
+	// 		while (true && reader) {
+	// 			const { done, value } = await reader.read();
+	// 			const text = new TextDecoder('utf-8').decode(value);
+	// 			if (text){
+	// 				// Duplication glitch fix attemmpt
+	// 				if(!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+	// 					$readingStore.conclusion = text;
+	// 					storedConclusion = text;
+	// 				}
+	// 			}
+	// 			if (done) {
+	// 				// Does not end with ...
+	// 				if($readingStore.conclusion && !$readingStore.conclusion.endsWith('...') ) {
+	// 					$readingStore.incomplete = true;
+	// 				}else{
+	// 					$achievementsStore = { action: 'CompleteReading', value: 'default' };
+	// 				}
+	// 				break;
+	// 			}
+	// 		}
+	// 	});
+	// };
 	
+	let chunksToText = (text: string): string => {
+		if(text.includes('"choices":[{"delta":{"content":"')) {
+			let startIndex = text.indexOf('"choices":[{"delta":{"content":"') + 32;
+			let endIndex = text.indexOf('"}',text.indexOf('"choices":[{"delta":{"content":"') + 32);
+			return text.slice(startIndex , endIndex) + chunksToText(text.slice(endIndex + 2));
+		}else{
+			return "";
+		}
+	}
 
 	let selectOption = (option: string) => {
 		// console.log(option);
@@ -361,23 +367,6 @@
 
 	let navigateToCustomSpreads = () => {
 		$menuStateStore = { value: 4, change: true };
-	};
-
-	let deleteCustomSpread = (name: string) => {
-		$customSpreadsStore = $customSpreadsStore.filter((spread) => spread.name !== name);
-		fetch("/api/updateCustomSpreads", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        customSpreads: $customSpreadsStore
-      }
-      ),
-    })
-		.then(() => {
-      invalidateAll();
-    });
 	};
 
 	$: if ($readingStore) checkForSecret($readingStore.question);
@@ -426,96 +415,8 @@
 			<div class="optionSelectWrapper">
 				<p>Choose a spread</p>
 				<ItemList bind:items={listItems}></ItemList>
-				<!-- <div class="optionSelect spread">
-					{#each Array.from(readingSpreads).map( ([name, setting]) => ({ name, setting }) ) as spread}
-					{#if !unlocks.get(spread.name) || $page.data.profile?.data.experience >= (unlocks.get(spread.name)?.exp || 0)}
-					<button
-						class={'option ' + ($readingStore?.setting === spread.name ? 'active' : '')}
-						on:click={() => selectOption(spread.name)}
-						on:keydown={(event) => {
-							if (event.key === 'Enter') selectOption(spread.name);
-						}}
-					>
-						<div class="imgWrapper">
-							<img src="/options/{spread.name}.png" alt="" />
-						</div>
-						<div class="optionText">
-							<p>{spread.setting.name}</p>
-						</div>
-					</button>
-					{:else}
-					<button
-						class="option lockedOption"
-						on:click={() => $menuStateStore = { value: 2, change: true }}
-						on:keydown={(event) => {
-							if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
-						}}
-					>
-						<div class="imgWrapper">
-							<img src="/options/Lock.svg" alt="" />
-						</div>
-						<div class="optionText">
-							<p>{spread.setting.name}</p>
-						</div>
-					</button>
-
-					{/if}
-					{/each}
-					{#each $customSpreadsStore as spread}
-						<button
-							class={'option customOption ' +
-								($readingStore?.setting === spread.name ? 'active' : '')}
-							on:click={() => selectOption(spread.name)}
-							on:keydown={(event) => {
-								if (event.key === 'Enter') selectOption(spread.name);
-							}}
-						>
-							<div class="imgWrapper">
-								<img src="/options/custom.png" alt="" />
-							</div>
-							<div class="optionText">
-								<p>{spread.name}</p>
-							</div>
-							<button class="delete" on:click={() => deleteCustomSpread(spread.name)}>
-								<p>Delete</p>
-							</button>
-						</button>
-					{/each}
-					{#if !unlocks.get('custom') || $page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)}
-						<button
-							class="option"
-							on:click={() => navigateToCustomSpreads()}
-							on:keydown={(event) => {
-								if (event.key === 'Enter') navigateToCustomSpreads();
-							}}
-						>
-							<div class="imgWrapper">
-								<img src="/options/Add.png" alt="" />
-							</div>
-							<div class="optionText">
-								<p>Add Custom Spreads</p>
-							</div>
-						</button>
-					{:else}
-						<button
-							class="option lockedOption"
-							on:click={() => $menuStateStore = { value: 2, change: true }}
-							on:keydown={(event) => {
-								if (event.key === 'Enter') $menuStateStore = { value: 2, change: true };
-							}}
-						>
-							<div class="imgWrapper">
-								<img src="/options/Lock.svg" alt="" />
-							</div>
-							<div class="optionText">
-								<p>Add Custom Spreads</p>
-							</div>
-						</button>
-					{/if}
-				</div> -->
 			</div>
 		</div>
-		<!-- {#if tokenCost <= $page.data.profile.data.tokens} -->
 		<div>
 			<p>Enter your question</p>
 			<input bind:value={question} type="text" name="question" id="question" />
@@ -626,15 +527,11 @@
 				</div>
 				<p>Tell me my fortune</p>
 			</div>
+			<!-- If daily is available -->
+			{#if !$page.data.profile.data.daily }
+				<p class="bonus info">Daily bonus is available! <br> Complete a reading to earn 5 shop essence!</p>
+			{/if}
 		</div>
-		<!-- {:else}
-		<p>Not enough tokens </p>
-		{/if}
-		<p class="cost">Costs {tokenCost} token{tokenCost  !== 1 ? "s" : ""} | <span>({$page.data.profile.data.tokens} remaining)</span></p>
-		<button class="cta" on:click={() => $menuStateStore = { value: 6, change: true }}>Buy More Tokens</button>
-		{#if $page.data.profile.data.tokens < 10}
-			<p class="info">Regain up to 10 tokens at 12:00PM EST</p>
-		{/if} -->
 	</div>
 </div>
 
@@ -646,185 +543,11 @@
 	.setup {
 		display: grid;
 		grid-template-columns: 100%;
-		& .separator {
-			background: white;
-		}
 		& .optionSelectWrapper {
 			> p {
 				font-size: $h4-font-size;
 			}
-			& .optionSelect {
-				max-width: 100vw;
-				overflow: auto;
-				display: inline-flex;
-				gap: 1rem;
-				padding: 1rem;
-				&::-webkit-scrollbar {
-					display: none;
-				}
-				.option {
-					color: white;
-					font-size: $base-font-size;
-					font-family: $other-font;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: start;
-					padding: 1rem 1rem;
-					width: min-content;
-					background: rgba($color: #000000, $alpha: 0.2);
-					border-radius: 1rem;
-					outline: none;
-					border: 1px solid transparent;
-					cursor: pointer;
-					transition: background-color 0.2s ease;
-					&::-webkit-scrollbar {
-						display: none;
-					}
-					.imgWrapper {
-						width: min(30vw, 6rem);
-						aspect-ratio: 1/1;
-						overflow: hidden;
-						border-radius: 1rem;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						img {
-							transition: transform 1s ease;
-						}
-					}
-					&:hover {
-						background-color: rgba($color: #000000, $alpha: 0.4);
-						& img {
-							transform: scale(1.05);
-						}
-					}
-					&.active {
-						background-color: rgba($color: #000000, $alpha: 0.8);
-						border: 1px solid #ffffff2c;
-						& img {
-							transform: scale(1.1);
-						}
-					}
-					&:focus {
-						border: 1px solid white;
-					}
-					& .optionText {
-						margin-top: 0.5rem;
-					}
-					&.customOption {
-						position: relative;
-						&:hover {
-							& .delete {
-								opacity: 1;
-								pointer-events: all;
-							}
-						}
-						&:focus {
-							& .delete {
-								opacity: 1;
-								pointer-events: all;
-							}
-						}
-						& .delete {
-							position: absolute;
-							bottom: 0;
-							transform: translateY(50%);
-							width: 100%;
-							background-color: red;
-							border-radius: 0 0 1rem 1rem;
-							border: none;
-							font-family: $other-font;
-							font-size: $base-font-size;
-							opacity: 0;
-							pointer-events: none;
-							transition: opacity 0.25s ease;
-							&:hover {
-								background-color: #be0000;
-								cursor: pointer;
-							}
-							&:focus {
-								opacity: 1;
-								pointer-events: all;
-								outline: 1px solid white;
-							}
-						}
-					}
-				}
-				.lockedOption {
-					color: white;
-					font-size: $base-font-size;
-					font-family: $other-font;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: start;
-					padding: 1rem 1rem;
-					width: min-content;
-					background: rgba($color: #000000, $alpha: 0.2);
-					border-radius: 1rem;
-					outline: none;
-					border: 1px solid transparent;
-					cursor: pointer;
-					transition: all 0.2s ease;
-					&::-webkit-scrollbar {
-						display: none;
-					}
-					.imgWrapper {
-						width: min(30vw, 6rem);
-						aspect-ratio: 1/1;
-						overflow: hidden;
-						border-radius: 0;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						img {
-							transition: all 1s ease;
-						}
-					}
-					&:hover {
-						background-color: rgba($color: #000000, $alpha: 0.4);
-						& img {
-							transform: scale(1.05);
-						}
-					}
-					&:focus {
-						border: 1px solid white;
-					}
-					& .optionText {
-						margin-top: 0.5rem;
-					}
-				}
-			}
-		}
-		& .character {
-			& .option:not(.lockedOption) {
-				& .imgWrapper {
-					&.active {
-						border: 1px solid #ffffff;
-					}
-					& img {
-						width: 100%;
-					}
-				}
-			}
-		}
-		& .spread {
-			& .option {
-				& .imgWrapper {
-					& img {
-						max-height: 80%;
-						max-width: 90%;
-					}
-				}
-			}
-		}
-		& .lockedOption {
-			& .imgWrapper {
-				& img {
-					width: 60%;
-				}
-			}
+			
 		}
 	}
 	.input {
@@ -858,9 +581,6 @@
 				height: 100%;
 				background-color: #000;
 				border: none;
-				&:hover {
-					// background-color: rgb(14, 13, 13);
-				}
 			}
 			& .timeVarIndicator {
 				pointer-events: none;
@@ -881,6 +601,9 @@
 			font-size: $h4-font-size;
 			transform: translateZ(0);
 		}
+	}
+	.bonus{
+		margin-top: 0.5rem;
 	}
 	
 </style>

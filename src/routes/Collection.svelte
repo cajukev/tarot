@@ -55,6 +55,11 @@
 				} else {
 					deck.available = false;
 				}
+				if(deck.available){
+					deck.cards.forEach((card) => {
+						card.reversed = false;
+					});
+				}
 			});
 		}
 	};
@@ -195,7 +200,7 @@
 		{/each}
 	</div>
 
-	<InfoBox bind:isShown bind:currentCard collection={true} />
+	<InfoBox bind:isShown currentCard={currentCard} collection={true} />
 </div>
 
 <style lang="scss">

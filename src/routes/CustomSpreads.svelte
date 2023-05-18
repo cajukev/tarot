@@ -146,34 +146,38 @@
   <div class="newSpread">
     <label class="" for="spreadName">Spread Name: </label>
     <input type="text" id="spreadName" bind:value={newSpread.name} />
-    {#each newSpread.positions as position, i }
-      <div class="card">
-        <label for="positionName">Position Name: </label>
-        <input type="text" id="positionName" bind:value={newSpread.positions[i]} />
-        <label for="positionInstruction">Instruction: </label>
-        <input type="text" id="positionInstruction" bind:value={newSpread.instructions[i]} />
-        <!-- Delete this card -->
-        <button on:click={() => {
-          newSpread.positions.splice(i, 1); 
-          newSpread = { ...newSpread }
-          }}>Delete Card</button>
-      </div>
-    {/each}
+    <div class="cards">
+      {#each newSpread.positions as position, i }
+        <div class="card">
+          <label for="positionName">Position Name: </label>
+          <input type="text" id="positionName" bind:value={newSpread.positions[i]} />
+          <label for="positionInstruction">Instruction: </label>
+          <input type="text" id="positionInstruction" bind:value={newSpread.instructions[i]} />
+          <!-- Delete this card -->
+          <button on:click={() => {
+            newSpread.positions.splice(i, 1); 
+            newSpread = { ...newSpread }
+            }}>Delete Card</button>
+        </div>
+      {/each}
+    </div>
     <div class="addCard">
       <button class="add" on:click={() => addNewCard()}>+ Add Card</button>
     </div>
-
-    <button class="save" on:click={() => saveSpread()}>Save Spread</button>
-
-    <!-- Duplicate -->
-    {#if selected !== $customSpreadsStore.length}
-      <button class="duplicate" on:click={() => duplicateSpread()}>Duplicate Spread</button>
-    {/if}
-
-    <!-- Delete -->
-    {#if selected !== $customSpreadsStore.length}
-      <button class="delete" on:click={() => deleteSpread()}>Delete Spread</button>
-    {/if}
+    <div class="actions">
+  
+      <button class="save" on:click={() => saveSpread()}>Save Spread</button>
+  
+      <!-- Duplicate -->
+      {#if selected !== $customSpreadsStore.length}
+        <button class="duplicate" on:click={() => duplicateSpread()}>Duplicate Spread</button>
+      {/if}
+  
+      <!-- Delete -->
+      {#if selected !== $customSpreadsStore.length}
+        <button class="delete" on:click={() => deleteSpread()}>Delete Spread</button>
+      {/if}
+    </div>
   </div>
   {:else}
     <p>Custom spreads are unlocked at {unlocks.get("custom")?.exp} experience.</p>
@@ -188,10 +192,47 @@
     justify-content: center;
   }
   .newSpread{
-    width: 35rem;
+    width: 100%;
     max-width: 90vw;
-    .card, .add, .save, .delete{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .cards{
       margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .card{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      border: 1px solid $accent;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      
+      label{
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      input{
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+    }
+    .actions{
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      button{
+        width: 100%;
+        max-width: 20rem;
+        margin-bottom: 0.5rem;
+      }
     }
     button{
       cursor: pointer;
@@ -200,9 +241,6 @@
 		  padding: 0.25rem 0.5rem;
 		  font-family: $other-font;
 		  font-weight: 700;
-      &:not(:last-child){
-        margin-right: 0.5rem;
-      }
     }
   }
 </style>

@@ -31,6 +31,10 @@ let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
   return hasAll;
 }
 
+// export const config = {
+//   runtime: 'edge',
+// };
+
 export const POST: RequestHandler = async ({request, locals}) => {
     const formData: {
         reading: ReadingType;

@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { achievements } from '$lib/achievements';
 	import { getCardsPack, type CollectionCard } from '$lib/cards';
-	import { energyGroups, energyList, energyMap } from '$lib/energies';
+	import { energyList } from '$lib/energies';
 	import { objToMap } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { prevent_default } from 'svelte/internal';
@@ -77,10 +77,6 @@
 			}
 		});
 		return newTextBeforePeriod + "." + newText.split('.')[1] + ".";
-	};
-
-	export let _getEnergyColor = (energy: string) => {
-		return energyList.indexOf(energy) % 2 === 0 ? 'green' : 'red';
 	};
 
 	let reverseCard = () => {
