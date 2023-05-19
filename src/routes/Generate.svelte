@@ -419,7 +419,10 @@
 		</div>
 		<div>
 			<p>Enter your question</p>
-			<input bind:value={question} type="text" name="question" id="question" />
+			<!-- Placeholder random in readingSpreads?.get($readingStore.setting)?.placeholders -->
+			<textarea bind:value={question} name="question" id="question" placeholder={
+				readingSpreads?.get($readingStore.setting)?.placeholders?.[Math.floor(Math.random() * (readingSpreads?.get($readingStore.setting)?.placeholders?.length ?? 0))] || ""
+			}></textarea>
 			<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 				<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
 					<div
@@ -555,10 +558,13 @@
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
-		& input {
-			width: 15rem;
+		& textarea {
+			resize: vertical;
+			width: 30rem;
+			max-width: 80vw;
 			height: 2.5rem;
 			margin-bottom: 1rem;
+			padding-top: 0.25rem;
 			text-align: center;
 			font-size: $base-font-size;
 			font-family: $other-font;

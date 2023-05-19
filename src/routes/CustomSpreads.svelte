@@ -98,7 +98,6 @@
     for (let i = 0; i < $customSpreadsStore.length; i++) {
       listItems.push({
         name: $customSpreadsStore[i].name,
-        description: $customSpreadsStore[i].positions.join(", "),
         id: i,
         img: "/options/custom.png",
         selected: i === selected,
@@ -149,7 +148,7 @@
     <div class="cards">
       {#each newSpread.positions as position, i }
         <div class="card">
-          <label for="positionName">Position Name: </label>
+          <label for="positionName">Card {i+1} name:</label>
           <input type="text" id="positionName" bind:value={newSpread.positions[i]} />
           <label for="positionInstruction">Instruction: </label>
           <input type="text" id="positionInstruction" bind:value={newSpread.instructions[i]} />
