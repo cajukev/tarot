@@ -13,8 +13,8 @@ export async function GET({request, params}) {
       });
 
     let data = await dbSecret.from("Profile")
-      .update({ tokens: 50})
-      .lt("tokens", 50)
+      .update({ tokens: 30})
+      .lt("tokens", 30)
       .select("id")
       .then((data) => {
         return data.data

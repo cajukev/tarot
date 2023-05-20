@@ -157,25 +157,25 @@
 				// console.log('StartReading');
 				value = $readingStore;
 				let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
-				userAchievements.get('250Tokens')!.progress =
-					userAchievements.get('250Tokens')!.progress + spentTokens;
-				if (userAchievements.get('250Tokens')!.progress >= 250) {
-					completeAchievement('250Tokens');
-				}
-				if (userAchievements.get('250Tokens')!.progress >= 200) {
+				userAchievements.get('200Tokens')!.progress =
+					userAchievements.get('200Tokens')!.progress + spentTokens;
+				if (userAchievements.get('200Tokens')!.progress >= 200) {
 					completeAchievement('200Tokens');
 				}
-				if (userAchievements.get('250Tokens')!.progress >= 150) {
-					completeAchievement('150Tokens');
-				}
-				if (userAchievements.get('250Tokens')!.progress >= 100) {
+				if (userAchievements.get('200Tokens')!.progress >= 100) {
 					completeAchievement('100Tokens');
 				}
-				if (userAchievements.get('250Tokens')!.progress >= 50) {
+				if (userAchievements.get('200Tokens')!.progress >= 75) {
+					completeAchievement('75Tokens');
+				}
+				if (userAchievements.get('200Tokens')!.progress >= 50) {
 					completeAchievement('50Tokens');
 				}
-				if (userAchievements.get('250Tokens')!.progress >= 25) {
+				if (userAchievements.get('200Tokens')!.progress >= 25) {
 					completeAchievement('25Tokens');
+				}
+				if (userAchievements.get('200Tokens')!.progress >= 10) {
+					completeAchievement('10Tokens');
 				}
 				updateAchievementsFlag = true;
 				break;

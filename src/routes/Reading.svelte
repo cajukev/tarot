@@ -248,7 +248,7 @@
 				>Buy More Tokens</button
 			>
 			{#if $page.data.profile.data.tokens < 50}
-				<p class="info">Regain up to 50 tokens at 12:00PM EST</p>
+				<p class="info">Regain up to 30 tokens at 12:00PM EST</p>
 			{/if}
 		</div>
 	{/if}
