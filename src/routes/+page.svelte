@@ -26,8 +26,10 @@
 		</div>
 	
 		<div class={'loading sidePadding ' + (state !== 2 ? 'hidden' : '')}>
-			<p class="energy">Your energy, <span>it reads..</span> <span>{$readingStore.energy}</span></p>
-			<p class="loading">Let us see what the cards have in store...</p>
+			{#if $readingStore.energy}
+				<p class="energy">Your energy, <span>it reads..</span> <span>{$readingStore.energy}</span></p>
+			{/if}
+			<p class="loading">Validating your question...</p>
 		</div>
 	
 		<div class={'' + (state !== 3 ? 'hidden' : '')}>

@@ -17,15 +17,44 @@
 	import { set } from '@fern-api/openai/core/schemas';
 	import ItemList from './ItemList.svelte';
 	import { art } from '$lib/customization';
+	import Collection from './Collection.svelte';
 	export let state: number;
 
+	
+	let cardSelectPopup: HTMLElement;
+	let currentSelectCardPosition: number | null = null;
+	let currentSelectCard: CollectionCard | null = null;
+	let selectedCard: CollectionCard | undefined | null = undefined;
 	let flipCard = (index: number) => {
-		$flippedCardsStore[index] = !$flippedCardsStore[index];
-		$achievementsStore = {
-			action: 'FlipCard',
-			value: $readingStore.cards[index].name
-		};
+		if($readingStore.cards[index].name === "undefined"){
+			// Card is undefined, select card
+			cardSelectPopup.classList.remove('hidden');
+			currentSelectCardPosition = index;
+		}else{
+			// Card is set
+			$flippedCardsStore[index] = !$flippedCardsStore[index];
+			$achievementsStore = {
+				action: 'FlipCard',
+				value: $readingStore.cards[index].name
+			};
+		}
 	};
+
+	$: if(selectedCard !== undefined && selectedCard !== null) {
+		setCard();
+		flipCard(currentSelectCardPosition as number);
+		// reset variables
+		currentSelectCard = null;
+		currentSelectCardPosition = null;
+		closePopup();
+	}
+
+	let setCard = () => {
+		console.log("setCard", currentSelectCard);
+		$readingStore.cards[currentSelectCardPosition as number] = JSON.parse(JSON.stringify(currentSelectCard || ""));
+		selectedCard = undefined;
+	}
+	
 
 	// actionState 0: show actions
 	// actionState 1: hide actions
@@ -73,13 +102,13 @@
 
 	// Infobox state
 
-	let currentCard: CollectionCard | undefined = undefined;
+	let currentCard: CollectionCard | undefined | null = undefined;
 
-	let isShown = false;
+	let infoBoxIsShown = false;
 	
 
 	let infoBoxAppear = (card: CollectionCard) => {
-		isShown = true;
+		infoBoxIsShown = true;
 		currentCard = card;
 		setTimeout(() => {
 			currentCard = card;
@@ -125,13 +154,19 @@
 		selectCharacter([...characters.keys()][id]);
 		setupItemList();
 	};
+
+	let closePopup = () => {
+		cardSelectPopup.classList.add('hidden');
+	};
 	
 </script>
 
 <div class="reading" bind:this={readingElem}>
 	<div class="header">
 		<h2>"{$readingStore.question}"</h2>
-		<p class="info">Energy: {$readingStore.energy}</p>
+		{#if $readingStore.energy !== ''}
+			<p class="info">Energy: {$readingStore.energy}</p>
+		{/if}
 	</div>
 	<p class={"info " + ($flippedCardsStore?.some((card) => card) ? 'faded' : '')}>
 		Click the cards to start the reading
@@ -149,6 +184,7 @@
 				<div class="stacked">
 					{#if $readingStore.cards[i]}
 						<div class="stacked">
+							<!-- Back of card -->
 							<div class={'card ' + ($flippedCardsStore[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
 									src={"/cards/"+$readingStore.cardback+"-200.webp"}
@@ -167,7 +203,7 @@
 									}
 								/>
 							</div>
-
+							<!-- Front of card -->
 							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
 									src={"/cards/"+_getCardImgName($readingStore.cards[i].name)+"-200"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(getCardsPack($readingStore.cards[i].name) || "anythingElse") ? "-"+$readingStore.art : "")+".webp"}
@@ -198,7 +234,7 @@
 	</p>
 	{#if actionState}
 		<div transition:fade>
-			<div class="optionSelectWrapper">
+			<div class="optionSelectWrapper" >
 				<p>Choose a reader</p>
 				<ItemList items={listItems} />
 			</div>
@@ -244,7 +280,7 @@
 				Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''} |
 				<span>({$page.data.profile.data.tokens} remaining)</span>
 			</p>
-			<button class="cta" on:click={() => ($menuStateStore = { value: 6, change: true })}
+			<button class="cta" on:click={() => ($menuStateStore = { value: 5, change: true })}
 				>Buy More Tokens</button
 			>
 			{#if $page.data.profile.data.tokens < 50}
@@ -278,7 +314,12 @@
 </div>
 
 <div>
-	<InfoBox bind:isShown currentCard={currentCard}></InfoBox>
+	<InfoBox bind:isShown={infoBoxIsShown} currentCard={currentCard}></InfoBox>
+</div>
+
+<div bind:this={cardSelectPopup} class="fullScreenPopup hidden">
+	<Collection bind:currentCard={currentSelectCard} bind:selectedCard={selectedCard}></Collection>
+
 </div>
 
 
@@ -585,6 +626,25 @@
 			}
 		}
 	
-	
+		.fullScreenPopup{
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background-color: rgba($color: #000000, $alpha: 0.8);
+			z-index: 100;
+			overflow-y: scroll;
+			padding: 2rem;
+			
+			& > div {
+				background-color: white;
+				border-radius: 1rem;
+				padding: 2rem;
+				max-width: 80vw;
+				max-height: 80vh;
+				overflow-y: scroll;
+			}
+		}
 	
 </style>

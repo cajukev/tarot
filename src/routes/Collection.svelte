@@ -19,6 +19,9 @@
 	import { flip } from 'svelte/animate';
 
 	export let landing = false;
+	export let selectedCard: CollectionCard | undefined | null = undefined;
+
+	$: console.log(selectedCard)
 
 	// Transition animations
 	const [send, receive] = crossfade({
@@ -125,13 +128,14 @@
 
 	// Infobox state
 
-	let currentCard: CollectionCard | undefined = undefined;
+	export let currentCard: CollectionCard | undefined | null = undefined;
 
 	let isShown = false;
 
 	let infoBoxAppear = (card: CollectionCard) => {
 		isShown = true;
 		currentCard = card;
+		currentCard.meaning = card.meaning;
 		setTimeout(() => {
 			currentCard = card;
 		}, 250);
@@ -165,8 +169,7 @@
 										infoBoxAppear(card);
 									}
 								}}
-								class="card"
-							>
+								class="card">
 								<img
 									src={'/cards/' +
 										_getCardImgName(card) +
@@ -200,7 +203,7 @@
 		{/each}
 	</div>
 
-	<InfoBox bind:isShown currentCard={currentCard} collection={true} />
+	<InfoBox bind:isShown currentCard={currentCard} collection={true} bind:selectedCard={selectedCard} />
 </div>
 
 <style lang="scss">

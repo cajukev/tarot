@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     spread = readingSpreads.get(setting)!;
   }
   let energy = formData.reading.energy || "";
-  let question = formData.reading.question || "No question";
+  let question = formData.reading.question + '?' || "No question";
   let collectionDecks = formData.collectionDecks || [];
   let trimmedQuestion = await trimQuestion(question);
   if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {

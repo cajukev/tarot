@@ -94,7 +94,7 @@
     listItems.push({
       id: listItems.length,
       name: 'Purchase History',
-      img: '',
+      img: '/menuOptions/Clock.svg',
       selected: false,
       action: () => {
         selectItem(listItems.length - 1);

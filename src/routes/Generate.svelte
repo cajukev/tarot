@@ -38,18 +38,17 @@
 	let scrollVar = 1;
 	let oldScroll = 0;
 
-	$: if($page.data.profile.data){
+	$: if ($page.data.profile.data) {
 		// console.log('profile data', $page.data.profile.data);
 		$customSpreadsStore = $page.data.profile.data.custom_spreads || [];
 		setupItemList();
 	}
 
-	$: if($readingStore.ready){
+	$: if ($readingStore.ready) {
 		getReading();
 	}
 
-	let listItems: ListItem[] = []
-
+	let listItems: ListItem[] = [];
 
 	onMount(() => {
 		window.onscroll = function () {
@@ -64,7 +63,10 @@
 		// console.log('setupItemList', $readingStore.setting);
 		listItems = [];
 		Array.from(readingSpreads).forEach((spread) => {
-			if(!unlocks.get(spread[1].key as string) || $page.data.profile?.data.experience >= (unlocks.get(spread[1].key as string)?.exp || 0)){
+			if (
+				!unlocks.get(spread[1].key as string) ||
+				$page.data.profile?.data.experience >= (unlocks.get(spread[1].key as string)?.exp || 0)
+			) {
 				listItems.push({
 					id: listItems.length,
 					name: spread[1].name,
@@ -78,7 +80,7 @@
 		});
 
 		// Add exisiting custom spreads
-		if($customSpreadsStore){
+		if ($customSpreadsStore) {
 			$customSpreadsStore.forEach((spread) => {
 				listItems.push({
 					id: listItems.length,
@@ -93,7 +95,10 @@
 		}
 
 		// Add custom spreads if unlocked
-		if(unlocks.get('custom') && $page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)){
+		if (
+			unlocks.get('custom') &&
+			$page.data.profile?.data.experience >= (unlocks.get('custom')?.exp || 0)
+		) {
 			listItems.push({
 				id: listItems.length,
 				name: 'Add Custom Spreads',
@@ -102,35 +107,32 @@
 					navigateToCustomSpreads();
 				}
 			});
-		}else{
+		} else {
 			// Add button to navigate to progression
 			listItems.push({
 				id: listItems.length,
 				name: 'Unlock more spreads',
 				img: `./options/Lock.svg`,
 				action: () => {
-					$menuStateStore = {value: 2, change: true}
+					$menuStateStore = { value: 2, change: true };
 				}
 			});
 		}
-	}
+	};
 
 	$: {
 		$readingStore.cards = drawnCards;
 		$readingStore.question = question;
 	}
 
-	$: if($readingStore.ready){
+	$: if ($readingStore.ready) {
 		$readingStore.ready = false;
 		getReading();
 	}
 
 	let tokenCost = 0;
 	$: {
-		tokenCost = getTokenCost(
-			$readingStore.cards.length,
-			$readingStore.model || 'default'
-		);
+		tokenCost = getTokenCost($readingStore.cards.length, $readingStore.model || 'default');
 	}
 
 	let mouseoverSegment = (segment: number) => {
@@ -208,9 +210,7 @@
 			body: JSON.stringify({
 				reading: $readingStore,
 				collectionDecks: $collectionStore,
-				customSpread: $customSpreadsStore.find(
-					(spread) => spread.name === $readingStore.setting
-				),
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
 				// tokenCost: tokenCost
 			})
 		})
@@ -250,11 +250,67 @@
 			);
 	};
 
-	let storedConclusion = "";
-	
+	let setEmptyCards = () => {
+		$achievementsStore = { action: 'AskQuestion', value: 'default' };
+		state = 2; // loading
+		window.scrollTo(0, 0);
+		innerState = 1;
+		$readingStore.conclusion = '';
+		$readingStore.energy = '';
+		// Validate question
+		fetch('/api/validateQuestion', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				question: $readingStore.question
+			})
+		})
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.body.error) {
+					state = 4;
+					error = data.body.error;
+					return;
+				} else {
+					// Get number of cards in spread
+					let numCards = 0;
+					const customSpread = $customSpreadsStore.find(
+						(spread) => spread.name === $readingStore.setting
+					);
+					if (customSpread) {
+						numCards = customSpread.positions.length;
+						$flippedCardsStore = customSpread.positions.map((pos) => false);
+					} else {
+						numCards = readingSpreads.get($readingStore.setting)?.positions.length || 0;
+						$flippedCardsStore =
+							readingSpreads.get($readingStore.setting)?.positions.map((pos) => false) || [];
+					}
+					// Create empty cards of that length
+					let emptyCards: CollectionCard[] = [];
+					for (let i = 0; i < numCards; i++) {
+						emptyCards.push({
+							name: 'undefined',
+							energy: { upright: ['none'], reversed: ['none'] },
+							meaning: 'none',
+							reversedMeaning: 'none'
+						});
+					}
+
+					$readingStore.cards = emptyCards;
+					$readingStore.energy = '';
+
+					state = 3;
+				}
+			});
+	};
+
+	let storedConclusion = '';
+
 	let getReading = () => {
-		$readingStore.conclusion = "";
-		storedConclusion = "";
+		$readingStore.conclusion = '';
+		storedConclusion = '';
 		va.track('GetReading');
 		fetch('/api/tarotreading', {
 			method: 'POST',
@@ -263,9 +319,7 @@
 			},
 			body: JSON.stringify({
 				reading: $readingStore,
-				customSpread: $customSpreadsStore.find(
-					(spread) => spread.name === $readingStore.setting
-				),
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
 				tokenCost: tokenCost
 			})
 		}).then(async (res) => {
@@ -276,23 +330,26 @@
 			while (true && reader) {
 				const { done, value } = await reader.read();
 				const res = new TextDecoder('utf-8').decode(value);
-				console.log(res.substring(res.indexOf('{'),res.lastIndexOf('}') + 1));
+				console.log(res.substring(res.indexOf('{'), res.lastIndexOf('}') + 1));
 				let text = chunksToText(res);
 				// let text = res.slice(res.indexOf('"choices":[{"delta":{"content":"') + 32 , res.indexOf('"}',res.indexOf('"choices":[{"delta":{"content":"') + 32))
 				if (text && !text.includes('"finish_reason":"stop')) {
 					// Duplication glitch fix attempt
-					if(!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-						$readingStore.conclusion += text.replaceAll('\\n','<br>').replaceAll('\\','');
+					if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+						$readingStore.conclusion += text.replaceAll('\\n', '<br>').replaceAll('\\', '');
 						storedConclusion = $readingStore.conclusion;
 					}
 				}
 				if (done) {
 					// Is wrapped in {}
-					if($readingStore.conclusion && $readingStore.conclusion.startsWith('{') && $readingStore.conclusion.endsWith('}')) {
+					if (
+						$readingStore.conclusion &&
+						$readingStore.conclusion.startsWith('{') &&
+						$readingStore.conclusion.endsWith('}')
+					) {
 						$readingStore.incomplete = false;
 						$readingStore.conclusion = '...';
-			
-					}else{
+					} else {
 						$readingStore.conclusion += `
 						
 ...`;
@@ -343,27 +400,26 @@
 	// 		}
 	// 	});
 	// };
-	
+
 	let chunksToText = (text: string): string => {
-		if(text.includes('"choices":[{"delta":{"content":"')) {
+		if (text.includes('"choices":[{"delta":{"content":"')) {
 			let startIndex = text.indexOf('"choices":[{"delta":{"content":"') + 32;
-			let endIndex = text.indexOf('"}',text.indexOf('"choices":[{"delta":{"content":"') + 32);
-			return text.slice(startIndex , endIndex) + chunksToText(text.slice(endIndex + 2));
-		}else{
-			return "";
+			let endIndex = text.indexOf('"}', text.indexOf('"choices":[{"delta":{"content":"') + 32);
+			return text.slice(startIndex, endIndex) + chunksToText(text.slice(endIndex + 2));
+		} else {
+			return '';
 		}
-	}
+	};
 
 	let selectOption = (option: string) => {
 		// console.log(option);
 		$readingStore.setting = option;
-		$flippedCardsStore = readingSpreads.get(option)?.positions.map(() => false) || $customSpreadsStore.find(
-			(spread) => spread.name === option
-		)?.positions.map(() => false) || [];
+		$flippedCardsStore =
+			readingSpreads.get(option)?.positions.map(() => false) ||
+			$customSpreadsStore.find((spread) => spread.name === option)?.positions.map(() => false) ||
+			[];
 		setupItemList();
 	};
-
-	
 
 	let navigateToCustomSpreads = () => {
 		$menuStateStore = { value: 4, change: true };
@@ -373,10 +429,12 @@
 
 	// Handle Secrets
 	let checkForSecret = (input: string) => {
-		switch (input.toLowerCase()) {
+		switch (
+			input.toLowerCase()
 			// case 'svelte':
 			// 	addSecret('Svelte');
 			// 	break;
+		) {
 		}
 	};
 
@@ -414,15 +472,22 @@
 		<div class="setup">
 			<div class="optionSelectWrapper">
 				<p>Choose a spread</p>
-				<ItemList bind:items={listItems}></ItemList>
+				<ItemList bind:items={listItems} />
 			</div>
 		</div>
 		<div>
 			<p>Enter your question</p>
 			<!-- Placeholder random in readingSpreads?.get($readingStore.setting)?.placeholders -->
-			<textarea bind:value={question} name="question" id="question" placeholder={
-				readingSpreads?.get($readingStore.setting)?.placeholders?.[Math.floor(Math.random() * (readingSpreads?.get($readingStore.setting)?.placeholders?.length ?? 0))] || ""
-			}></textarea>
+			<textarea
+				bind:value={question}
+				name="question"
+				id="question"
+				placeholder={readingSpreads?.get($readingStore.setting)?.placeholders?.[
+					Math.floor(
+						Math.random() * (readingSpreads?.get($readingStore.setting)?.placeholders?.length ?? 0)
+					)
+				] || ''}
+			/>
 			<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 				<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
 					<div
@@ -528,11 +593,14 @@
 						on:click={() => clickSegment(10)}
 					/>
 				</div>
-				<p>Tell me my fortune</p>
+				<p>Draw cards</p>
 			</div>
+			<button class="manual" on:click={() => setEmptyCards()}>My cards are already drawn</button>
 			<!-- If daily is available -->
-			{#if !$page.data.profile.data.daily }
-				<p class="bonus info">Daily bonus is available! <br> Complete a reading to earn 5 shop essence!</p>
+			{#if !$page.data.profile.data.daily}
+				<p class="bonus info">
+					Daily bonus is available! <br /> Complete a reading to earn 5 shop essence!
+				</p>
 			{/if}
 		</div>
 	</div>
@@ -550,7 +618,6 @@
 			> p {
 				font-size: $h4-font-size;
 			}
-			
 		}
 	}
 	.input {
@@ -559,6 +626,7 @@
 		align-items: center;
 		width: 100%;
 		& textarea {
+			margin-top: 1rem;
 			resize: vertical;
 			width: 30rem;
 			max-width: 80vw;
@@ -608,8 +676,16 @@
 			transform: translateZ(0);
 		}
 	}
-	.bonus{
+	.manual {
+		margin-top: 1rem;
+		background-color: #f7db5d;
+		border: none;
+		padding: 0.25rem 0.5rem;
+		font-family: serif;
+		font-size: clamp(20px, 2.3vw, 26px);
+		cursor: pointer;
+	}
+	.bonus {
 		margin-top: 0.5rem;
 	}
-	
 </style>

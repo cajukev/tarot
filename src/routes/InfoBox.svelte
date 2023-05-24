@@ -11,8 +11,12 @@
 	import { art } from '$lib/customization';
 
 	export let isShown = false;
-	export let currentCard: CollectionCard | undefined = undefined;
+	export let currentCard: CollectionCard | undefined | null = undefined;
 	export let collection: boolean = false;
+
+	export let selectedCard: CollectionCard | undefined | null = undefined;
+
+	$:console.log('select card', selectedCard)
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
@@ -48,6 +52,7 @@
 	let infoBoxHide = () => {
 		isShown = false;
 		infoBox.classList.remove('visible');
+		selectedCard = JSON.parse(JSON.stringify(currentCard));
 		setTimeout(() => {
 			currentCard = undefined;
 		}, 250);

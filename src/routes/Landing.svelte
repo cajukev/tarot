@@ -233,8 +233,8 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 			transition: all 1s ease-in-out;
 			position: relative;
 			text-decoration: none;
-      display: flex;
-      justify-content: center;
+      		display: flex;
+      		justify-content: center;
 			&.hidden {
 				opacity: 0;
 				pointer-events: none;

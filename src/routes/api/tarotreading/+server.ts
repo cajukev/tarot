@@ -107,7 +107,7 @@ You are ${characterInput} and must give the best Tarot reading given the followi
 // `)}
 // `
     +
-    `Spread: ${spread.name}
+    `Spread: ${spread.name} - Do not mention the spread name in the reading
 question = ${question}
 drawn card(s):`
   drawnCards.forEach((card, i) => {
@@ -120,7 +120,7 @@ follow this structure:
 p1: greeting and one phrase overview of the reading to come
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name} ${drawnCards[i].reversed ? "reversed" : ""}, explain`).join(`
 `)}
-p${(spread.positions.length || 1) + 2}: conclude by relating the cards together and to the question, reopening or closing words
+p${(spread.positions.length || 1) + 2}: conclude by relating the cards together and to the question, and a reopening to the querent
 separate each p with a line break
 answer in the same language as the question was asked
 Total ${60 * drawnCards.length + 120} words, no more no less`

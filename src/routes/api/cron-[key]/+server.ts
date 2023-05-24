@@ -1,6 +1,6 @@
 import { dbSecret } from '$lib/db';
 
-export async function GET({request, params}) {
+export async function GET({params}) {
 
   if(params.key === import.meta.env.VITE_CRON_SHARED_KEY) {
 
