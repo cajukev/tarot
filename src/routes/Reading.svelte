@@ -18,6 +18,7 @@
 	import ItemList from './ItemList.svelte';
 	import { art } from '$lib/customization';
 	import Collection from './Collection.svelte';
+	import CardSelect from './CardSelect.svelte';
 	export let state: number;
 
 	
@@ -318,7 +319,7 @@
 </div>
 
 <div bind:this={cardSelectPopup} class="fullScreenPopup hidden">
-	<Collection bind:currentCard={currentSelectCard} bind:selectedCard={selectedCard}></Collection>
+	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard={selectedCard}></CardSelect>
 
 </div>
 
@@ -635,7 +636,10 @@
 			background-color: rgba($color: #000000, $alpha: 0.8);
 			z-index: 100;
 			overflow-y: scroll;
-			padding: 2rem;
+			padding-top: 4rem;
+			padding-bottom: 2rem;
+			transition: opacity 0.2s ease;
+			backdrop-filter: blur(5px);
 			
 			& > div {
 				background-color: white;

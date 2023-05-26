@@ -33,7 +33,7 @@
 		});
 	});
 
-	$: if (isShown === true && infoBox.classList.contains('visible') === false) {
+	$: if (isShown === true && infoBox?.classList.contains('visible') === false) {
 		infoBoxAppear(currentCard as CollectionCard);
 	}
 	let infoBox: HTMLDivElement;
