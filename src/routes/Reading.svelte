@@ -19,19 +19,19 @@
 	import { art } from '$lib/customization';
 	import Collection from './Collection.svelte';
 	import CardSelect from './CardSelect.svelte';
+	import { invalidateAll } from '$app/navigation';
 	export let state: number;
 
-	
 	let cardSelectPopup: HTMLElement;
 	let currentSelectCardPosition: number | null = null;
 	let currentSelectCard: CollectionCard | null = null;
 	let selectedCard: CollectionCard | undefined | null = undefined;
 	let flipCard = (index: number) => {
-		if($readingStore.cards[index].name === "undefined"){
+		if ($readingStore.cards[index].name === 'undefined') {
 			// Card is undefined, select card
 			cardSelectPopup.classList.remove('hidden');
 			currentSelectCardPosition = index;
-		}else{
+		} else {
 			// Card is set
 			$flippedCardsStore[index] = !$flippedCardsStore[index];
 			$achievementsStore = {
@@ -41,7 +41,7 @@
 		}
 	};
 
-	$: if(selectedCard !== undefined && selectedCard !== null) {
+	$: if (selectedCard !== undefined && selectedCard !== null) {
 		setCard();
 		flipCard(currentSelectCardPosition as number);
 		// reset variables
@@ -51,20 +51,21 @@
 	}
 
 	let setCard = () => {
-		console.log("setCard", currentSelectCard);
-		$readingStore.cards[currentSelectCardPosition as number] = JSON.parse(JSON.stringify(currentSelectCard || ""));
+		console.log('setCard', currentSelectCard);
+		$readingStore.cards[currentSelectCardPosition as number] = JSON.parse(
+			JSON.stringify(currentSelectCard || '')
+		);
 		selectedCard = undefined;
-	}
-	
+	};
 
 	// actionState 0: show actions
 	// actionState 1: hide actions
 
 	let actionState = 0;
 
-	$: if($flippedCardsStore?.every((card) => card) && !$readingStore.conclusion){
+	$: if ($flippedCardsStore?.every((card) => card) && !$readingStore.conclusion) {
 		actionState = 1;
-	}else{
+	} else {
 		actionState = 0;
 		loading = false;
 	}
@@ -78,9 +79,9 @@
 	let reset = () => {
 		actionState = 0;
 		$readingStore.ready = false;
-		$readingStore.conclusion = "";
+		$readingStore.conclusion = '';
 		readingElem.scrollIntoView();
-	}
+	};
 
 	let _getCardImgName = (name: string) => {
 		return name.replace(/ /g, '_').replace(/'/g, '');
@@ -88,25 +89,20 @@
 
 	let tokenCost = 0;
 	$: {
-		tokenCost = getTokenCost(
-			$flippedCardsStore?.length,
-			$readingStore.model || 'default'
-		);
+		tokenCost = getTokenCost($flippedCardsStore?.length, $readingStore.model || 'default');
 	}
 	let loading = false;
 	let startReading = () => {
-		if(loading === true) return;
+		if (loading === true) return;
 		loading = true;
 		$readingStore.ready = true;
 		actionState = 0;
 	};
-
 	// Infobox state
 
 	let currentCard: CollectionCard | undefined | null = undefined;
 
 	let infoBoxIsShown = false;
-	
 
 	let infoBoxAppear = (card: CollectionCard) => {
 		infoBoxIsShown = true;
@@ -123,27 +119,35 @@
 	// ItemList, 1 selected at a time
 
 	let listItems: ListItem[] = [];
-	let selected = 0
+	let selected = 0;
 
 	let setupItemList = () => {
 		listItems = [];
 		for (let i = 0; i < characters.size; i++) {
 			let available = false;
-			if((!characters.get([...characters.keys()][i])?.pack  || characters.get([...characters.keys()][i])?.pack === 'unlock' && $page.data.profile?.data.experience >= (unlocks.get(characters.get([...characters.keys()][i])?.name + "")?.exp || 0) ||
-				characters.get([...characters.keys()][i])?.pack && $page.data.profile?.data.bought_items.includes(characters.get([...characters.keys()][i])?.pack + ""))){
+			if (
+				!characters.get([...characters.keys()][i])?.pack ||
+				(characters.get([...characters.keys()][i])?.pack === 'unlock' &&
+					$page.data.profile?.data.experience >=
+						(unlocks.get(characters.get([...characters.keys()][i])?.name + '')?.exp || 0)) ||
+				(characters.get([...characters.keys()][i])?.pack &&
+					$page.data.profile?.data.bought_items.includes(
+						characters.get([...characters.keys()][i])?.pack + ''
+					))
+			) {
 				available = true;
-				}
-			
+			}
+
 			listItems.push({
 				id: i,
 				name: characters.get([...characters.keys()][i])?.name || '',
 				description: characters.get([...characters.keys()][i])?.title || '',
 				selected: i === selected,
-				img: "/options/"+characters.get([...characters.keys()][i])?.name+"-200.webp" || '',
+				img: '/options/' + characters.get([...characters.keys()][i])?.name + '-200.webp' || '',
 				available: available,
 				action() {
 					selectItem(i);
-				},
+				}
 			});
 		}
 	};
@@ -159,6 +163,140 @@
 	let closePopup = () => {
 		cardSelectPopup.classList.add('hidden');
 	};
+
+	let analyseCards = () => {
+		if (loading) return;
+		loading = true;
+		fetch('/api/analysis', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				readingStore: $readingStore,
+				tokenCost: $readingStore.cards.length / 10
+			})
+		})
+			.then(async (res) => {
+				console.log(res);
+				const reader = res.body?.getReader();
+				let storedLength = 0;
+				while (true && reader) {
+					const { done, value } = await reader.read();
+					if(storedLength === value?.length){
+						console.log('done');
+						loading = false;
+						actionState = 1;
+						invalidateAll();
+					}else{
+						storedLength = value?.length || 0;
+					}
+					const text = new TextDecoder('utf-8').decode(value);
+					if (text) {
+						if (!(storedAnalysis.length > 20 && text.length > 1.5 * storedAnalysis.length)) {
+							$readingStore.analysis = text;
+							storedAnalysis = $readingStore.analysis;
+						}
+					}
+					
+				}
+			})
+			// .finally(() => {
+			// 	console.log('done');
+			// 	loading = false;
+			// 	actionState = 0;
+			// 	invalidateAll();
+			// });
+	};
+
+	let storedConclusion = '';
+	let storedAnalysis = '';
+	let getReadingWithAnalysis = () => {
+		if (loading) return;
+		loading = true;
+		actionState = 0;
+		storedConclusion = '';
+		storedAnalysis = '';
+		fetch('/api/tarotReadingWithAnalysis', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				readingStore: $readingStore,
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
+				tokenCost: $readingStore.cards.length / 10
+			})
+		})
+			.then(async (res) => {
+				const reader = res.body?.getReader();
+				let storedLength = 0;
+				while (true && reader) {
+					const { done, value } = await reader.read();
+					if(storedLength === value?.length){
+						console.log('done');
+						loading = false;
+						actionState = 1;
+						$achievementsStore = { action: 'CompleteReading', value: 'default' };
+						$readingStore.conclusion = $readingStore.conclusion + `
+...`
+						invalidateAll();
+					}else{
+						storedLength = value?.length || 0;
+					}
+					const text = new TextDecoder('utf-8').decode(value);
+					if (text) {
+						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+							$readingStore.conclusion = text;
+							storedConclusion = $readingStore.conclusion;
+						}
+					}
+				}
+			})
+	};
+
+	let getReading = () => {
+		if (loading) return;
+		loading = true;
+		actionState = 0;
+		fetch('/api/tarotreading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore,
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
+				tokenCost: tokenCost
+			})
+		})
+			.then(async (res) => {
+				console.log(res);
+				const reader = res.body?.getReader();
+				let storedLength = 0;
+				while (true && reader) {
+					const { done, value } = await reader.read();
+					if(storedLength === value?.length){
+						console.log('done');
+						loading = false;
+						actionState = 1;
+						$achievementsStore = { action: 'CompleteReading', value: 'default' };
+						$readingStore.conclusion = $readingStore.conclusion + `
+...`
+						invalidateAll();
+					}else{
+						storedLength = value?.length || 0;
+						const text = new TextDecoder('utf-8').decode(value);
+						if (text) {
+							if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+								$readingStore.conclusion = text;
+								storedConclusion = $readingStore.conclusion;
+							}
+						}
+					}
+				}
+			})
+	};
 	
 </script>
 
@@ -169,7 +307,7 @@
 			<p class="info">Energy: {$readingStore.energy}</p>
 		{/if}
 	</div>
-	<p class={"info " + ($flippedCardsStore?.some((card) => card) ? 'faded' : '')}>
+	<p class={'info ' + ($flippedCardsStore?.some((card) => card) ? 'faded' : '')}>
 		Click the cards to start the reading
 	</p>
 	<div class="cards">
@@ -179,8 +317,9 @@
 					{(readingSpreads.get($readingStore.setting)?.positions &&
 						readingSpreads.get($readingStore.setting)?.positions[i]) ||
 						''}
-					{$customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
-						?.positions[i] || ''}
+					{$customSpreadsStore.find((spread) => spread.name === $readingStore.setting)?.positions[
+						i
+					] || ''}
 				</p>
 				<div class="stacked">
 					{#if $readingStore.cards[i]}
@@ -188,40 +327,45 @@
 							<!-- Back of card -->
 							<div class={'card ' + ($flippedCardsStore[i] ? 'cardhidden ' : ' ') + 'ready'}>
 								<img
-									src={"/cards/"+$readingStore.cardback+"-200.webp"}
+									src={'/cards/' + $readingStore.cardback + '-200.webp'}
 									alt=""
 									class={$readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow'}
 									tabindex={$flippedCardsStore[i] ? -1 : 0}
 									on:click={() => {
 										flipCard(i);
 									}}
-									on:keydown={
-										(event) => {
-											if (event.key === 'Enter') {
-												flipCard(i);
-											}
+									on:keydown={(event) => {
+										if (event.key === 'Enter') {
+											flipCard(i);
 										}
-									}
+									}}
 								/>
 							</div>
 							<!-- Front of card -->
 							<div class={'card ' + ($flippedCardsStore[i] ? '' : 'cardhidden')}>
 								<img
-									src={"/cards/"+_getCardImgName($readingStore.cards[i].name)+"-200"+($readingStore.art && art.find(a => a.suffix === $readingStore.art )?.decks.includes(getCardsPack($readingStore.cards[i].name) || "anythingElse") ? "-"+$readingStore.art : "")+".webp"}
+									src={'/cards/' +
+										_getCardImgName($readingStore.cards[i].name) +
+										'-200' +
+										($readingStore.art &&
+										art
+											.find((a) => a.suffix === $readingStore.art)
+											?.decks.includes(getCardsPack($readingStore.cards[i].name) || 'anythingElse')
+											? '-' + $readingStore.art
+											: '') +
+										'.webp'}
 									alt=""
 									tabindex={$flippedCardsStore[i] ? 0 : -1}
 									class={'white ' +
 										($readingStore.cards[i].reversed ? 'reversed cardGrowReversed' : 'cardGrow')}
-										on:click={() => {
+									on:click={() => {
+										infoBoxAppear($readingStore.cards[i]);
+									}}
+									on:keydown={(event) => {
+										if (event.key === 'Enter') {
 											infoBoxAppear($readingStore.cards[i]);
-										}}
-										on:keydown={
-											(event) => {
-												if (event.key === 'Enter') {
-													infoBoxAppear($readingStore.cards[i]);
-												}
-											}
 										}
+									}}
 								/>
 							</div>
 						</div>
@@ -230,12 +374,36 @@
 			</div>
 		{/each}
 	</div>
-	<p class={"info " + ($flippedCardsStore?.every((card) => !card) ? 'faded' : '')}>
+	<p class={'info ' + ($flippedCardsStore?.every((card) => !card) ? 'faded' : '')}>
 		Click the cards to learn more about them
 	</p>
+	{#if $readingStore.analysis.length > 0}
+		<div class="analysis">
+			<!-- Show hide -->
+			<details open>
+				<summary>Analysis</summary>
+				<p>{$readingStore.analysis}</p>
+			</details>
+		</div>
+	{:else if $readingStore.cards.length > 1 && actionState === 1}
+		{#if 0.5 <= $page.data.profile.data.tokens }
+			<div>
+				<button class="action analyse" on:click={() => analyseCards()}>Analyse Cards</button>
+				<p class="cost">
+					<!-- Float to 1st decimal -->
+					Costs {$readingStore.cards.length / 10} tokens
+					<span>({$page.data.profile.data.tokens} remaining)</span>
+				</p>
+			</div>
+		{:else}
+			<div>
+				<p>Not enough tokens for card analysis</p>
+			</div>
+		{/if}
+	{/if}
 	{#if actionState}
 		<div transition:fade>
-			<div class="optionSelectWrapper" >
+			<div class="optionSelectWrapper">
 				<p>Choose a reader</p>
 				<ItemList items={listItems} />
 			</div>
@@ -251,7 +419,11 @@
 						checked={$readingStore.model === 'gpt-3.5-turbo'}
 						on:change={() => ($readingStore.model = 'gpt-3.5-turbo')}
 					/>
-					<label for="gpt-3.5-turbo">GPT-3.5 Turbo {characters.get($readingStore.character)?.model === "gpt-3.5-turbo" ? "(suggested)" : "" }</label>
+					<label for="gpt-3.5-turbo"
+						>GPT-3.5 Turbo {characters.get($readingStore.character)?.model === 'gpt-3.5-turbo'
+							? '(suggested)'
+							: ''}</label
+					>
 				</div>
 				<div class="radio">
 					<input
@@ -262,15 +434,24 @@
 						checked={$readingStore.model === 'gpt-4'}
 						on:change={() => ($readingStore.model = 'gpt-4')}
 					/>
-					<label for="gpt-4">GPT-4 {characters.get($readingStore.character)?.model === "gpt-4" ? "(suggested)" : "" }</label>
+					<label for="gpt-4"
+						>GPT-4 {characters.get($readingStore.character)?.model === 'gpt-4'
+							? '(suggested)'
+							: ''}</label
+					>
 				</div>
-				</div>
+			</div>
 			{#if tokenCost <= $page.data.profile.data.tokens}
 				<div>
-					<button class="startReading" on:click={() => startReading()}>
+					<button class="startReading" on:click={() => getReading()}>
 						{'Get ' + $readingStore.character + "'s interpretation"}
 					</button>
-					
+
+					{#if $readingStore.analysis.length > 0}
+						<button class="startReading" on:click={() => getReadingWithAnalysis()}>
+							With Analysis
+						</button>
+					{/if}
 				</div>
 			{:else}
 				<div>
@@ -281,19 +462,19 @@
 				Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''} |
 				<span>({$page.data.profile.data.tokens} remaining)</span>
 			</p>
-			<button class="cta" on:click={() => ($menuStateStore = { value: 5, change: true })}
-				>Buy More Tokens</button
-			>
+			<button class="cta" on:click={() => ($menuStateStore = { value: 5, change: true })}>
+				Buy More Tokens
+			</button>
 			{#if $page.data.profile.data.tokens < 50}
 				<p class="info">Regain up to 30 tokens at 12:00PM EST</p>
 			{/if}
 		</div>
 	{/if}
-	{#if $readingStore.conclusion.length > 0 }
-	<p class="info infoReader">
-		Reader: {characters.get($readingStore.character)?.name}
-		{characters.get($readingStore.character)?.title}
-	</p>
+	{#if $readingStore.conclusion.length > 0}
+		<p class="info infoReader">
+			Reader: {characters.get($readingStore.character)?.name}
+			{characters.get($readingStore.character)?.title}
+		</p>
 	{/if}
 	<p class="conclusion">
 		{@html $readingStore.conclusion.trim()}
@@ -306,23 +487,20 @@
 	<div class="actions">
 		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
 			{#if $readingStore.conclusion.length > 0}
-			<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+				<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
 			{/if}
 			<button class="btn-link" on:click={() => restart()}>Restart</button>
 		{/if}
-
 	</div>
 </div>
 
 <div>
-	<InfoBox bind:isShown={infoBoxIsShown} currentCard={currentCard}></InfoBox>
+	<InfoBox bind:isShown={infoBoxIsShown} {currentCard} />
 </div>
 
 <div bind:this={cardSelectPopup} class="fullScreenPopup hidden">
-	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard={selectedCard}></CardSelect>
-
+	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard />
 </div>
-
 
 <style lang="scss">
 	.reading {
@@ -383,7 +561,6 @@
 					cursor: not-allowed;
 					pointer-events: none;
 				}
-				
 			}
 		}
 		.conclusion {
@@ -415,8 +592,11 @@
 		font-family: $other-font;
 		font-size: $h4-font-size;
 		cursor: pointer;
+		&:first-of-type {
+			margin-right: 1rem;
+		}
 	}
-	.cta{
+	.cta {
 		cursor: pointer;
 		background-color: $accent;
 		border: none;
@@ -424,7 +604,17 @@
 		font-family: $other-font;
 		font-weight: 700;
 	}
-	.cost{
+	.analysis {
+		margin: auto;
+		margin-top: 2rem;
+		padding: 0 1rem;
+		max-width: 40rem;
+		white-space: break-spaces;
+	}
+	.analyse {
+		margin-top: 1rem;
+	}
+	.cost {
 		padding: 1rem 0rem 0.5rem;
 	}
 	.infoReader {
@@ -460,195 +650,193 @@
 
 	.optionSelectWrapper {
 		margin-top: 1rem;
-			> p {
-				font-size: $h4-font-size;
+		> p {
+			font-size: $h4-font-size;
+		}
+		& .optionSelect {
+			max-width: 100vw;
+			overflow: auto;
+			display: inline-flex;
+			gap: 1rem;
+			padding: 1rem;
+			&::-webkit-scrollbar {
+				display: none;
 			}
-			& .optionSelect {
-				max-width: 100vw;
-				overflow: auto;
-				display: inline-flex;
-				gap: 1rem;
-				padding: 1rem;
+			.option {
+				color: white;
+				font-size: $base-font-size;
+				font-family: $other-font;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: start;
+				padding: 1rem 1rem;
+				width: min-content;
+				background: rgba($color: #000000, $alpha: 0.2);
+				border-radius: 1rem;
+				outline: none;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: all 0.2s ease;
 				&::-webkit-scrollbar {
 					display: none;
 				}
-				.option {
-					color: white;
-					font-size: $base-font-size;
-					font-family: $other-font;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: start;
-					padding: 1rem 1rem;
-					width: min-content;
-					background: rgba($color: #000000, $alpha: 0.2);
+				.imgWrapper {
+					width: min(30vw, 6rem);
+					aspect-ratio: 1/1;
+					overflow: hidden;
 					border-radius: 1rem;
-					outline: none;
-					border: 1px solid transparent;
-					cursor: pointer;
-					transition: all 0.2s ease;
-					&::-webkit-scrollbar {
-						display: none;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					img {
+						transition: all 1s ease;
 					}
-					.imgWrapper {
-						width: min(30vw, 6rem);
-						aspect-ratio: 1/1;
-						overflow: hidden;
-						border-radius: 1rem;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						img {
-							transition: all 1s ease;
-						}
+				}
+				&:hover {
+					background-color: rgba($color: #000000, $alpha: 0.4);
+					& img {
+						transform: scale(1.05);
 					}
+				}
+				&.active {
+					background-color: rgba($color: #000000, $alpha: 0.8);
+					border: 1px solid #ffffff2c;
+					& img {
+						transform: scale(1.1);
+					}
+				}
+				&:focus {
+					border: 1px solid white;
+				}
+				& .optionText {
+					margin-top: 0.5rem;
+				}
+				&.customOption {
+					position: relative;
 					&:hover {
-						background-color: rgba($color: #000000, $alpha: 0.4);
-						& img {
-							transform: scale(1.05);
-						}
-					}
-					&.active {
-						background-color: rgba($color: #000000, $alpha: 0.8);
-						border: 1px solid #ffffff2c;
-						& img {
-							transform: scale(1.1);
+						& .delete {
+							opacity: 1;
+							pointer-events: all;
 						}
 					}
 					&:focus {
-						border: 1px solid white;
+						& .delete {
+							opacity: 1;
+							pointer-events: all;
+						}
 					}
-					& .optionText {
-						margin-top: 0.5rem;
-					}
-					&.customOption {
-						position: relative;
+					& .delete {
+						position: absolute;
+						bottom: 0;
+						transform: translateY(50%);
+						width: 100%;
+						background-color: red;
+						border-radius: 0 0 1rem 1rem;
+						border: none;
+						font-family: $other-font;
+						font-size: $base-font-size;
+						opacity: 0;
+						pointer-events: none;
+						transition: all 0.25s ease;
 						&:hover {
-							& .delete {
-								opacity: 1;
-								pointer-events: all;
-							}
+							background-color: #be0000;
+							cursor: pointer;
 						}
 						&:focus {
-							& .delete {
-								opacity: 1;
-								pointer-events: all;
-							}
+							opacity: 1;
+							pointer-events: all;
+							outline: 1px solid white;
 						}
-						& .delete {
-							position: absolute;
-							bottom: 0;
-							transform: translateY(50%);
-							width: 100%;
-							background-color: red;
-							border-radius: 0 0 1rem 1rem;
-							border: none;
-							font-family: $other-font;
-							font-size: $base-font-size;
-							opacity: 0;
-							pointer-events: none;
-							transition: all 0.25s ease;
-							&:hover {
-								background-color: #be0000;
-								cursor: pointer;
-							}
-							&:focus {
-								opacity: 1;
-								pointer-events: all;
-								outline: 1px solid white;
-							}
-						}
-					}
-				}
-				.lockedOption {
-					color: white;
-					font-size: $base-font-size;
-					font-family: $other-font;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-					justify-content: start;
-					padding: 1rem 1rem;
-					width: min-content;
-					background: rgba($color: #000000, $alpha: 0.2);
-					border-radius: 1rem;
-					outline: none;
-					border: 1px solid transparent;
-					cursor: pointer;
-					transition: all 0.2s ease;
-					&::-webkit-scrollbar {
-						display: none;
-					}
-					.imgWrapper {
-						width: min(30vw, 6rem);
-						aspect-ratio: 1/1;
-						overflow: hidden;
-						border-radius: 0;
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						img {
-							transition: all 1s ease;
-						}
-					}
-					&:hover {
-						background-color: rgba($color: #000000, $alpha: 0.4);
-						& img {
-							transform: scale(1.05);
-						}
-					}
-					&:focus {
-						border: 1px solid white;
-					}
-					& .optionText {
-						margin-top: 0.5rem;
 					}
 				}
 			}
-		}
-		.character {
-			& .option:not(.lockedOption) {
-				& .imgWrapper {
-					&.active {
-						border: 1px solid #ffffff;
-					}
-					& img {
-						width: 100%;
-					}
-				}
-			}
-		}
-		.lockedOption {
-			& .imgWrapper {
-				& img {
-					width: 60%;
-				}
-			}
-		}
-	
-		.fullScreenPopup{
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100vw;
-			height: 100vh;
-			background-color: rgba($color: #000000, $alpha: 0.8);
-			z-index: 100;
-			overflow-y: scroll;
-			padding-top: 4rem;
-			padding-bottom: 2rem;
-			transition: opacity 0.2s ease;
-			backdrop-filter: blur(5px);
-			
-			& > div {
-				background-color: white;
+			.lockedOption {
+				color: white;
+				font-size: $base-font-size;
+				font-family: $other-font;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: start;
+				padding: 1rem 1rem;
+				width: min-content;
+				background: rgba($color: #000000, $alpha: 0.2);
 				border-radius: 1rem;
-				padding: 2rem;
-				max-width: 80vw;
-				max-height: 80vh;
-				overflow-y: scroll;
+				outline: none;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				&::-webkit-scrollbar {
+					display: none;
+				}
+				.imgWrapper {
+					width: min(30vw, 6rem);
+					aspect-ratio: 1/1;
+					overflow: hidden;
+					border-radius: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					img {
+						transition: all 1s ease;
+					}
+				}
+				&:hover {
+					background-color: rgba($color: #000000, $alpha: 0.4);
+					& img {
+						transform: scale(1.05);
+					}
+				}
+				&:focus {
+					border: 1px solid white;
+				}
+				& .optionText {
+					margin-top: 0.5rem;
+				}
 			}
 		}
-	
+	}
+	.character {
+		& .option:not(.lockedOption) {
+			& .imgWrapper {
+				&.active {
+					border: 1px solid #ffffff;
+				}
+				& img {
+					width: 100%;
+				}
+			}
+		}
+	}
+	.lockedOption {
+		& .imgWrapper {
+			& img {
+				width: 60%;
+			}
+		}
+	}
+	.fullScreenPopup {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background-color: rgba($color: #000000, $alpha: 0.8);
+		z-index: 100;
+		overflow-y: scroll;
+		padding-top: 4rem;
+		padding-bottom: 2rem;
+		transition: opacity 0.2s ease;
+		backdrop-filter: blur(5px);
+
+		& > div {
+			background-color: white;
+			border-radius: 1rem;
+			padding: 2rem;
+			max-width: 80vw;
+			max-height: 80vh;
+			overflow-y: scroll;
+		}
+	}
 </style>

@@ -57,6 +57,7 @@ declare global {
 		cardback: string,
 		art: string,
 		model: string,
+		analysis: string,
 	}
 
 	type ListItem = {

@@ -188,6 +188,7 @@
 		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
+		$readingStore.analysis = '';
 		$readingStore.energy =
 			energyList[energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore]];
 		$readingStore.cards = [];
@@ -256,6 +257,7 @@
 		window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
+		$readingStore.analysis = '';
 		$readingStore.energy = '';
 		// Validate question
 		fetch('/api/validateQuestion', {

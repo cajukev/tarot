@@ -14,7 +14,8 @@ export const readingStore = writable<ReadingType>(
     character: "",
     cardback: "cardback",
     art: "",
-    model: "gpt-3.5-turbo"
+    model: "gpt-3.5-turbo",
+    analysis: "",
   }
 );
 export const conclusionStore = writable<string>(undefined);

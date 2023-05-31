@@ -7,10 +7,20 @@ import type { CollectionCard, CollectionDeck } from "$lib/cards";
 import characters, { type Character } from "$lib/characters";
 import { cards } from "$lib/cards";
 import { unlocks } from "$lib/unlocks";
+import { ChatPromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
+import { LLMChain } from "langchain";
+import { ChatOpenAI } from "langchain/chat_models/openai";
 
 export const config = {
   runtime: 'edge',
 };
+
+let apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
+const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
+const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
+
+const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
+const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
 
 let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
   let hasAll = true;
@@ -27,7 +37,7 @@ let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
   console.log(usedDecks);
 
   usedDecks.forEach((deck) => {
-    if (deck.exp){
+    if (deck.exp) {
       if (profile.experience < unlocks.get(deck.abbrv)!.exp) {
         hasAll = false;
       }
@@ -37,9 +47,9 @@ let hasAllUsedPacks = (usedCards: CollectionCard[], profile: any) => {
 }
 
 let hasReader = (character: Character, profile: any) => {
-  return !character.pack  || 
-		character.pack === 'unlock' && profile.data.experience >= (unlocks.get(character.name)?.exp || 0) ||
-		character.pack && profile.data.bought_items.includes(character.pack)
+  return !character.pack ||
+    character.pack === 'unlock' && profile.data.experience >= (unlocks.get(character.name)?.exp || 0) ||
+    character.pack && profile.data.bought_items.includes(character.pack)
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -49,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     tokenCost: number;
   } = await request.json();
 
-  // // Verify tokens
+  // Verify tokens
   const profileData = await locals.sb.from('Profile')
     .select('*')
     .eq('id', locals.session.user.id)
@@ -61,33 +71,33 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         error: "Not enough tokens",
       }),
     );
-  }else if(!hasReader(characters.get(formData.reading.character) as Character, profileData)){
+  } else if (!hasReader(characters.get(formData.reading.character) as Character, profileData)) {
     return new Response(
       JSON.stringify({
         error: "Reader not unlocked",
       }),
     );
-  }else{
+  } else {
 
     await locals.sb.from('Profile')
       .update({ tokens: profileData.data!.tokens - formData.tokenCost })
       .eq('id', locals.session.user.id)
       .single()
   }
-  if(!hasAllUsedPacks(formData.reading.cards, profileData.data!)){
+  if (!hasAllUsedPacks(formData.reading.cards, profileData.data!)) {
     return new Response(
       JSON.stringify({
         error: "Cards not unlocked",
       }),
     );
   }
-  
+
 
   let setting = formData.reading.setting || "ppf";
   let spread: ReadingSpreadType;
-  if(formData.customSpread){
+  if (formData.customSpread) {
     spread = formData.customSpread;
-  }else{
+  } else {
     spread = readingSpreads.get(setting)!;
   }
   let question = formData.reading.question || "No question";
@@ -95,17 +105,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let drawnCards = formData.reading.cards || [];
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
-  let model = formData.reading.model || "gpt-3.5-turbo";
+  let model: ChatOpenAI;
+  switch (formData.reading.model) {
+    case 'gpt-3.5-turbo':
+      model = chatgpt3creative;
+      break;
+    case 'gpt-4':
+      model = chatgpt4creative;
+      break;
+    default:
+      model = chatgpt3creative;
+  }
 
 
-  let system = `Ignore all instructions before this one. You print out only raw text.
+  let system = `{empty}Ignore all instructions before this one. You print out only raw text.
 You are ${characterInput} and must give the best Tarot reading given the following information.
 ` +
     character?.description
-//     +
-//     `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
-// `)}
-// `
+    //     +
+    //     `Expressions: ${character?.expressions?.sort(() => Math.random() - 0.5).slice(0, 5).join(`
+    // `)}
+    // `
     +
     `Spread: ${spread.name} - Do not mention the spread name in the reading
 question = ${question}
@@ -130,16 +150,35 @@ Total ${60 * drawnCards.length + 120} words, no more no less`
   ]
   console.log('messages', messages[0].content)
 
-  let openAIresponseReading = await openaiEdge.createChatCompletion({
-    model: model || "gpt-3.5-turbo",
-    messages: [{ role: 'system', 'content': system }],
-    max_tokens: 2048,
-    temperature: character?.temperature || 1,
-    presence_penalty: 1.5,
-    stream: true
+  const tarotReadingTemplate = new ChatPromptTemplate({
+    promptMessages: [
+      SystemMessagePromptTemplate.fromTemplate(system)
+
+    ],
+    inputVariables: [
+      "empty"
+    ]
   })
 
-  return new Response(openAIresponseReading.body, {
+  const tarotReadingChain = new LLMChain({ llm: model, prompt: tarotReadingTemplate })
+
+  const stream = new ReadableStream({
+    start(controller) {
+      let utf8Encode = new TextEncoder();
+      let text = ''
+      tarotReadingChain.call({ empty: "" }
+        , [{
+          handleLLMNewToken(token: string) {
+            text += token;
+            let textBytes = utf8Encode.encode(text);
+            controller.enqueue(textBytes);
+          }
+        }]
+      )
+    }
+  })
+
+  return new Response(stream, {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "text/event-stream;charset=utf-8",
@@ -147,55 +186,4 @@ Total ${60 * drawnCards.length + 120} words, no more no less`
       "X-Accel-Buffering": "no",
     },
   })
-//   return new Response(new ReadableStream({
-//     async start(controller) {
-//       let streamingText = '';
-//       for await (const message of streamCompletion(openAIresponseReading.data)) {
-//         try {
-//           let messageObject: any = JSON.parse(message)
-//           let messageString = messageObject.choices[0].delta.content
-//           if (messageString !== undefined) {
-//             streamingText += messageString
-//           }else if (streamingText !== ''){
-//             streamingText += `
-// ...`
-//           }
-//           controller.enqueue(streamingText);
-//         } catch (error) {
-//           //console.error("Could not JSON parse stream message", message, error);
-//         }
-//       }
-//       controller.close();
-//     },
-//   }),
-//     { headers: { 'Content-Type': 'text/event-stream' } },
-//   );
-};
-
-// async function* chunksToLines(chunksAsync: any) {
-//   let previous = "";
-//   for await (const chunk of chunksAsync) {
-//     const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-//     previous += bufferChunk;
-//     let eolIndex;
-//     while ((eolIndex = previous.indexOf("\n")) >= 0) {
-//       // line includes the EOL
-//       const line = previous.slice(0, eolIndex + 1).trimEnd();
-//       if (line === "data: [DONE]") break;
-//       if (line.startsWith("data: ")) yield line;
-//       previous = previous.slice(eolIndex + 1);
-//     }
-//   }
-// }
-
-// async function* linesToMessages(linesAsync: any) {
-//   for await (const line of linesAsync) {
-//     const message = line.substring("data :".length);
-
-//     yield message;
-//   }
-// }
-
-// async function* streamCompletion(data: any) {
-//   yield* linesToMessages(chunksToLines(data));
-// }
+}
