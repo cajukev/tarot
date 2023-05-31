@@ -163,5 +163,14 @@ p.info{
   cursor: pointer;
 }
 
+button.action{
+  background-color: $accent;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-family: $other-font;
+  cursor: pointer;
+  font-weight: 700;
+}
+
 @keyframes menuEnterAnim {
 }
