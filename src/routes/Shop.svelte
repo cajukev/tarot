@@ -49,7 +49,7 @@
             }
             loading = false;
             setupItemList();
-          });
+          })
           achievementToast(`Bought ${item.name}`, {});
         }
       });
@@ -69,7 +69,7 @@
           img = '/cards/' + cardbacks.find(c => c.name === Array.from(shopItems.entries())[i][1].name)?.image + '-200.webp';
           break;
         case 'Reader':
-          img = '/options/' + Array.from(shopItems.entries())[i][1].name + '-200.webp';
+          img = '/options/' + Array.from(shopItems.entries())[i][1].key + '-200.webp';
           break;
         case 'Essence':
           img = '/resources/Essence-120.webp';

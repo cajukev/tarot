@@ -47,7 +47,7 @@ export default new Map<string, ReadingSpreadType>([
     key: "pc",
     name: "Pros & Cons",
     positions: ["Pros", "Cons"],
-    instructions: ["Write a bullet point list of the positives of the situation", "Write a bullet point list of the negatives of the situation"],
+    instructions: ['', ''],
     placeholders: ["Could you reveal the pros and cons of...",
     "What might be the positive and negative outcomes if...",
     "Can you show the benefits and drawbacks of...",

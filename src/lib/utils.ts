@@ -39,6 +39,10 @@ export let getTokenCost = (nbCards: number, model: string) => {
 	return ((nbCards-1) * modelMultiplier + modelCost);
 }
 
+export let getAnalysisTokenCost = (nbCards: number) => {
+	return (nbCards * 3 / 10);
+}
+
 export let centsToDollars = (cents: number) => {
 	// Returns a string with the dollar amount with 2 decimal places
 	return (cents / 100).toFixed(2);

@@ -51,7 +51,7 @@ export const POST: RequestHandler = async ({request, locals}) => {
 
     let  tarotAnalysisAIPromptCards = ``
     cards.forEach((card, i) => {
-        tarotAnalysisAIPromptCards += `The ${spread?.positions[i]} card is the ${card.name} - ${card.reversed ? card.reversed : card.meaning }.
+        tarotAnalysisAIPromptCards += `The ${spread?.positions[i]} card is the ${card.name} ${card.reversed ? '(reversed)' : ''} - ${card.reversed ? card.reversedMeaning : card.meaning }.
     `
     })
 
@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({request, locals}) => {
         ),
         AIMessagePromptTemplate.fromTemplate(
             tarotAnalysisAIPromptCards + `Find some observations (at least ${cards.length - 1}) using pairs of cards and their keywords. State the observation using the keywords that led you to that observation.
-Observation 1: ${cards[0].name} in the ${spread?.positions[0]} position and ${cards[1].name} in the ${spread?.positions[1]} position come together to mean `
+Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the ${spread?.positions[0]} position and ${cards[1].name} ${cards[1].reversed ? '(reversed)' : ''} in the ${spread?.positions[1]} position come together to mean `
             )
         ],
         inputVariables: [

@@ -29,9 +29,24 @@ export const shopItems: Map<string, ShopItem> = new Map([
     key: "500tokens", name: "500 Tokens", amount: 500, cost: 100, description: "", type: "Tokens",
   }],
   ["CrystalVisions", {
-    key: "CrystalVisions", name: "Crystal Visions", cost: 100, description: "Unlock Jewel The Vibrant and Crystal Visions Cards and Cardback", type: "ReaderPack",
+    key: "CrystalVisions", name: "Crystal Visions", cost: 200, description: "Unlock Jewel The Vibrant and Crystal Visions Cards and Cardback", type: "ReaderPack",
   }],
   ["LunarEnlightenment", {
-    key: "LunarEnlightenment", name: "Lunar Enlightenment", cost: 100, description: "Unlock Luna The Moongazer and Lunar Enlightenment Cards and Cardback", type: "ReaderPack",
+    key: "LunarEnlightenment", name: "Lunar Enlightenment", cost: 200, description: "Unlock Luna The Moongazer and Lunar Enlightenment Cards and Cardback", type: "ReaderPack",
   }],
+  ["Zephyr", {
+    key: "Zephyr", name: "Zephyr The Whimsical", cost: 100, description: "Unlock Zephyr The Whimsical", type: "Reader",
+  }],
+  ["Ignatio", {
+    key: "Ignatio", name: "Ignatio The Flame Seer", cost: 100, description: "Unlock Ignatio The Flame Seer", type: "Reader",
+  }],
+  ["Seraphina", {
+    key: "Seraphina", name: "Seraphina The Siren Poet", cost: 100, description: "Unlock Seraphina The Siren Poet", type: "Reader",
+  }],
+  ["Gaia", {
+    key: "Gaia", name: "Gaia The Grounded", cost: 100, description: "Unlock Gaia The Grounded", type: "Reader",
+  }],
+  ["Jack", {
+    key: "Jack", name: "Jack The Dealer", cost: 100, description: "Unlock Jack The Dealer", type: "Reader",
+  }]
 ])

@@ -285,6 +285,9 @@
 	<Title />
 	<slot />
 	<p class="title end">AITarot.website</p>
+	<div class="endMenu">
+		<Menu></Menu>
+	</div>
 </div>
 
 <div class="dummy hidden" />
@@ -293,6 +296,7 @@
 	.app {
 		min-height: 101vh;
 		position: relative;
+		padding-bottom: 3rem;
 		@media screen and (max-width: $breakpoint-2-1) {
 			flex-direction: column;
 			height: auto;

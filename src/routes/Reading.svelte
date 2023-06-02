@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import characters from '$lib/characters';
 	import readingSpreads from '$lib/readingSpreads';
-	import { getTokenCost, objToMap } from '$lib/utils';
+	import { getAnalysisTokenCost, getTokenCost, objToMap } from '$lib/utils';
 	import { fade } from 'svelte/transition';
 	import {
 		readingStore,
@@ -88,16 +88,13 @@
 	};
 
 	let tokenCost = 0;
+	let analysisTokenCost = 0;
 	$: {
 		tokenCost = getTokenCost($flippedCardsStore?.length, $readingStore.model || 'default');
+		analysisTokenCost = getAnalysisTokenCost($flippedCardsStore?.length);
 	}
 	let loading = false;
-	let startReading = () => {
-		if (loading === true) return;
-		loading = true;
-		$readingStore.ready = true;
-		actionState = 0;
-	};
+
 	// Infobox state
 
 	let currentCard: CollectionCard | undefined | null = undefined;
@@ -174,20 +171,23 @@
 			},
 			body: JSON.stringify({
 				readingStore: $readingStore,
-				tokenCost: $readingStore.cards.length / 10
+				tokenCost: analysisTokenCost
 			})
 		})
 			.then(async (res) => {
 				console.log(res);
 				const reader = res.body?.getReader();
 				let storedLength = 0;
-				while (true && reader) {
+				let flag = false;
+				while (true && reader && !flag) {
 					const { done, value } = await reader.read();
 					if(storedLength === value?.length){
 						console.log('done');
 						loading = false;
 						actionState = 1;
+						flag = true;
 						invalidateAll();
+						break;
 					}else{
 						storedLength = value?.length || 0;
 					}
@@ -225,13 +225,14 @@
 			body: JSON.stringify({
 				readingStore: $readingStore,
 				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
-				tokenCost: $readingStore.cards.length / 10
+				tokenCost: tokenCost
 			})
 		})
 			.then(async (res) => {
 				const reader = res.body?.getReader();
 				let storedLength = 0;
-				while (true && reader) {
+				let flag = false;
+				while (true && reader && !flag) {
 					const { done, value } = await reader.read();
 					if(storedLength === value?.length){
 						console.log('done');
@@ -240,15 +241,17 @@
 						$achievementsStore = { action: 'CompleteReading', value: 'default' };
 						$readingStore.conclusion = $readingStore.conclusion + `
 ...`
+						flag = true;
 						invalidateAll();
+						break;
 					}else{
 						storedLength = value?.length || 0;
-					}
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) {
-						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-							$readingStore.conclusion = text;
-							storedConclusion = $readingStore.conclusion;
+						const text = new TextDecoder('utf-8').decode(value);
+						if (text) {
+							if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+								$readingStore.conclusion = text;
+								storedConclusion = $readingStore.conclusion;
+							}
 						}
 					}
 				}
@@ -274,7 +277,8 @@
 				console.log(res);
 				const reader = res.body?.getReader();
 				let storedLength = 0;
-				while (true && reader) {
+				let flag = false;
+				while (true && reader && !flag) {
 					const { done, value } = await reader.read();
 					if(storedLength === value?.length){
 						console.log('done');
@@ -283,7 +287,9 @@
 						$achievementsStore = { action: 'CompleteReading', value: 'default' };
 						$readingStore.conclusion = $readingStore.conclusion + `
 ...`
+						flag = true;
 						invalidateAll();
+						break;
 					}else{
 						storedLength = value?.length || 0;
 						const text = new TextDecoder('utf-8').decode(value);
@@ -386,12 +392,11 @@
 			</details>
 		</div>
 	{:else if $readingStore.cards.length > 1 && actionState === 1}
-		{#if 0.5 <= $page.data.profile.data.tokens }
+		{#if analysisTokenCost <= $page.data.profile.data.tokens }
 			<div>
 				<button class="action analyse" on:click={() => analyseCards()}>Analyse Cards</button>
 				<p class="cost">
-					<!-- Float to 1st decimal -->
-					Costs {$readingStore.cards.length / 10} tokens
+					Costs {analysisTokenCost} tokens
 					<span>({$page.data.profile.data.tokens} remaining)</span>
 				</p>
 			</div>
