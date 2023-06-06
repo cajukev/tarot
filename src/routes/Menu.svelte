@@ -6,6 +6,7 @@
   <div class="container">
     <a href="/">Home</a>
     <a href="/about">About</a>
+    <a href="/credits">Credits</a>
    
   </div>
 

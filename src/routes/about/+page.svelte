@@ -36,6 +36,10 @@
 </div>
 
 <style lang="scss">
+
+    h2{
+        margin-top: 2rem;
+    }
     .container{
         margin-top: 3rem;
         max-width: 40rem;
@@ -47,4 +51,5 @@
             text-align: center;
         }
     }
+
 </style>
