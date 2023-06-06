@@ -136,7 +136,7 @@ drawn card(s):`
   })
   system += `
 Do not use any other card name than the one provided in the list above. Do not repeat the meaning, prioritize previous knowledge of the cards over the given meaning.
-follow this structure:
+(Unless writing a poem) follow this structure:
 p1: greeting and one phrase overview of the reading to come
 ${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name} ${drawnCards[i].reversed ? "reversed" : ""}, explain`).join(`
 `)}
@@ -153,7 +153,6 @@ Total ${60 * drawnCards.length + 120} words, no more no less`
   const tarotReadingTemplate = new ChatPromptTemplate({
     promptMessages: [
       SystemMessagePromptTemplate.fromTemplate(system)
-
     ],
     inputVariables: [
       "empty"

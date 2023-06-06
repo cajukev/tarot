@@ -58,7 +58,9 @@ export const POST: RequestHandler = async ({request, locals}) => {
     const tarotAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [
             SystemMessagePromptTemplate.fromTemplate(
-                `{empty} You understand the meaning of Tarot cards at an expert level and you are writing a book on advanced reading techniques. You read cards and come up with Observations considering the question. This chapter is about the question: ${question}.` 
+                `Here is some context: 
+Tarot cards, each bearing distinct symbolic imagery, carry layered meanings that can shift between positive, neutral, and negative depending on the context of a reading. In a tarot spread, the position of each card adds another dimension to its interpretation, linking the card's intrinsic meaning with the theme of its place in the layout.
+{empty} You understand the meaning of Tarot cards at an expert level and you are writing a book on advanced reading techniques. You read cards and come up with Observations considering the question. This chapter is about the question: ${question}.` 
         ),
         AIMessagePromptTemplate.fromTemplate(
             tarotAnalysisAIPromptCards + `Find some observations (at least ${cards.length - 1}) using pairs of cards and their keywords. State the observation using the keywords that led you to that observation.

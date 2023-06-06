@@ -40,7 +40,7 @@ export let getTokenCost = (nbCards: number, model: string) => {
 }
 
 export let getAnalysisTokenCost = (nbCards: number) => {
-	return (nbCards * 3 / 10);
+	return (nbCards * 2 / 10);
 }
 
 export let centsToDollars = (cents: number) => {

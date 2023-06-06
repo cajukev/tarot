@@ -82,12 +82,12 @@ cards.forEach((card, i) => {
   })
   tarotReadingAnalysisPromptText += `Use the following Analysis and make sure to adapt them to the character you are playing:
     ${analysis}
-    follow this structure:
-    start with a greeting and one phrase overview of the reading to come
-    Talk about the cards in the order they were drawn naming them and using the knowledge above once all the associated cards have been explained
-    conclude by reopening to the querent
-    separate each paragraph with a line break
-    answer in the same language as the question was asked`
+(Unless writing a poem) follow this structure:
+minimal greeting
+Talk about the cards in the order they were drawn naming them and using the knowledge above once all the associated cards have been explained
+conclude by reopening to the querent
+separate each paragraph with a line break
+answer in the same language as the question was asked`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [
