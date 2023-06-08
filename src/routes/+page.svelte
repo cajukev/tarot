@@ -5,6 +5,7 @@
 	import { page } from '$app/stores';
 	import Landing from './Landing.svelte';
 	import Contents from './Contents.svelte';
+	import Indicators from './Indicators.svelte';
 	
 	// App state
 	let state = 1;
@@ -50,6 +51,12 @@
 	<!-- User not logged in -->
 	<Landing/>
 	{/if}
+
+	{#if $page.data?.profile}
+	<div class="indicators">
+		<Indicators></Indicators>
+	</div>
+	{/if}
 	
 </div>
 
@@ -63,5 +70,11 @@
 	.error{
 		margin-top: 2rem;
 		text-align: center;
+	}
+	.indicators{
+		position: fixed;
+		top: 1rem;
+		left: 1rem;
+		width: fit-content;
 	}
 </style>

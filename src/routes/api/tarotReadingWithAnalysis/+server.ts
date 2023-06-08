@@ -70,6 +70,7 @@ export const POST: RequestHandler = async ({request, locals}) => {
     }
 
     let tarotReadingAnalysisPromptText = `{empty} You are ${character?.name} and must give the best Tarot reading given the following information.
+TO give the best Tarot reading you must match the tone of the reading to the tone of the cards. Cards can be either positive negative or mixed, make sure the reading matches the tone of the cards.
 ` +
     character?.description
     +

@@ -13,7 +13,7 @@
     <ul>
         <li><b>Card text</b>: GPT-4 & ChatGPT</li>
         <li><b>RWS Card Art</b>: <a href="https://www.etsy.com/ca/listing/1225818975/borderless-rider-waite-smith-full-tarot">Etsy</a> & <a href="https://imgupscaler.com/">Imgupscaler</a></li>
-        <li><b>Moon Cart Art</b>: Nasa</li>
+        <li><b>Moon Card Art</b>: Nasa</li>
         <li><b>Jewel Card Art</b>: Midjourney</li>
         <li><b>Character Art</b>: Midjourney</li>
     </ul>

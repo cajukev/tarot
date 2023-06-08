@@ -232,6 +232,7 @@
 				const reader = res.body?.getReader();
 				let storedLength = 0;
 				let flag = false;
+				let flag2 = false;
 				while (true && reader && !flag) {
 					const { done, value } = await reader.read();
 					if(storedLength === value?.length){
@@ -240,11 +241,15 @@
 						actionState = 1;
 						$achievementsStore = { action: 'CompleteReading', value: 'default' };
 						$readingStore.conclusion = $readingStore.conclusion + `
-...`
+...`;					
 						flag = true;
 						invalidateAll();
 						break;
 					}else{
+						if(!flag2){
+							invalidateAll();
+							flag2 = true;
+						}
 						storedLength = value?.length || 0;
 						const text = new TextDecoder('utf-8').decode(value);
 						if (text) {
@@ -278,6 +283,7 @@
 				const reader = res.body?.getReader();
 				let storedLength = 0;
 				let flag = false;
+				let flag2 = false;
 				while (true && reader && !flag) {
 					const { done, value } = await reader.read();
 					if(storedLength === value?.length){
@@ -291,6 +297,10 @@
 						invalidateAll();
 						break;
 					}else{
+						if(!flag2){
+							invalidateAll();
+							flag2 = true;
+						}
 						storedLength = value?.length || 0;
 						const text = new TextDecoder('utf-8').decode(value);
 						if (text) {
