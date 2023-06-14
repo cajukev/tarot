@@ -156,7 +156,7 @@
 			case 'StartReading':
 				// console.log('StartReading');
 				value = $readingStore;
-				let spentTokens = getTokenCost(value.cards.length, characters.get(value.character)!.model);
+				let spentTokens = getTokenCost(value.cards.length, value.model);
 				userAchievements.get('200Tokens')!.progress =
 					userAchievements.get('200Tokens')!.progress + spentTokens;
 				if (userAchievements.get('200Tokens')!.progress >= 200) {

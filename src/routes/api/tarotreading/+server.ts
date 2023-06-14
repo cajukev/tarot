@@ -135,15 +135,13 @@ drawn card(s):`
   ${card.name} ${card.reversed ? "reversed" : ""}, "position": "${spread.positions[i] || "Answer"}", special instruction: ${spread.instructions[i]}, "meaning": "${card.reversed ? card.reversedMeaning : card.meaning}`
   })
   system += `
-Do not use any other card name than the one provided in the list above. Do not repeat the meaning, prioritize previous knowledge of the cards over the given meaning.
-(Unless writing a poem) follow this structure:
-p1: greeting and one phrase overview of the reading to come
-${spread.positions.map((position, i) => `p${i + 2}: ${position || 'Answer'} card is ${drawnCards[i].name} ${drawnCards[i].reversed ? "reversed" : ""}, explain`).join(`
-`)}
-p${(spread.positions.length || 1) + 2}: conclude by relating the cards together and to the question, and a reopening to the querent
-separate each p with a line break
-answer in the same language as the question was asked
-Total ${60 * drawnCards.length + 120} words, no more no less`
+  (Unless writing a poem) follow this structure:
+  minimal greeting
+  Answe using the cards in the order they were drawn naming them and connect them once all the associated cards have been explained
+  conclude by reopening to the querent
+  separate each paragraph with a line break
+  answer in the same language as the question was asked
+  Total ${60 * drawnCards.length + 120} words, no more no less (unless writing a poem)`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },

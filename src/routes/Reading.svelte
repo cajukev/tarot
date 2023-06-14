@@ -20,6 +20,7 @@
 	import Collection from './Collection.svelte';
 	import CardSelect from './CardSelect.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import { secret } from '$lib/toastStubs';
 	export let state: number;
 
 	let cardSelectPopup: HTMLElement;
@@ -230,6 +231,7 @@
 		})
 			.then(async (res) => {
 				const reader = res.body?.getReader();
+				$achievementsStore = { action: 'StartReading', value: 'default' };
 				let storedLength = 0;
 				let flag = false;
 				let flag2 = false;
@@ -280,6 +282,7 @@
 		})
 			.then(async (res) => {
 				console.log(res);
+				$achievementsStore = { action: 'StartReading', value: 'default' };
 				const reader = res.body?.getReader();
 				let storedLength = 0;
 				let flag = false;
@@ -312,6 +315,27 @@
 					}
 				}
 			})
+	};
+
+	let saveReading = () => {
+		fetch('/api/saveReading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore,
+			})
+
+		})
+		.then((res) => res.json())
+		.then((res) => {
+			console.log(res.body.reading.data[0].id);
+			// Copy to clipboard
+			navigator.clipboard.writeText(window.location.origin + '/reading/' + res.body.reading.data[0].id);
+			secret(`Link copied to clipboard!`)
+		})
+
 	};
 	
 </script>
@@ -503,8 +527,9 @@
 		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
 			{#if $readingStore.conclusion.length > 0}
 				<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+				<button class="btn-link" on:click={() => saveReading()}>Share reading</button>
 			{/if}
-			<button class="btn-link" on:click={() => restart()}>Restart</button>
+			<button class="btn-link" on:click={() => restart()}>New reading</button>
 		{/if}
 	</div>
 </div>

@@ -4,7 +4,7 @@ export async function GET({params}) {
 
   if(params.key === import.meta.env.VITE_CRON_SHARED_KEY) {
 
-    let setDaily = await dbSecret.from("Profile")
+    let resetDaily = await dbSecret.from("Profile")
       .update({ daily: false})
       .eq("daily", true)
       .select("id")
@@ -12,7 +12,7 @@ export async function GET({params}) {
         return data.data
       });
 
-    let data = await dbSecret.from("Profile")
+    let regenTokens = await dbSecret.from("Profile")
       .update({ tokens: 30})
       .lt("tokens", 30)
       .select("id")
@@ -20,7 +20,7 @@ export async function GET({params}) {
         return data.data
       });
 
-      return new Response(JSON.stringify({setDaily, data}));
+      return new Response(JSON.stringify({resetDaily, regenTokens}));
     }
     else {
       return new Response("Invalid key", {status: 401});

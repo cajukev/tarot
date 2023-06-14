@@ -88,7 +88,8 @@ minimal greeting
 Talk about the cards in the order they were drawn naming them and using the knowledge above once all the associated cards have been explained
 conclude by reopening to the querent
 separate each paragraph with a line break
-answer in the same language as the question was asked`
+answer in the same language as the question was asked
+Total ${60 * cards.length + 120} words, no more no less (unless writing a poem)`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [

@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             }
           )
         }
-        if (data.essence < (formData.item.amount || 0)) {
+        if (data.essence < (formData.item.cost || 0)) {
           returnError = new Response(
             JSON.stringify({
               error: 'Not enough essence'

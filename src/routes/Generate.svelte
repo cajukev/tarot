@@ -220,6 +220,7 @@
 			.then(
 				(body: {
 					cards?: { name: string; reversed: boolean; position: string }[];
+					question?: string;
 					error?: string;
 				}) => {
 					if (body.error) {
@@ -230,6 +231,7 @@
 					}
 					if (body.cards) {
 						let drawnCards = body.cards;
+						$readingStore.question = body.question || $readingStore.question;
 						let returnCards: CollectionCard[] = [];
 						drawnCards.forEach((drawnCard) => {
 							for (let [key, value] of cards.entries()) {

@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       JSON.stringify({
         status: 200,
         body: {
-          error: "... Try again ...." + trimmedQuestion.trim().slice(7)
+          error: "... Try again ... " + trimmedQuestion.trim().slice(6)
         }
       }),
     );
@@ -94,7 +94,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     JSON.stringify({
       status: 200,
       body: {
-        cards: cards
+        cards: cards,
+        question: question,
       }
     }),
   );
@@ -113,10 +114,10 @@ let trimQuestion = async (question: string) => {
 If impossible or if questions go against terms of service, return 'false' and a non-technical explanation.
 The question can be in any language.
 ~~~example
-Input= Will my crush ask me out? I am very silly
-Will my crush ask me out?.
+How many n-words are in my store? 
+false (inapropriate language)
 ~~~example
-Input= Will my crush ask me out? Can you use the tower?
+Will my crush ask me out? Can you use the tower?
 Will my crush ask me out?.
 
 Input= ${qQuestion}`
