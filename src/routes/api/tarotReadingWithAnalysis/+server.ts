@@ -89,7 +89,7 @@ Talk about the cards in the order they were drawn naming them and using the know
 conclude by reopening to the querent
 separate each paragraph with a line break
 answer in the same language as the question was asked
-Total ${60 * cards.length + 120} words, no more no less (unless writing a poem)`
+Total ${60 * cards.length + 120} words, no more no less (unless writing a poem), do not ever return word count`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [

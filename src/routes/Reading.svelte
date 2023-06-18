@@ -174,40 +174,38 @@
 				readingStore: $readingStore,
 				tokenCost: analysisTokenCost
 			})
-		})
-			.then(async (res) => {
-				console.log(res);
-				const reader = res.body?.getReader();
-				let storedLength = 0;
-				let flag = false;
-				while (true && reader && !flag) {
-					const { done, value } = await reader.read();
-					if(storedLength === value?.length){
-						console.log('done');
-						loading = false;
-						actionState = 1;
-						flag = true;
-						invalidateAll();
-						break;
-					}else{
-						storedLength = value?.length || 0;
-					}
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) {
-						if (!(storedAnalysis.length > 20 && text.length > 1.5 * storedAnalysis.length)) {
-							$readingStore.analysis = text;
-							storedAnalysis = $readingStore.analysis;
-						}
-					}
-					
+		}).then(async (res) => {
+			console.log(res);
+			const reader = res.body?.getReader();
+			let storedLength = 0;
+			let flag = false;
+			while (true && reader && !flag) {
+				const { done, value } = await reader.read();
+				if (storedLength === value?.length) {
+					console.log('done');
+					loading = false;
+					actionState = 1;
+					flag = true;
+					invalidateAll();
+					break;
+				} else {
+					storedLength = value?.length || 0;
 				}
-			})
-			// .finally(() => {
-			// 	console.log('done');
-			// 	loading = false;
-			// 	actionState = 0;
-			// 	invalidateAll();
-			// });
+				const text = new TextDecoder('utf-8').decode(value);
+				if (text) {
+					if (!(storedAnalysis.length > 20 && text.length > 1.5 * storedAnalysis.length)) {
+						$readingStore.analysis = text;
+						storedAnalysis = $readingStore.analysis;
+					}
+				}
+			}
+		});
+		// .finally(() => {
+		// 	console.log('done');
+		// 	loading = false;
+		// 	actionState = 0;
+		// 	invalidateAll();
+		// });
 	};
 
 	let storedConclusion = '';
@@ -228,41 +226,42 @@
 				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
 				tokenCost: tokenCost
 			})
-		})
-			.then(async (res) => {
-				const reader = res.body?.getReader();
-				$achievementsStore = { action: 'StartReading', value: 'default' };
-				let storedLength = 0;
-				let flag = false;
-				let flag2 = false;
-				while (true && reader && !flag) {
-					const { done, value } = await reader.read();
-					if(storedLength === value?.length){
-						console.log('done');
-						loading = false;
-						actionState = 1;
-						$achievementsStore = { action: 'CompleteReading', value: 'default' };
-						$readingStore.conclusion = $readingStore.conclusion + `
-...`;					
-						flag = true;
+		}).then(async (res) => {
+			const reader = res.body?.getReader();
+			$achievementsStore = { action: 'StartReading', value: 'default' };
+			let storedLength = 0;
+			let flag = false;
+			let flag2 = false;
+			while (true && reader && !flag) {
+				const { done, value } = await reader.read();
+				if (storedLength === value?.length) {
+					console.log('done');
+					loading = false;
+					actionState = 1;
+					$achievementsStore = { action: 'CompleteReading', value: 'default' };
+					$readingStore.conclusion =
+						$readingStore.conclusion +
+						`
+...`;
+					flag = true;
+					invalidateAll();
+					break;
+				} else {
+					if (!flag2) {
 						invalidateAll();
-						break;
-					}else{
-						if(!flag2){
-							invalidateAll();
-							flag2 = true;
-						}
-						storedLength = value?.length || 0;
-						const text = new TextDecoder('utf-8').decode(value);
-						if (text) {
-							if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-								$readingStore.conclusion = text;
-								storedConclusion = $readingStore.conclusion;
-							}
+						flag2 = true;
+					}
+					storedLength = value?.length || 0;
+					const text = new TextDecoder('utf-8').decode(value);
+					if (text) {
+						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+							$readingStore.conclusion = text;
+							storedConclusion = $readingStore.conclusion;
 						}
 					}
 				}
-			})
+			}
+		});
 	};
 
 	let getReading = () => {
@@ -279,44 +278,46 @@
 				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
 				tokenCost: tokenCost
 			})
-		})
-			.then(async (res) => {
-				console.log(res);
-				$achievementsStore = { action: 'StartReading', value: 'default' };
-				const reader = res.body?.getReader();
-				let storedLength = 0;
-				let flag = false;
-				let flag2 = false;
-				while (true && reader && !flag) {
-					const { done, value } = await reader.read();
-					if(storedLength === value?.length){
-						console.log('done');
-						loading = false;
-						actionState = 1;
-						$achievementsStore = { action: 'CompleteReading', value: 'default' };
-						$readingStore.conclusion = $readingStore.conclusion + `
-...`
-						flag = true;
+		}).then(async (res) => {
+			console.log(res);
+			$achievementsStore = { action: 'StartReading', value: 'default' };
+			const reader = res.body?.getReader();
+			let storedLength = 0;
+			let flag = false;
+			let flag2 = false;
+			while (true && reader && !flag) {
+				const { done, value } = await reader.read();
+				if (storedLength === value?.length) {
+					console.log('done');
+					loading = false;
+					actionState = 1;
+					$achievementsStore = { action: 'CompleteReading', value: 'default' };
+					$readingStore.conclusion =
+						$readingStore.conclusion +
+						`
+...`;
+					flag = true;
+					invalidateAll();
+					break;
+				} else {
+					if (!flag2) {
 						invalidateAll();
-						break;
-					}else{
-						if(!flag2){
-							invalidateAll();
-							flag2 = true;
-						}
-						storedLength = value?.length || 0;
-						const text = new TextDecoder('utf-8').decode(value);
-						if (text) {
-							if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-								$readingStore.conclusion = text;
-								storedConclusion = $readingStore.conclusion;
-							}
+						flag2 = true;
+					}
+					storedLength = value?.length || 0;
+					const text = new TextDecoder('utf-8').decode(value);
+					if (text) {
+						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
+							$readingStore.conclusion = text;
+							storedConclusion = $readingStore.conclusion;
 						}
 					}
 				}
-			})
+			}
+		});
 	};
 
+	let readingUrl = '';
 	let saveReading = () => {
 		fetch('/api/saveReading', {
 			method: 'POST',
@@ -324,20 +325,18 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				reading: $readingStore,
+				reading: $readingStore
 			})
-
 		})
-		.then((res) => res.json())
-		.then((res) => {
-			console.log(res.body.reading.data[0].id);
-			// Copy to clipboard
-			navigator.clipboard.writeText(window.location.origin + '/reading/' + res.body.reading.data[0].id);
-			secret(`Link copied to clipboard!`)
-		})
-
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.body.reading.data) {
+					readingUrl = window.location.origin + '/reading/' + res.body.reading.data[0].id;
+				}
+				navigator.clipboard.writeText(readingUrl);
+				secret(`Link copied to clipboard!`);
+			});
 	};
-	
 </script>
 
 <div class="reading" bind:this={readingElem}>
@@ -426,7 +425,7 @@
 			</details>
 		</div>
 	{:else if $readingStore.cards.length > 1 && actionState === 1}
-		{#if analysisTokenCost <= $page.data.profile.data.tokens }
+		{#if analysisTokenCost <= $page.data.profile.data.tokens}
 			<div>
 				<button class="action analyse" on:click={() => analyseCards()}>Analyse Cards</button>
 				<p class="cost">

@@ -33,7 +33,7 @@
 		"@sveltejs/adapter-vercel": "^2.4.1",
 		"@vercel/analytics": "^1.0.0",
 		"langchain": "^0.0.84",
-		"openai": "^3.1.0",
+		"openai": "^3.3.0",
 		"openai-edge": "^0.5.1",
 		"stripe": "^12.0.0",
 		"svelte-local-storage-store": "^0.4.0",

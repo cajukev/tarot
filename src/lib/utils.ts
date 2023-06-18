@@ -47,3 +47,15 @@ export let centsToDollars = (cents: number) => {
 	// Returns a string with the dollar amount with 2 decimal places
 	return (cents / 100).toFixed(2);
 }
+
+export let blobToBase64 = (blob: Blob) => {
+	return new Promise((resolve) => {
+	  const reader = new FileReader();
+	  reader.readAsDataURL(blob);
+	  reader.onloadend = function () {
+		resolve(reader.result);
+	  };
+	});
+  };
+
+  
