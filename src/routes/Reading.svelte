@@ -91,7 +91,7 @@
 	let tokenCost = 0;
 	let analysisTokenCost = 0;
 	$: {
-		tokenCost = getTokenCost($flippedCardsStore?.length, $readingStore.model || 'default');
+		tokenCost = getTokenCost($flippedCardsStore?.length, $readingStore.model || 'default', $page.data.profile?.data?.information);
 		analysisTokenCost = getAnalysisTokenCost($flippedCardsStore?.length);
 	}
 	let loading = false;
@@ -331,7 +331,7 @@
 			.then((res) => res.json())
 			.then((res) => {
 				if (res.body.reading.data) {
-					readingUrl = window.location.origin + '/reading/' + res.body.reading.data[0].id;
+					readingUrl = 'aitarot.website/reading/' + res.body.reading.data[0].id;
 				}
 				navigator.clipboard.writeText(readingUrl);
 				secret(`Link copied to clipboard!`);

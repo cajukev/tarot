@@ -6,8 +6,13 @@ export const GET: RequestHandler = async ({locals}) => {
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-  const formData = await request.json();
+  console.log('request', request)
+  const formData: {
+    information: string;
+  } = await request.json();
+  console.log('formData', formData)
   const information = formData.information
+  console.log('information', information)
   if (!information) {
     return new Response(
       JSON.stringify({

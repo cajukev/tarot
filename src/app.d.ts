@@ -30,6 +30,7 @@ declare global {
 					bought_items: string[],
 					purchase_history: {item: string, date: string}[],
 					daily: boolean,
+					information: string
 				}
 			}
 		}

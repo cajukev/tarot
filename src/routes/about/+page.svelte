@@ -9,7 +9,7 @@
             name: "Contact me",
             img: "email.svg",
             action: () => {
-                window.location.href = "mailto:kevin.brousseau98@gmail.com"
+                window.location.href = "mailto:kevin@aitarot.website"
             }
         })
     }

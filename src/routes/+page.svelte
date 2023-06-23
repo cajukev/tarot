@@ -36,9 +36,6 @@
 		<div class={'' + (state !== 3 ? 'hidden' : '')}>
 			{#if $readingStore}
 				<Reading bind:state ></Reading>
-				<!-- <p>Are there any inaccuracies?</p>
-				<input type="text" name="information" id="information" bind:value={information} />
-				<button on:click={handleSubmitInformation}>+ Add</button> -->
 			{/if}
 		</div>
 		<div class={'error sidePadding ' + (state !== 4 ? 'hidden ' : '')}>

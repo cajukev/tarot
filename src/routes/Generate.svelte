@@ -175,7 +175,7 @@
 
 	let tokenCost = 0;
 	$: {
-		tokenCost = getTokenCost($readingStore.cards.length, $readingStore.model || 'default');
+		tokenCost = getTokenCost($readingStore.cards.length, $readingStore.model || 'default', $page.data.profile?.data?.information);
 	}
 
 	let mouseoverSegment = (segment: number) => {

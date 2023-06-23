@@ -13,6 +13,7 @@
 	import ItemList from './ItemList.svelte';
 	import { onMount } from 'svelte';
 	import { unlocks } from '$lib/unlocks';
+	import UserInfo from './UserInfo.svelte';
 	// $menuStateStore
 	// 0: card collection
 	// 1: guide to energies
@@ -21,6 +22,8 @@
 	// 4: Readers
 	// 5: Custom Spreads
 	// 6: Shop
+	// 7 Customization
+	// 8: User Info
 	$: if ($menuStateStore.change){
 		// console.log('menuStateStore changed', $menuStateStore.value);
 		menuValue = $menuStateStore.value;
@@ -37,7 +40,8 @@
 		{ name: 'About Readers', component: Readers, img: '/menuOptions/Readers.svg' },
 		{ name: 'Custom Spreads', component: CustomSpreads, img: '/menuOptions/Custom_Spreads.svg', exp: unlocks.get('custom')!.exp },
 		{ name: 'Shop', component: Shop, img: '/menuOptions/Shop.svg' },
-		{ name: 'Customization', component: Customization, img: '/menuOptions/Customization.svg'}
+		{ name: 'Customization', component: Customization, img: '/menuOptions/Customization.svg'},
+		{ name: 'User Info', component: UserInfo, img: '/menuOptions/Profile.svg' },
 	];
 
 	let navigate = (index: number) => {

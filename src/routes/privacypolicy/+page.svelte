@@ -15,7 +15,7 @@
   <li>When purchasing tokens, the amount paid is stored on your user in this project.</li>
   <li>All purchases are non-refundable</li>
   <li>Your data will in no way be shared with any other businesses or individuals.</li>
-  <p>For any other questions, please <a href="mailto:kbweb98@gmail.com">send me an email </a></p>
+  <p>For any other questions, please <a href="mailto:kevin@aitarot.website">send me an email.</a></p>
 
 </div>
 

@@ -54,6 +54,9 @@ export const POST: RequestHandler = async ({request, locals}) => {
     
     let cards = formData.readingStore.cards;
     let question = formData.readingStore.question;
+    if (question.length > 100) {
+        question = question.slice(0, 100);
+      }
     let character = characters.get(formData.readingStore.character);
     let analysis = formData.readingStore.analysis;
 
@@ -69,7 +72,7 @@ export const POST: RequestHandler = async ({request, locals}) => {
             model = chatgpt3creative;
     }
 
-    let tarotReadingAnalysisPromptText = `{empty} You are ${character?.name} and must give the best Tarot reading given the following information.
+    let tarotReadingAnalysisPromptText = `You are ${character?.name} and must give the best Tarot reading given the following information.
 TO give the best Tarot reading you must match the tone of the reading to the tone of the cards. Cards can be either positive negative or mixed, make sure the reading matches the tone of the cards.
 ` +
     character?.description
@@ -83,12 +86,17 @@ cards.forEach((card, i) => {
   })
   tarotReadingAnalysisPromptText += `Use the following Analysis and make sure to adapt them to the character you are playing:
     ${analysis}
-(Unless writing a poem) follow this structure:
-minimal greeting
+(Unless writing a poem) follow this structure:[
+Minimal greeting
 Talk about the cards in the order they were drawn naming them and using the knowledge above once all the associated cards have been explained
-conclude by reopening to the querent
-separate each paragraph with a line break
-answer in the same language as the question was asked
+Conclude by reopening to the querent
+]
+Separate each paragraph with a line break
+Answer in the same language as the question was asked
+User information (Use in the reading if applicable): 
+'''
+${profileData.data!.information}
+'''
 Total ${60 * cards.length + 120} words, no more no less (unless writing a poem), do not ever return word count`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
@@ -97,10 +105,7 @@ Total ${60 * cards.length + 120} words, no more no less (unless writing a poem),
                 tarotReadingAnalysisPromptText
             )
         ],
-        inputVariables: [
-            "empty"
-        ]
-    
+        inputVariables: []
     })
 
     const tarotReadingAnalysisChain = new LLMChain({llm: model , prompt: tarotReadingAnalysisTemplate})

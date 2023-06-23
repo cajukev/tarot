@@ -5,6 +5,8 @@ export const POST: RequestHandler = async ({request, locals}) => {
         reading: ReadingType;
     } = await request.json();
     const reading = formData.reading;
+    
+    // Get reading first
     const readingId = await locals.sb.from('Reading')
         .insert({
             reading: reading,
