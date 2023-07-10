@@ -1,3 +1,3 @@
 # AI Tarot Website
 
-### Readme TODO
+Divining Digital Wisdom: Your AI Guided Path to Enlightenment.
