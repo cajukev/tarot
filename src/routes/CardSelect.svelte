@@ -136,20 +136,48 @@
 		isShown = true;
 		currentCard = card;
 		currentCard.meaning = card.meaning;
+	};
+
+	let randomCard = () => {
+		let availableDecks = decks.filter((d) => d.available);
+		let randomDeck = availableDecks[Math.floor(Math.random() * availableDecks.length)];
+		let randomCard = randomDeck.cards[Math.floor(Math.random() * randomDeck.cards.length)];
+		selectedCard = randomCard;
+		if (Math.random() < 0.5) {
+			selectedCard.reversed = true;
+		}
+		infoBoxAppear(randomCard);
 		setTimeout(() => {
-			currentCard = card;
-		}, 250);
+			isShown = false;
+		}, 0);
 	};
 </script>
 
 <div class="container">
-    {#if !isShown}
-	<div>
+	<div class={isShown ? "hidden" : ""}>
 		{#if !landing}
 			<p class="info">You can click on a deck to show / hide it.</p>
 			<ItemList items={itemList} />
 		{/if}
 		<p class="info">You can click on a card to select it, you will be able to chose upright or reversed</p>
+		<!-- Add a random card option -> header is Random, has a cardback img -->
+		<div class="header">
+			<h3>
+				Random
+			</h3>
+			<div class="cards">
+				<div class="card" 
+					on:click={() => randomCard()}
+					on:keydown={(e) => {
+						if (e.key === 'Enter') {
+							randomCard();
+						}
+					}}>
+					<img src="/cards/cardback-120.webp" alt="Cardback" />
+				</div>
+			</div>
+		</div>
+
 		{#each decks.filter((d)=>d.available) as deck (deck.abbrv)}
 		<div in:receive="{{key: deck.abbrv}}" out:send="{{key: deck.abbrv}}" animate:flip="{{duration: 600}}" class="deck screenPadding">
 					<div class="header">
@@ -203,16 +231,15 @@
 				</div>
 		{/each}
 	</div>
-    {:else}
-	<InfoBox bind:isShown currentCard={currentCard} collection={true} bind:selectedCard={selectedCard} />
-    {/if}
+	<div class={isShown ? "" : "hidden"}>
+		<InfoBox bind:isShown currentCard={currentCard} collection={true} bind:selectedCard={selectedCard} />
+	</div>
 
 </div>
 
 <style lang="scss">
 	.container {
 		text-align: center;
-		display: relative;
 	}
 	h3 {
 		font-family: $header-font;

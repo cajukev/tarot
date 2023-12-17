@@ -7,6 +7,7 @@
 	import type { CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
 	import { readingStore } from '../stores';
+	import Generate from './Generate.svelte';
 
 	let recursiveInvalidate = (count: number) => {
 		switch (count) {
@@ -135,10 +136,10 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 </script>
 
 <div class="container screenPadding">
-	<a href="/login"><div class="button">Login</div></a>
+	<a href="/login"><div class="button">Login or sign up</div></a>
 	<!-- Landing Reading -->
 
-	<div class="reading">
+	<!-- <div class="reading">
 		<div class="header">
 			<h2>"{landingReading.question}"</h2>
 			<p class="info">Energy: {landingReading.energy}</p>
@@ -153,7 +154,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 						{#if landingReading.cards[i]}
 							<div class="stacked">
 								<div class={'card ' + (flippedCards[i] ? 'cardhidden ' : ' ') + 'ready'}>
-									<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+									svelte-ignore a11y-no-noninteractive-tabindex
 									<img
 										src={"/cards/cardback-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
@@ -172,9 +173,9 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 									/>
 								</div>
 
-								<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}>
+								<div class={'card ' + (flippedCards[i] ? '' : 'cardhidden')}> -->
 									<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-									<img
+									<!-- <img
 										src={"/cards/"+_getCardImgName(landingReading.cards[i].name)+"-200"+($readingStore.art ? "-"+$readingStore.art : "")+".webp"}
 										alt=""
 										class={'white ' +
@@ -188,7 +189,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 												infoBoxAppear(landingReading.cards[i]);
 											}
 										}}
-									/>
+									/> -->
 									<!-- <h3>
 										{landingReading.cards[i].name}
 										<span>
@@ -196,7 +197,7 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
 										</span>
 									</h3> -->
 									<!-- <p>{@html landingReading.cards[i].reversed ? landingReading.cards[i].reversedMeaning : landingReading.cards[i].meaning }</p> -->
-								</div>
+								<!-- </div>
 							</div>
 						{/if}
 					</div>
@@ -214,11 +215,8 @@ Peeking into the cards' wisdom, it's clear that this website offers an engaging 
       <a href="/login" bind:this={afterButton} class="hidden"><div class="button">Sign up</div></a>
     </div>
 
-	</div>
-</div>
-<div class="collection screenPadding">
-	<h1>Collection</h1>
-	<Collection landing={true} />
+	</div> -->
+	<Generate state={0}></Generate>
 </div>
 
 <InfoBox bind:isShown bind:currentCard> </InfoBox>

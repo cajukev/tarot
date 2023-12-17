@@ -140,12 +140,12 @@
 			{/if}
 			{#if currentCard?.reversed === false}
 				<p in:fade>
-					{@html addColorsToMeaningText(currentCard?.meaning)}
+					{@html addColorsToMeaningText(currentCard?.meaning || '')}
 					<span class="dummy energy" />
 				</p>
-			{:else if currentCard?.reversed === true}
+			{:else}
 				<p in:fade>
-					{@html addColorsToMeaningText(currentCard?.reversedMeaning)}
+					{@html addColorsToMeaningText(currentCard?.reversedMeaning || '')}
 					<span class="dummy energy" />
 				</p>
 			{/if}
@@ -157,6 +157,7 @@
 	.infoBox {
 		position: fixed;
 		height: 100%;
+		min-height: 100vh;
 		width: 100%;
 		z-index: 100;
 		background-color: rgba($bg, 0.5);
@@ -164,13 +165,13 @@
 		border-radius: 5px;
 		padding: 0.5rem;
 		padding-top: 2rem;
-		transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		text-align: center;
 		top: 0 !important;
 		left: 0 !important;
 		overflow: auto;
 		.infoBoxContent {
-			min-height: 100%;
+			min-height: 100vh;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;

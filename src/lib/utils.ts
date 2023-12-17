@@ -22,7 +22,7 @@ export let objToMap = (obj: { [key: string]: any }) => {
 	return map;
 };
 
-export let getTokenCost = (nbCards: number, model: string, information?: string) => {
+export let getTokenCost = (nbCards: number, model: string, multiplierPref: number, information?: string) => {
 	let modelCost = 0;
 	let modelMultiplier = 0;
 	switch (model) {
@@ -36,7 +36,7 @@ export let getTokenCost = (nbCards: number, model: string, information?: string)
 			break;
 	}
 
-	let fullValue = ((nbCards-1) * modelMultiplier + modelCost + (information?.length || 0)*0.0025*modelMultiplier)
+	let fullValue = ((nbCards-1) * modelMultiplier * multiplierPref + modelCost * multiplierPref + (information?.length || 0)*0.0025*modelMultiplier)
 
 	return Math.round(fullValue * 100) / 100;
 }

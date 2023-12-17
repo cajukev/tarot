@@ -11,11 +11,11 @@ export const config = {
   };
 
 let apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
-const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
-const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
+const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
+const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
 
-const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
-const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
+const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
+const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
 
 export const POST: RequestHandler = async ({request, locals}) => {
 
@@ -72,6 +72,8 @@ export const POST: RequestHandler = async ({request, locals}) => {
             model = chatgpt3creative;
     }
 
+    let multiplier = formData.readingStore.multiplier || 1;
+
     let tarotReadingAnalysisPromptText = `You are ${character?.name} and must give the best Tarot reading given the following information.
 TO give the best Tarot reading you must match the tone of the reading to the tone of the cards. Cards can be either positive negative or mixed, make sure the reading matches the tone of the cards.
 ` +
@@ -84,20 +86,24 @@ cards.forEach((card, i) => {
     tarotReadingAnalysisPromptText += `
   ${card.name}, "position": "${spread!.positions[i] || "Answer"}", special instruction: ${spread!.instructions[i]}`
   })
-  tarotReadingAnalysisPromptText += `Use the following Analysis and make sure to adapt them to the character you are playing:
-    ${analysis}
+  tarotReadingAnalysisPromptText += `
+Use the following Analysis and make sure to use the combinations in the reading.
+'''${analysis}'''
+
 (Unless writing a poem) follow this structure:[
-Minimal greeting
-Talk about the cards in the order they were drawn naming them and using the knowledge above once all the associated cards have been explained
-Conclude by reopening to the querent
+Minimal greeting (optional)
+Start with a powerful statement about the message the cards show (ie: "You are going to have a great day today!")
+Use the analysis as a base of information to be interpreted with your dialect and writing style, multiple cards can be combined into one paragraph.
+The reading must only contain ${spread.positions.length} cards
+Conclude by reopening to the querent - beckoning them to pull another card.
 ]
 Separate each paragraph with a line break
 Answer in the same language as the question was asked
-User information (Use in the reading if applicable): 
+User preferences comply to demands: 
 '''
 ${profileData.data!.information}
 '''
-Total ${60 * cards.length + 120} words, no more no less (unless writing a poem), do not ever return word count`
+Maximum ${(80 * cards.length + 80)*multiplier} words OR LESS depending on user preference. Do not ever return word count`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [
@@ -129,9 +135,7 @@ Total ${60 * cards.length + 120} words, no more no less (unless writing a poem),
     return new Response(stream, {
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Content-Type": "text/event-stream;charset=utf-8",
-          "Cache-Control": "no-cache, no-transform",
-          "X-Accel-Buffering": "no",
+          "Content-Type": "text/event-stream;charset=utf-8"
         },
       })
     };

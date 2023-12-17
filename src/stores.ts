@@ -16,6 +16,8 @@ export const readingStore = writable<ReadingType>(
     art: "",
     model: "gpt-3.5-turbo",
     analysis: "",
+    summary: [],
+    multiplier: 1,
   }
 );
 export const conclusionStore = writable<string>(undefined);
@@ -27,3 +29,4 @@ export const menuStateStore = writable<{value: number, change: boolean}>({value:
 export const customSpreadsStore = writable<ReadingSpreadType[]>([]);
 export const achievementsStore = writable<{action: string, value: any}>();
 export const textSizeStore = persisted<number>('textSizeStore', 1);
+export const guestTokenStore = persisted<number>('guestTokenStore', 9);

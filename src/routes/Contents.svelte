@@ -34,14 +34,14 @@
 	}
 
 	let menuItems = [
-		{ name: 'Card Collection', component: Collection, img: '/menuOptions/Collection.svg' },
-		{ name: 'Guide to Energies', component: EnergiesGuide, img: '/menuOptions/Guide_To_Energies.svg' },
+		{ name: 'Card Collection', component: Collection, img: '/menuOptions/Collection.svg', landing: true },
+		{ name: 'Guide to Energies', component: EnergiesGuide, img: '/menuOptions/Guide_To_Energies.svg', landing: true },
 		{ name: 'Progression', component: Progression, img: '/menuOptions/Progression.svg' },
-		{ name: 'About Readers', component: Readers, img: '/menuOptions/Readers.svg' },
+		{ name: 'About Readers', component: Readers, img: '/menuOptions/Readers.svg', landing: true },
 		{ name: 'Custom Spreads', component: CustomSpreads, img: '/menuOptions/Custom_Spreads.svg', exp: unlocks.get('custom')!.exp },
 		{ name: 'Shop', component: Shop, img: '/menuOptions/Shop.svg' },
 		{ name: 'Customization', component: Customization, img: '/menuOptions/Customization.svg'},
-		{ name: 'User Info', component: UserInfo, img: '/menuOptions/Profile.svg' },
+		{ name: 'Preferences', component: UserInfo, img: '/menuOptions/Profile.svg' },
 	];
 
 	let navigate = (index: number) => {
@@ -56,7 +56,7 @@
 	let setupItemList = () => {
 		itemList = [];
 		menuItems.forEach((item, i) => {
-			if(item.exp && item.exp > $page.data.profile.data.experience) return;
+			if(item.exp && item.exp > $page.data.profile?.data.experience) return;
 			itemList.push({
 				id: i,
 				name: menuItems[i].name,
@@ -64,7 +64,8 @@
 				action: () => {
 					navigate(i);
 				},
-				selected: i === menuValue
+				selected: i === menuValue,
+				available: menuItems[i].landing || $page.data.profile?.data !== undefined
 			});
 		});
 	}

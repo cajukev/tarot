@@ -191,23 +191,10 @@
 	}
 	.startReading {
 		margin-top: 2rem;
-		background-color: $accent;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: $other-font;
 		font-size: $h4-font-size;
-		cursor: pointer;
 		&:first-of-type {
 			margin-right: 1rem;
 		}
-	}
-	.cta {
-		cursor: pointer;
-		background-color: $accent;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: $other-font;
-		font-weight: 700;
 	}
 	.analysis {
 		margin: auto;

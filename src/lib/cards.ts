@@ -1,9 +1,9 @@
 export type CollectionCard = {
     name: string;
     reversed?: boolean | false;
-    energy: { "upright": string[], reversed: string[] };
-    meaning: string;
-    reversedMeaning: string;
+    energy?: { "upright": string[], reversed: string[] };
+    meaning?: string;
+    reversedMeaning?: string;
 };
 
 export type CollectionDeck = {

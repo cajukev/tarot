@@ -9,7 +9,8 @@
 		flippedCardsStore,
 		customSpreadsStore,
 		achievementsStore,
-		menuStateStore
+		menuStateStore,
+		guestTokenStore
 	} from '../stores';
 	import { getCardsPack, type CollectionCard } from '$lib/cards';
 	import InfoBox from './InfoBox.svelte';
@@ -21,6 +22,7 @@
 	import CardSelect from './CardSelect.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { secret } from '$lib/toastStubs';
+	import va from '@vercel/analytics';
 	export let state: number;
 
 	let cardSelectPopup: HTMLElement;
@@ -57,6 +59,9 @@
 			JSON.stringify(currentSelectCard || '')
 		);
 		selectedCard = undefined;
+		if (storyMode) {
+			getStoryReading();
+		}
 	};
 
 	// actionState 0: show actions
@@ -75,13 +80,18 @@
 	let restart = () => {
 		state = 1;
 		document.body.scrollIntoView();
+		storyMode = false;
+		$readingStore.summary = [];
 	};
 
 	let reset = () => {
 		actionState = 0;
+		storyMode = false;
 		$readingStore.ready = false;
 		$readingStore.conclusion = '';
+		$readingStore.summary = [];
 		readingElem.scrollIntoView();
+		// Kill fetch request
 	};
 
 	let _getCardImgName = (name: string) => {
@@ -91,7 +101,12 @@
 	let tokenCost = 0;
 	let analysisTokenCost = 0;
 	$: {
-		tokenCost = getTokenCost($flippedCardsStore?.length, $readingStore.model || 'default', $page.data.profile?.data?.information);
+		tokenCost = getTokenCost(
+			$flippedCardsStore?.length,
+			$readingStore.model || 'default',
+			$readingStore.multiplier || 1,
+			$page.data.profile?.data?.information
+		);
 		analysisTokenCost = getAnalysisTokenCost($flippedCardsStore?.length);
 	}
 	let loading = false;
@@ -165,6 +180,7 @@
 	let analyseCards = () => {
 		if (loading) return;
 		loading = true;
+		va.track('analysis')
 		fetch('/api/analysis', {
 			method: 'POST',
 			headers: {
@@ -172,7 +188,8 @@
 			},
 			body: JSON.stringify({
 				readingStore: $readingStore,
-				tokenCost: analysisTokenCost
+				tokenCost: analysisTokenCost,
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
 			})
 		}).then(async (res) => {
 			console.log(res);
@@ -214,8 +231,6 @@
 		if (loading) return;
 		loading = true;
 		actionState = 0;
-		storedConclusion = '';
-		storedAnalysis = '';
 		fetch('/api/tarotReadingWithAnalysis', {
 			method: 'POST',
 			headers: {
@@ -227,40 +242,14 @@
 				tokenCost: tokenCost
 			})
 		}).then(async (res) => {
-			const reader = res.body?.getReader();
 			$achievementsStore = { action: 'StartReading', value: 'default' };
-			let storedLength = 0;
-			let flag = false;
-			let flag2 = false;
-			while (true && reader && !flag) {
-				const { done, value } = await reader.read();
-				if (storedLength === value?.length) {
-					console.log('done');
-					loading = false;
-					actionState = 1;
-					$achievementsStore = { action: 'CompleteReading', value: 'default' };
-					$readingStore.conclusion =
-						$readingStore.conclusion +
-						`
-...`;
-					flag = true;
-					invalidateAll();
-					break;
-				} else {
-					if (!flag2) {
-						invalidateAll();
-						flag2 = true;
-					}
-					storedLength = value?.length || 0;
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) {
-						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-							$readingStore.conclusion = text;
-							storedConclusion = $readingStore.conclusion;
-						}
-					}
-				}
-			}
+			return res.json();
+		}).then((result) => {
+			loading = false;
+			actionState = 1;
+			$achievementsStore = { action: 'CompleteReading', value: 'default' };
+			$readingStore.conclusion = result.result;
+			invalidateAll();
 		});
 	};
 
@@ -268,7 +257,9 @@
 		if (loading) return;
 		loading = true;
 		actionState = 0;
-		fetch('/api/tarotreading', {
+		va.track($page.data.profile?.data === undefined ? 'GuestReading' : 'Reading');
+		let url = $page.data.profile?.data === undefined ? '/api/guestReading' : '/api/tarotreading';
+		fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -281,39 +272,16 @@
 		}).then(async (res) => {
 			console.log(res);
 			$achievementsStore = { action: 'StartReading', value: 'default' };
-			const reader = res.body?.getReader();
-			let storedLength = 0;
-			let flag = false;
-			let flag2 = false;
-			while (true && reader && !flag) {
-				const { done, value } = await reader.read();
-				if (storedLength === value?.length) {
-					console.log('done');
-					loading = false;
-					actionState = 1;
-					$achievementsStore = { action: 'CompleteReading', value: 'default' };
-					$readingStore.conclusion =
-						$readingStore.conclusion +
-						`
-...`;
-					flag = true;
-					invalidateAll();
-					break;
-				} else {
-					if (!flag2) {
-						invalidateAll();
-						flag2 = true;
-					}
-					storedLength = value?.length || 0;
-					const text = new TextDecoder('utf-8').decode(value);
-					if (text) {
-						if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-							$readingStore.conclusion = text;
-							storedConclusion = $readingStore.conclusion;
-						}
-					}
-				}
-			}
+			return res.json();
+		}).then((result) => {
+			console.log(result);
+			loading = false;
+			actionState = 1;
+			$readingStore.conclusion = result.result;
+			$achievementsStore = { action: 'CompleteReading', value: 'default' };
+			$readingStore.conclusion = $readingStore.conclusion + `
+	...`;
+			invalidateAll();
 		});
 	};
 
@@ -336,6 +304,43 @@
 				navigator.clipboard.writeText(readingUrl);
 				secret(`Link copied to clipboard!`);
 			});
+	};
+
+	let storyMode = false;
+	let nextPosition = '';
+	let pullStoryCard = () => {
+		storyMode = true;
+		$readingStore.cards = [{ name: 'undefined' }];
+		$flippedCardsStore = [false];
+		flipCard(0);
+	};
+
+	let getStoryReading = () => {
+		if (loading) return;
+		loading = true;
+		actionState = 0;
+		va.track('StoryReading');
+		fetch('/api/storyCardReading', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				reading: $readingStore,
+				nextPosition: nextPosition,
+				tokenCost: tokenCost
+			})
+		})
+			.then(async (res) => res.json())
+			.then((data) => {
+				console.log(data);
+				$readingStore.conclusion = data.conclusion;
+				$readingStore.summary.push(data.summary);
+				loading = false;
+			});
+		setTimeout(() => {
+			$readingStore.conclusion = 'Story card reading in progress. . .';
+		}, 0);
 	};
 </script>
 
@@ -416,6 +421,19 @@
 	<p class={'info ' + ($flippedCardsStore?.every((card) => !card) ? 'faded' : '')}>
 		Click the cards to learn more about them
 	</p>
+	{#if $readingStore.summary.length > 0}
+		<div class="analysis">
+			<!-- Show hide -->
+			<details open>
+				<summary>Summary</summary>
+				<ul>
+					{#each $readingStore.summary as summary}
+						<li>{summary}</li>
+					{/each}
+				</ul>
+			</details>
+		</div>
+	{/if}
 	{#if $readingStore.analysis.length > 0}
 		<div class="analysis">
 			<!-- Show hide -->
@@ -430,7 +448,6 @@
 				<button class="action analyse" on:click={() => analyseCards()}>Analyse Cards</button>
 				<p class="cost">
 					Costs {analysisTokenCost} tokens
-					<span>({$page.data.profile.data.tokens} remaining)</span>
 				</p>
 			</div>
 		{:else}
@@ -463,33 +480,37 @@
 							: ''}</label
 					>
 				</div>
-				<div class="radio">
-					<input
-						type="radio"
-						id="gpt-4"
-						name="model"
-						value="gpt-4"
-						checked={$readingStore.model === 'gpt-4'}
-						on:change={() => ($readingStore.model = 'gpt-4')}
-					/>
-					<label for="gpt-4"
-						>GPT-4 {characters.get($readingStore.character)?.model === 'gpt-4'
-							? '(suggested)'
-							: ''}</label
-					>
-				</div>
+				{#if $page.data.profile?.data}
+					<div class="radio">
+						<input
+							type="radio"
+							id="gpt-4"
+							name="model"
+							value="gpt-4"
+							checked={$readingStore.model === 'gpt-4'}
+							on:change={() => ($readingStore.model = 'gpt-4')}
+						/>
+						<label for="gpt-4"
+							>GPT-4 {characters.get($readingStore.character)?.model === 'gpt-4'
+								? '(suggested)'
+								: ''}</label
+						>
+					</div>
+				{/if}
 			</div>
-			{#if tokenCost <= $page.data.profile.data.tokens}
+			{#if tokenCost <= ($page.data.profile?.data.tokens || $guestTokenStore)}
 				<div>
-					<button class="startReading" on:click={() => getReading()}>
+					<button class="startReading action" on:click={() => getReading()}>
 						{'Get ' + $readingStore.character + "'s interpretation"}
 					</button>
 
 					{#if $readingStore.analysis.length > 0}
-						<button class="startReading" on:click={() => getReadingWithAnalysis()}>
+						<button class="startReading action" on:click={() => getReadingWithAnalysis()}>
 							With Analysis
 						</button>
 					{/if}
+					<p class="info mt-1">Reading length multiplier</p>
+					<input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier} />
 				</div>
 			{:else}
 				<div>
@@ -497,16 +518,20 @@
 				</div>
 			{/if}
 			<p class="cost">
-				Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''} |
-				<span>({$page.data.profile.data.tokens} remaining)</span>
+				Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''}
 			</p>
-			<button class="cta" on:click={() => ($menuStateStore = { value: 5, change: true })}>
+			<button class="cta action" on:click={() => ($menuStateStore = { value: 5, change: true })}>
 				Buy More Tokens
 			</button>
-			{#if $page.data.profile.data.tokens < 50}
-				<p class="info">Regain up to 30 tokens at 12:00PM EST</p>
-			{/if}
+			{#if $page.data.profile?.data}
+				{#if $page.data.profile.data.tokens < 50}
+					<p class="info">Regain up to 30 tokens at 12:00PM EST</p>
+				{/if}
+			{:else}{/if}
 		</div>
+	{/if}
+	{#if loading}
+		<p class="info loading">Loading...</p>
 	{/if}
 	{#if $readingStore.conclusion.length > 0}
 		<p class="info infoReader">
@@ -522,22 +547,41 @@
 		</button>
 		{/if} -->
 	</p>
+	{#if (actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0) && $readingStore.conclusion.length > 0 && !loading}
+		<button class="action story" on:click={() => pullStoryCard()}>Pull a story card</button>
+		<input
+			type="text"
+			class="position"
+			placeholder="Card Meaning / Position"
+			bind:value={nextPosition}
+		/>
+		<p class="info">Reading length multiplier</p>
+		<input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier} />
+		<p class="cost">
+			Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''}
+		</p>
+	{/if}
 	<div class="actions">
 		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
 			{#if $readingStore.conclusion.length > 0}
 				<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
 				<button class="btn-link" on:click={() => saveReading()}>Share reading</button>
 			{/if}
-			<button class="btn-link" on:click={() => restart()}>New reading</button>
 		{/if}
+		<button class="btn-link" on:click={() => restart()}>New reading</button>
 	</div>
+	<!-- Reading length multiplier slider -->
 </div>
 
 <div>
 	<InfoBox bind:isShown={infoBoxIsShown} {currentCard} />
 </div>
 
-<div bind:this={cardSelectPopup} class="fullScreenPopup hidden">
+<div
+	bind:this={cardSelectPopup}
+	class="fullScreenPopup hidden"
+	style={currentSelectCard ? 'overflow: initial' : 'overflow-y: auto; overflow-x: hidden;'}
+>
 	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard />
 </div>
 
@@ -551,8 +595,19 @@
 		}
 		.actions {
 			display: flex;
+			flex-wrap: wrap;
 			justify-content: center;
 			gap: 1rem;
+		}
+		button.story {
+			margin-top: 1rem;
+			font-size: $base-font-size;
+		}
+		input.position {
+			display: block;
+			margin: 0.5rem auto 1rem;
+			font-size: $mini-font-size;
+			padding: 0.25rem;
 		}
 		.cards {
 			// display: grid;
@@ -625,23 +680,7 @@
 	}
 	.startReading {
 		margin-top: 2rem;
-		background-color: $accent;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: $other-font;
 		font-size: $h4-font-size;
-		cursor: pointer;
-		&:first-of-type {
-			margin-right: 1rem;
-		}
-	}
-	.cta {
-		cursor: pointer;
-		background-color: $accent;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: $other-font;
-		font-weight: 700;
 	}
 	.analysis {
 		margin: auto;
@@ -654,7 +693,7 @@
 		margin-top: 1rem;
 	}
 	.cost {
-		padding: 1rem 0rem 0.5rem;
+		padding: 0.5rem 0rem 0.5rem;
 	}
 	.infoReader {
 		margin-top: 2rem;
@@ -864,6 +903,7 @@
 		background-color: rgba($color: #000000, $alpha: 0.8);
 		z-index: 100;
 		overflow-y: scroll;
+		overflow-x: hidden;
 		padding-top: 4rem;
 		padding-bottom: 2rem;
 		transition: opacity 0.2s ease;
@@ -876,6 +916,20 @@
 			max-width: 80vw;
 			max-height: 80vh;
 			overflow-y: scroll;
+		}
+	}
+	.loading {
+		animation: loadingAnim 1s ease infinite;
+	}
+	@keyframes loadingAnim {
+		0% {
+			opacity: 0.2;
+		}
+		50% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.2;
 		}
 	}
 </style>

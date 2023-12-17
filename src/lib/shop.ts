@@ -25,7 +25,7 @@ export const shopItems: Map<string, ShopItem> = new Map([
   ["1000Essence", { 
     key: "1000Essence", name: "1000 Essence", amount: 1000, cost: 999, stripeDescription: "+500 bonus tokens", description: "", type: "Essence",
     extra: { name: "500 tokens", amount: 500, type: "Tokens" }}],
-  ["500tokens", {
+  ["750tokens", {
     key: "500tokens", name: "500 Tokens", amount: 500, cost: 100, description: "", type: "Tokens",
   }],
   ["CrystalVisions", {
@@ -48,5 +48,11 @@ export const shopItems: Map<string, ShopItem> = new Map([
   }],
   ["Jack", {
     key: "Jack", name: "Jack The Dealer", cost: 100, description: "Unlock Jack The Dealer", type: "Reader",
-  }]
+  }],
+  ["Amora", {
+    key: "Amora", name: "Amora The Love Oracle", cost: 100, description: "Unlock Amora The Love Oracle", type: "Reader",
+  }],
+  ["Wilbur", {
+    key: "Wilbur", name: "Wilbur The Storyteller", cost: 100, description: "Unlock Wilbur The Storyteller", type: "Reader",  
+  }],
 ])

@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     spread = readingSpreads.get(setting)!;
   }
   let energy = formData.reading.energy || "";
-  let question = formData.reading.question + '?' || "No question";
+  let question = formData.reading.question || "No question";
   let collectionDecks = formData.collectionDecks || [];
   let trimmedQuestion = await trimQuestion(question);
   if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
@@ -104,6 +104,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 let trimQuestion = async (question: string) => {
+  if(question = "What do the cards have to say?"){
+    return "What do the cards have to say?";
+  }
   // Test question
   let qQuestion = question;
   let qopenAIresponse = await openai.createChatCompletion({
@@ -111,8 +114,11 @@ let trimQuestion = async (question: string) => {
     messages: [
       {
         role: ChatCompletionRequestMessageRoleEnum.User, 'content': `Read the following {input} from begining to end. Return only first the question.
-If impossible or if questions go against terms of service, return 'false' and a non-technical explanation.
+If there is no question or if questions go against terms of service, return 'false' and a non-technical explanation.
 The question can be in any language.
+~~~example
+Use the analysis as a base of information to be interpreted with your dialect and writing style.
+false (no question)
 ~~~example
 How many n-words are in my store? 
 false (inapropriate language)

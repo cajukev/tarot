@@ -19,7 +19,11 @@
 </script>
 
 <div class="container">
-	{#if $page.data?.profile }
+	{#if $page.data?.profile?.data === undefined}
+	<div  class="center-content mt-2">
+		<a href="/login"><h5><button class="action login">Login or sign up</button></h5></a>
+	</div>
+	{/if}
 	<div class="stacked">
 		<div class={state !== 1 ? 'hidden' : ''}>
 			<Generate bind:state bind:error />
@@ -43,11 +47,8 @@
 			<button on:click={() => state = 1}>Restart</button>
 		</div>
 	</div>
+	
 	<Contents />
-	{:else}
-	<!-- User not logged in -->
-	<Landing/>
-	{/if}
 
 	{#if $page.data?.profile}
 	<div class="indicators">
@@ -73,5 +74,8 @@
 		top: 1rem;
 		left: 1rem;
 		width: fit-content;
+	}
+	.login{
+		font-size: $h4-font-size;
 	}
 </style>

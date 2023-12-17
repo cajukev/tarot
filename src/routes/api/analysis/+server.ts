@@ -1,6 +1,6 @@
 import type { RequestHandler } from "@sveltejs/kit";
 import { ChatOpenAI } from "langchain/chat_models/openai";
-import readingSpreads from "$lib/readingSpreads";
+import readingSpreads, { type ReadingSpreadType } from "$lib/readingSpreads";
 import { AIMessagePromptTemplate, ChatPromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 
@@ -9,6 +9,7 @@ export const POST: RequestHandler = async ({request, locals}) => {
     const formData: {
         readingStore: ReadingType;
         tokenCost: number;
+        customSpread: ReadingSpreadType;
     } = await request.json();
 
     // Verify tokens
@@ -38,9 +39,16 @@ export const POST: RequestHandler = async ({request, locals}) => {
     const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
     const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
 
+    const setting = readingStore.setting;
     const question = readingStore.question;
-    const spread = readingSpreads.get(readingStore.setting);
+    let spread: ReadingSpreadType;
+    if (formData.customSpread) {
+        spread = formData.customSpread;
+      } else {
+        spread = readingSpreads.get(setting)!;
+      }
     const cards = readingStore.cards;
+    console.log("cards_analysis", cards);
 
     
     // Create a chain of LLMchains that can be used for tarot readings
@@ -63,7 +71,7 @@ Tarot cards, each bearing distinct symbolic imagery, carry layered meanings that
 {empty} You understand the meaning of Tarot cards at an expert level and you are writing a book on advanced reading techniques. You read cards and come up with Observations considering the question. This chapter is about the question: ${question}.` 
         ),
         AIMessagePromptTemplate.fromTemplate(
-            tarotAnalysisAIPromptCards + `Find some observations (at least ${cards.length - 1}) using pairs of cards and their keywords. State the observation using the keywords that led you to that observation.
+            tarotAnalysisAIPromptCards + `Find some observations (at least ${cards.length - 1}) using pairs of cards and their keywords. State the observation using the keywords that led you to that observation. An observation is a statement about the cards when paired together, not about the cards individually.
 Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the ${spread?.positions[0]} position and ${cards[1].name} ${cards[1].reversed ? '(reversed)' : ''} in the ${spread?.positions[1]} position come together to mean `
             )
         ],
@@ -79,7 +87,7 @@ Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the 
 
     const stream = new ReadableStream({
         start(controller) {
-            let text = `Observation 1: ${cards[0].name} in the ${spread?.positions[0]} position and ${cards[1].name} in the ${spread?.positions[1]} position together mean `
+            let text = `Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the ${spread?.positions[0]} position and ${cards[1].name} ${cards[1].reversed ? '(reversed)' : ''} in the ${spread?.positions[1]} position together mean `
     tarotAnalysisChain.call({empty: ""}
     , [{
     handleLLMNewToken(token: string) {
@@ -95,9 +103,7 @@ Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the 
     return new Response(stream, {
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Content-Type": "text/event-stream;charset=utf-8",
-          "Cache-Control": "no-cache, no-transform",
-          "X-Accel-Buffering": "no",
+          "Content-Type": "text/event-stream;charset=utf-8"
         },
       })
 };

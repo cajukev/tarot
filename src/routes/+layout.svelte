@@ -39,7 +39,7 @@
 			data: { subscription }
 		} = db.auth.onAuthStateChange(() => {
 			invalidate('supabase:auth');
-			
+			invalidateAll();
 		});
 
 		return () => {

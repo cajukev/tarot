@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
     import { page } from '$app/stores';
+	import { readingStore } from '../stores';
 
 
     let inputVal = '';
@@ -35,6 +36,13 @@
     <p class="information">
         {$page.data.profile.data.information}
     </p>
+    <p class="info">
+        Reading length multiplier
+    </p>
+    <input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier}>
+    <p class="information">
+        {$readingStore.multiplier}
+    </p>
 </div>
 
 <style lang="scss">
@@ -45,10 +53,23 @@
         justify-content: center;
         width: 100%;
         padding: 0 1rem;
+        textarea{
+            width: 100%;
+            max-width: 40rem;
+            height: 10rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            resize: none;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
         p.information{
             margin-top: 1rem;
             max-width: 40rem;
             word-wrap: break-word;
+            white-space: break-spaces;
         }
         p.info{
             text-align: center;

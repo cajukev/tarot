@@ -15,6 +15,9 @@
   // console.log(newSpread);
 
   let addNewCard = () => {
+    if(newSpread.positions.length >= 10){
+      return;
+    }
     newSpread.positions.push("");
     newSpread = { ...newSpread };
   };
@@ -232,14 +235,6 @@
         max-width: 20rem;
         margin-bottom: 0.5rem;
       }
-    }
-    button{
-      cursor: pointer;
-		  background-color: $accent;
-		  border: none;
-		  padding: 0.25rem 0.5rem;
-		  font-family: $other-font;
-		  font-weight: 700;
     }
   }
 </style>

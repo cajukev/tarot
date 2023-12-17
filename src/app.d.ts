@@ -59,6 +59,8 @@ declare global {
 		art: string,
 		model: string,
 		analysis: string,
+		summary: string[],
+		multiplier?: number,
 	}
 
 	type ListItem = {

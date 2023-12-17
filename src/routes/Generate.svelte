@@ -42,14 +42,10 @@
 
 	let listItems: ListItem[] = [];
 
-	$: if ($page.data.profile.data) {
-		// console.log('profile data', $page.data.profile.data);
-		$customSpreadsStore = $page.data.profile.data.custom_spreads || [];
+	$: if ($page.data.profile?.data) {
+		// console.log('profile data', $page.data.profile?.data);
+		$customSpreadsStore = $page.data.profile?.data.custom_spreads || [];
 		setupItemList();
-	}
-
-	$: if ($readingStore.ready) {
-		getReading();
 	}
 
 	onMount(async () => {
@@ -110,7 +106,7 @@
 					navigateToCustomSpreads();
 				}
 			});
-		} else {
+		} else if ($page.data.profile?.data !== undefined) {
 			// Add button to navigate to progression
 			listItems.push({
 				id: listItems.length,
@@ -157,7 +153,7 @@
 	};
 
 	let stopRecording = () => {
-		if(recordingState === 2) return;
+		if (recordingState === 2) return;
 		recordingState = 2;
 		mediaRecorder.stop();
 		mediaRecorder = null;
@@ -166,16 +162,6 @@
 	$: {
 		$readingStore.cards = drawnCards;
 		$readingStore.question = question;
-	}
-
-	$: if ($readingStore.ready) {
-		$readingStore.ready = false;
-		getReading();
-	}
-
-	let tokenCost = 0;
-	$: {
-		tokenCost = getTokenCost($readingStore.cards.length, $readingStore.model || 'default', $page.data.profile?.data?.information);
 	}
 
 	let mouseoverSegment = (segment: number) => {
@@ -225,16 +211,18 @@
 		draw();
 	};
 
+	let placeholder = 'What do the cards have to say?';
 	let draw = () => {
 		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
-		window.scrollTo(0, 0);
+		// window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
 		$readingStore.analysis = '';
 		$readingStore.energy =
 			energyList[energyGrid[pressedSegment - 1][scrollVar][$timeVariableStore]];
 		$readingStore.cards = [];
+		$readingStore.question = question || placeholder;
 		// Check if custom spread
 		const customSpread = $customSpreadsStore.find(
 			(spread) => spread.name === $readingStore.setting
@@ -299,11 +287,13 @@
 	let setEmptyCards = () => {
 		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
-		window.scrollTo(0, 0);
+		// window.scrollTo(0, 0);
 		innerState = 1;
 		$readingStore.conclusion = '';
 		$readingStore.analysis = '';
 		$readingStore.energy = '';
+		$readingStore.summary = [];
+		$readingStore.question = question || placeholder;
 		// Validate question
 		fetch('/api/validateQuestion', {
 			method: 'POST',
@@ -355,59 +345,6 @@
 
 	let storedConclusion = '';
 
-	let getReading = () => {
-		$readingStore.conclusion = '';
-		storedConclusion = '';
-		va.track('GetReading');
-		fetch('/api/tarotreading', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				reading: $readingStore,
-				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
-				tokenCost: tokenCost
-			})
-		}).then(async (res) => {
-			const reader = res.body?.getReader();
-			$achievementsStore = { action: 'StartReading', value: 'default' };
-			$readingStore.incomplete = false;
-			invalidateAll();
-			while (true && reader) {
-				const { done, value } = await reader.read();
-				const res = new TextDecoder('utf-8').decode(value);
-				console.log(res.substring(res.indexOf('{'), res.lastIndexOf('}') + 1));
-				let text = chunksToText(res);
-				// let text = res.slice(res.indexOf('"choices":[{"delta":{"content":"') + 32 , res.indexOf('"}',res.indexOf('"choices":[{"delta":{"content":"') + 32))
-				if (text && !text.includes('"finish_reason":"stop')) {
-					// Duplication glitch fix attempt
-					if (!(storedConclusion.length > 20 && text.length > 1.5 * storedConclusion.length)) {
-						$readingStore.conclusion += text.replaceAll('\\n', '<br>').replaceAll('\\', '');
-						storedConclusion = $readingStore.conclusion;
-					}
-				}
-				if (done) {
-					// Is wrapped in {}
-					if (
-						$readingStore.conclusion &&
-						$readingStore.conclusion.startsWith('{') &&
-						$readingStore.conclusion.endsWith('}')
-					) {
-						$readingStore.incomplete = false;
-						$readingStore.conclusion = '...';
-					} else {
-						$readingStore.conclusion += `
-						
-...`;
-						$achievementsStore = { action: 'CompleteReading', value: 'default' };
-					}
-					break;
-				}
-			}
-		});
-	};
-
 	let chunksToText = (text: string): string => {
 		if (text.includes('"choices":[{"delta":{"content":"')) {
 			let startIndex = text.indexOf('"choices":[{"delta":{"content":"') + 32;
@@ -446,14 +383,14 @@
 	};
 
 	let addSecret = (secret: string) => {
-		if ($page.data.profile.data.secrets.includes(secret)) return;
+		if ($page.data.profile?.data.secrets.includes(secret)) return;
 		fetch('/api/addSecret', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				secrets: $page.data.profile.data.secrets.concat(secret)
+				secrets: $page.data.profile?.data.secrets.concat(secret)
 			})
 		}).then(() => {
 			secretToast(
@@ -484,41 +421,44 @@
 		</div>
 		<div class="inputSection">
 			<p>What is your question?</p>
-
-			{#if recordingState === 0 || recordingState === 2 || recordingState === 3 }
-			<button class="micButton" on:click={() => startRecording()}>
-				<svg viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M14 22.85C12.5667 22.85 11.3667 22.3347 10.4 21.3042C9.43333 20.2736 8.95 19.0222 8.95 17.55V5C8.95 3.6111 9.44068 2.43055 10.4221 1.45835C11.4034 0.486116 12.5951 0 13.9971 0C15.399 0 16.5917 0.486116 17.575 1.45835C18.5583 2.43055 19.05 3.6111 19.05 5V17.55C19.05 19.0222 18.5667 20.2736 17.6 21.3042C16.6333 22.3347 15.4333 22.85 14 22.85ZM12.5 38V31.2C8.96667 30.8333 6 29.35 3.6 26.75C1.2 24.15 0 21.0833 0 17.55H3C3 20.5833 4.07147 23.1333 6.2144 25.2C8.35733 27.2667 10.949 28.3 13.9894 28.3C17.0298 28.3 19.625 27.2667 21.775 25.2C23.925 23.1333 25 20.5833 25 17.55H28C28 21.0833 26.8 24.15 24.4 26.75C22 29.35 19.0333 30.8333 15.5 31.2V38H12.5ZM14 19.85C14.6 19.85 15.0917 19.625 15.475 19.175C15.8583 18.725 16.05 18.1833 16.05 17.55V5C16.05 4.43333 15.8535 3.95833 15.4606 3.575C15.0677 3.19167 14.5808 3 14 3C13.4192 3 12.9323 3.19167 12.5394 3.575C12.1465 3.95833 11.95 4.43333 11.95 5V17.55C11.95 18.1833 12.1417 18.725 12.525 19.175C12.9083 19.625 13.4 19.85 14 19.85Z" fill="white"/>
-				</svg>
-			</button>
-			<p class="info">
-				Mic costs 0.01 tokens
-			</p>
-			{/if}
-			<!-- 5 second timer -->
-			{#if recordingState === 1 }
-			<div class="stacked">
-				<div class="timer">
-					<span></span>
-				</div>
-				recording
-			</div>
-			{/if}
-			<!-- Waiting response -->
-			{#if recordingState === 2 }
-			<p>Understanding question...</p>
+			{#if $page.data.profile?.data !== undefined}
+				{#if recordingState === 0 || recordingState === 2 || recordingState === 3}
+					<button class="micButton" on:click={() => startRecording()}>
+						<svg viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M14 22.85C12.5667 22.85 11.3667 22.3347 10.4 21.3042C9.43333 20.2736 8.95 19.0222 8.95 17.55V5C8.95 3.6111 9.44068 2.43055 10.4221 1.45835C11.4034 0.486116 12.5951 0 13.9971 0C15.399 0 16.5917 0.486116 17.575 1.45835C18.5583 2.43055 19.05 3.6111 19.05 5V17.55C19.05 19.0222 18.5667 20.2736 17.6 21.3042C16.6333 22.3347 15.4333 22.85 14 22.85ZM12.5 38V31.2C8.96667 30.8333 6 29.35 3.6 26.75C1.2 24.15 0 21.0833 0 17.55H3C3 20.5833 4.07147 23.1333 6.2144 25.2C8.35733 27.2667 10.949 28.3 13.9894 28.3C17.0298 28.3 19.625 27.2667 21.775 25.2C23.925 23.1333 25 20.5833 25 17.55H28C28 21.0833 26.8 24.15 24.4 26.75C22 29.35 19.0333 30.8333 15.5 31.2V38H12.5ZM14 19.85C14.6 19.85 15.0917 19.625 15.475 19.175C15.8583 18.725 16.05 18.1833 16.05 17.55V5C16.05 4.43333 15.8535 3.95833 15.4606 3.575C15.0677 3.19167 14.5808 3 14 3C13.4192 3 12.9323 3.19167 12.5394 3.575C12.1465 3.95833 11.95 4.43333 11.95 5V17.55C11.95 18.1833 12.1417 18.725 12.525 19.175C12.9083 19.625 13.4 19.85 14 19.85Z"
+								fill="white"
+							/>
+						</svg>
+					</button>
+					<p class="info">Mic costs 0.01 tokens</p>
+				{/if}
+				<!-- 5 second timer -->
+				{#if recordingState === 1}
+					<div class="stacked">
+						<div class="timer">
+							<span />
+						</div>
+						recording
+					</div>
+				{/if}
+				<!-- Waiting response -->
+				{#if recordingState === 2}
+					<p>Understanding question...</p>
+				{/if}
 			{/if}
 			<textarea
 				bind:value={question}
 				name="question"
 				id="question"
 				maxlength={maxLength}
-				placeholder={readingSpreads?.get($readingStore.setting)?.placeholders?.[
+				{placeholder}
+			/>
+			<!-- placeholder={readingSpreads?.get($readingStore.setting)?.placeholders?.[
 					Math.floor(
 						Math.random() * (readingSpreads?.get($readingStore.setting)?.placeholders?.length ?? 0)
 					)
-				] || ''}
-			/>
+				] || ''} -->
 			<p class="textLengthCounter">{question.length}/{maxLength}</p>
 			<div bind:this={generateButtonWrapper} class="generateButtonWrapper stacked">
 				<div class="generateButton" on:mouseleave={mouseExit} on:touchend={mouseExit}>
@@ -557,9 +497,11 @@
 				</div>
 				<p>Draw cards</p>
 			</div>
-			<button class="manual" on:click={() => setEmptyCards()}>My cards are already drawn</button>
+			<button class="manual action" on:click={() => setEmptyCards()}
+				>My cards are already drawn</button
+			>
 			<!-- If daily is available -->
-			{#if !$page.data.profile.data.daily}
+			{#if !$page.data.profile?.data.daily}
 				<p class="bonus info">
 					Daily bonus is available! <br /> Complete a reading to earn 5 shop essence!
 				</p>
@@ -582,22 +524,22 @@
 			}
 		}
 	}
-	.inputSection{
+	.inputSection {
 		display: flex;
 		flex-direction: column;
-		.micButton{
+		.micButton {
 			border: none;
 			background: none;
 			margin: 0.5rem;
-			svg{
-				width: 1.5rem
+			svg {
+				width: 1.5rem;
 			}
 		}
-		.timer{
+		.timer {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			span{
+			span {
 				display: block;
 				width: 3rem;
 				height: 3rem;
@@ -613,7 +555,7 @@
 					}
 				}
 			}
-	}
+		}
 	}
 	.input {
 		display: flex;
@@ -675,18 +617,9 @@
 		}
 	}
 	.manual {
-		margin-top: 1rem;
-		background-color: #f7db5d;
-		border: none;
-		padding: 0.25rem 0.5rem;
-		font-family: serif;
-		font-size: clamp(20px, 2.3vw, 26px);
-		cursor: pointer;
+		margin: 1rem auto 0;
 	}
 	.bonus {
 		margin-top: 0.5rem;
 	}
-	
-
-
 </style>
