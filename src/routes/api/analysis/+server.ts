@@ -36,8 +36,8 @@ export const POST: RequestHandler = async ({request, locals}) => {
     const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
     const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey });
 
-    const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
-    const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4", verbose: true, streaming: true, openAIApiKey: apiKey });
+    const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4-1106-preview", verbose: true, streaming: true, openAIApiKey: apiKey });
+    const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4-1106-preview", verbose: true, streaming: true, openAIApiKey: apiKey });
 
     const setting = readingStore.setting;
     const question = readingStore.question;

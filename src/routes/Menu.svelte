@@ -12,7 +12,9 @@ const signOutUser = async () => {
     .then((response) => {
       console.log(response);
       if (response.status === 200) {
-        invalidateAll()
+        goto('/');
+        // refresh page
+        location.reload();
       }
     });
 }

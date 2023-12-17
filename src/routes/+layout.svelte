@@ -76,7 +76,7 @@
 			case 'CompleteReading':
 				value = $readingStore;
 				// Daily Challenge
-				if (!data.profile?.data?.daily){
+				if ( data.profile && !data.profile?.data?.daily){
 					completeDailyReading();
 				}
 

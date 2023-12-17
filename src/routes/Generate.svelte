@@ -501,7 +501,7 @@
 				>My cards are already drawn</button
 			>
 			<!-- If daily is available -->
-			{#if !$page.data.profile?.data.daily}
+			{#if $page.data.profile && !$page.data.profile?.data.daily}
 				<p class="bonus info">
 					Daily bonus is available! <br /> Complete a reading to earn 5 shop essence!
 				</p>

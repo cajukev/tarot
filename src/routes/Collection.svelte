@@ -45,7 +45,7 @@
 	let decks: CollectionDeck[] = [];
 
 	let checkCollection = () => {
-		if (landing) {
+		if (!$page.data.profile?.data) {
 			decks = [Array.from(cards.values())[0]];
 		} else {
 			decks = Array.from(cards.values());

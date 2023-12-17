@@ -19,9 +19,10 @@
 </script>
 
 <div class="container">
-	{#if $page.data?.profile?.data === undefined}
+	{#if !$page.data?.profile }
 	<div  class="center-content mt-2">
 		<a href="/login"><h5><button class="action login">Login or sign up</button></h5></a>
+		<p class="info mt-1">... to unlock more spreads, cards and readers!</p>
 	</div>
 	{/if}
 	<div class="stacked">
@@ -77,5 +78,10 @@
 	}
 	.login{
 		font-size: $h4-font-size;
+	}
+	.center-content{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 </style>

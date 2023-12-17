@@ -43,7 +43,7 @@ export const actions: Actions = {
         const user = await locals.sb.auth.signInWithPassword({ email, password })
         if (!user.data.user) {
             const user = await locals.sb.auth.signUp({ email, password })
-
+            location.reload()
         } else {
             throw redirect(300, '/')
         }

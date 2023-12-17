@@ -225,7 +225,6 @@
 		// });
 	};
 
-	let storedConclusion = '';
 	let storedAnalysis = '';
 	let getReadingWithAnalysis = () => {
 		if (loading) return;
