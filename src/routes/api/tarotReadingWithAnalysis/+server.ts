@@ -2,7 +2,7 @@ import characters from "$lib/characters";
 import type { ReadingSpreadType } from "$lib/readingSpreads";
 import readingSpreads from "$lib/readingSpreads";
 import type { RequestHandler } from "@sveltejs/kit";
-import { LLMChain } from "langchain";
+import { LLMChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ChatPromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
 
@@ -116,26 +116,11 @@ Maximum ${(80 * cards.length + 80)*multiplier} words OR LESS depending on user p
 
     const tarotReadingAnalysisChain = new LLMChain({llm: model , prompt: tarotReadingAnalysisTemplate})
 
-    const stream = new ReadableStream({
-        start(controller) {
-            let utf8Encode = new TextEncoder();
-            let text = ''
-            tarotReadingAnalysisChain.call({empty: ""}
-    , [{
-    handleLLMNewToken(token: string) {
-        text += token;
-        let textBytes = utf8Encode.encode(text);
-        controller.enqueue(textBytes);
-     }
-    }]
-    )
-        }
-    })
+    const response = await tarotReadingAnalysisChain.call({})
 
-    return new Response(stream, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "text/event-stream;charset=utf-8"
-        },
-      })
+    return new Response(
+        JSON.stringify({
+            response: response.text,
+        }),
+    );
     };
