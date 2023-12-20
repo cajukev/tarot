@@ -3,7 +3,7 @@ import { dbSecret } from '$lib/db';
 export async function GET(req) {
 
   if (req.request.headers.get('Authorization') !== `Bearer ${process.env.VITE_CRON_SECRET}`) {
-    return new Response(JSON.stringify({error: "Unauthorized"}), {status: 401});
+    return new Response(JSON.stringify({error: "Unauthorized"}), {status: 400});
   }
   let resetDaily = await dbSecret.from("Profile")
     .update({ daily: false})
