@@ -84,7 +84,7 @@
 				listItems.push({
 					id: listItems.length,
 					name: spread.name,
-					img: `./options/custom.png`,
+					img: `/options/custom.png`,
 					action: () => {
 						selectOption(spread.name);
 					},

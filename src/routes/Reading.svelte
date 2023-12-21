@@ -177,52 +177,33 @@
 		cardSelectPopup.classList.add('hidden');
 	};
 
-	let analyseCards = () => {
+	let analyseCards = async () => {
 		if (loading) return;
 		loading = true;
-		va.track('analysis')
-		fetch('/api/analysis', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				readingStore: $readingStore,
-				tokenCost: analysisTokenCost,
-				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
-			})
-		}).then(async (res) => {
-			console.log(res);
-			const reader = res.body?.getReader();
-			let storedLength = 0;
-			let flag = false;
-			while (true && reader && !flag) {
-				const { done, value } = await reader.read();
-				if (storedLength === value?.length) {
-					console.log('done');
-					loading = false;
-					actionState = 1;
-					flag = true;
-					invalidateAll();
-					break;
-				} else {
-					storedLength = value?.length || 0;
-				}
-				const text = new TextDecoder('utf-8').decode(value);
-				if (text) {
-					if (!(storedAnalysis.length > 20 && text.length > 1.5 * storedAnalysis.length)) {
-						$readingStore.analysis = text;
-						storedAnalysis = $readingStore.analysis;
-					}
-				}
-			}
-		});
-		// .finally(() => {
-		// 	console.log('done');
-		// 	loading = false;
-		// 	actionState = 0;
-		// 	invalidateAll();
-		// });
+		va.track('analysis');
+		try {
+			const response = await fetch('/api/analysis', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					readingStore: $readingStore,
+					tokenCost: analysisTokenCost,
+					customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
+				})
+			});
+			const result = await response.json();
+			$readingStore.analysis = result.result;
+			loading = false;
+			actionState = 1;
+			invalidateAll();
+		} catch (error) {
+			console.error(error);
+			loading = false;
+			actionState = 0;
+			invalidateAll();
+		}
 	};
 
 	let storedAnalysis = '';

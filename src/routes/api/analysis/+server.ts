@@ -83,27 +83,10 @@ Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the 
 
     const tarotAnalysisChain = new LLMChain({llm: chatgpt3creative, prompt: tarotAnalysisTemplate})
 
-    
+    const reading = await tarotAnalysisChain.call({empty: ""})
+    console.log("reading", reading)
+    let result = `Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the ${spread?.positions[0]} position and ${cards[1].name} ${cards[1].reversed ? '(reversed)' : ''} in the ${spread?.positions[1]} position together mean ` + reading.text
 
-    const stream = new ReadableStream({
-        start(controller) {
-            let text = `Observation 1: ${cards[0].name} ${cards[0].reversed ? '(reversed)' : ''} in the ${spread?.positions[0]} position and ${cards[1].name} ${cards[1].reversed ? '(reversed)' : ''} in the ${spread?.positions[1]} position together mean `
-    tarotAnalysisChain.call({empty: ""}
-    , [{
-    handleLLMNewToken(token: string) {
-        text += token;
-        controller.enqueue(text);
-     }
-    }]
-    )
-        }
-    });
+  return new Response(JSON.stringify({ result : result }))
 
-
-    return new Response(stream, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "text/event-stream;charset=utf-8"
-        },
-      })
 };
