@@ -102,7 +102,7 @@
       listItems.push({
         name: $customSpreadsStore[i].name,
         id: i,
-        img: "/options/custom.png",
+        img: "/options/custom_bg.png",
         selected: i === selected,
         action() {
           selectItem(i);
