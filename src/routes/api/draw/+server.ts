@@ -74,10 +74,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let otherCards:  {name: string, reversed: boolean}[] = [];
   // Get cards for the energy, and other
   allAllowedCards.forEach((card: CollectionCard) => {
-    if (card.energy.upright.includes(energy)) {
+    if (card.energy?.upright.includes(energy)) {
       energyCards.push({name: card.name, reversed: false});
     } else {
-      if (card.energy.reversed.includes(energy)) {
+      if (card.energy?.reversed.includes(energy)) {
         energyCards.push({name: card.name, reversed: true});
       }else{
         otherCards.push({name: card.name, reversed: Math.random() > 0.5});
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 };
 
 let trimQuestion = async (question: string) => {
-  if(question = "What do the cards have to say?"){
+  if(question === "What do the cards have to say?"){
     return "What do the cards have to say?";
   }
   // Test question
