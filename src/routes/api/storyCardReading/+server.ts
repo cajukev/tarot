@@ -3,6 +3,7 @@ import characters, { type Character } from "$lib/characters";
 import type { ReadingSpreadType } from "$lib/readingSpreads";
 import readingSpreads from "$lib/readingSpreads";
 import { unlocks } from "$lib/unlocks";
+import { getLengthInstruction } from "$lib/utils";
 import type { RequestHandler } from "@sveltejs/kit";
 import { LLMChain, SimpleSequentialChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -11,8 +12,8 @@ import { ChatCompletionRequestMessageRoleEnum } from "openai";
 
 
 let apiKey = import.meta.env.VITE_OPENAI_SECRET_KEY;
-const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
-const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
+const chatgpt3creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-3.5-turbo-1106", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
+const chatgpt3logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-3.5-turbo-1106", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
 
 const chatgpt4creative = new ChatOpenAI({ temperature: 1, modelName: "gpt-4-1106-preview", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
 const chatgpt4logical = new ChatOpenAI({ temperature: 0, modelName: "gpt-4-1106-preview", verbose: true, streaming: true, openAIApiKey: apiKey, frequencyPenalty: 0.5, presencePenalty: 0.5 });
@@ -108,8 +109,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     let character = characters.get(characterInput);
     let conclusion = formData.reading.conclusion || "No conclusion";
     let summary = formData.reading.summary || "No summary";
-    let multiplier = formData.reading.multiplier || 1;
-
+    let length = formData.reading.length || "short";
 
     let model: ChatOpenAI;
     switch (formData.reading.model) {
@@ -123,10 +123,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             model = chatgpt3creative;
     }
 
+    let lengthInstruction = getLengthInstruction(length, formData.reading.cards.length)
 
     let summarySystem = `{empty}
-Reading: ${conclusion}
-Summarize the reading into short Sparse Priming Representations.`;
+From the READING - extract the name of each new card, and write a short phrase about the card's meaning in the context of the reading so far.
+Return a JSON object where the key is the name of the card, and the value is the phrase for that card. Only include cards in the READING that are not in the SUMMARY.
+SUMMARY: ${summary}.
+READING: ${conclusion}.`
 
     const summaryTemplate = new ChatPromptTemplate({
         promptMessages: [
@@ -135,6 +138,18 @@ Summarize the reading into short Sparse Priming Representations.`;
         inputVariables: ["empty"]
     })
 
+
+    // Summary verifier - check for duplicate cards with original summary & shorten if too long
+    let summaryCheckerSystem = `Remove duplicate cards from SUMMARY + NEW SUMMARY. Return a JSON object where the key is the name of the card, and the value is the phrase for that card.
+SUMMARY: ${summary}
+NEW SUMMARY: {newSummary}`
+
+    const summaryCheckerTemplate = new ChatPromptTemplate({
+        promptMessages: [
+            SystemMessagePromptTemplate.fromTemplate(summaryCheckerSystem)
+        ],
+        inputVariables: ["newSummary"]
+    })
 
     // TODO: add a meaning parameter
 
@@ -163,7 +178,7 @@ User Preferences, comply to demands:
 '''
 ${profileData.data!.information}
 '''
-Maximum ${160*multiplier} words OR LESS depending on user preference. Do not ever return word count`
+${lengthInstruction}`
 
     const readingTemplate = new ChatPromptTemplate({
         promptMessages: [
@@ -177,15 +192,32 @@ Maximum ${160*multiplier} words OR LESS depending on user preference. Do not eve
 
     const summaryChain = new LLMChain({ llm: chatgpt3logical, prompt: summaryTemplate});
 
+    const summaryCheckerChain = new LLMChain({ llm: chatgpt3logical, prompt: summaryCheckerTemplate});
+
     const readingChain = new LLMChain({ llm: model, prompt: readingTemplate});
 
 
     let newSummary = await summaryChain.call({empty: ""}).then((summaryResponse) => {
         console.log(summaryResponse.text);
-        return summaryResponse.text;
+        let summaryObj = JSON.parse(summaryResponse.text);
+        let summaryString = "";
+        for (const [key, value] of Object.entries(summaryObj)) {
+            summaryString += `${key}: ${value}\n`;
+        }
+        return summaryString;
     })
 
-    let newConclusion = await readingChain.call({summary: newSummary}).then((readingResponse) => {
+    let newSummaryChecked = await summaryCheckerChain.call({newSummary: newSummary}).then((summaryCheckedResponse) => {
+        console.log(summaryCheckedResponse.text);
+        let summaryObj = JSON.parse(summaryCheckedResponse.text);
+        let summaryString = "";
+        for (const [key, value] of Object.entries(summaryObj)) {
+            summaryString += `${key}: ${value}\n`;
+        }
+        return summaryString;
+    })
+
+    let newConclusion = await readingChain.call({summary: newSummaryChecked}).then((readingResponse) => {
         console.log(readingResponse);
         return readingResponse.text + "\n\n" + '...';
 
@@ -194,7 +226,7 @@ Maximum ${160*multiplier} words OR LESS depending on user preference. Do not eve
     return new Response(
         JSON.stringify({
             message: "Success",
-            summary: newSummary,
+            summary: newSummaryChecked,
             conclusion: newConclusion
         }),
     );

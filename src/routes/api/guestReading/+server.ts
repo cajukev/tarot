@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
   let model: ChatOpenAI;
-  let multiplier = formData.reading.multiplier || 1;
+  let length = formData.reading.length || "short";
   switch (formData.reading.model) {
     case 'gpt-3.5-turbo':
       model = chatgpt3creative;
@@ -56,6 +56,19 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       break;
     default:
       model = chatgpt3creative;
+  }
+
+  let lengthInstruction = "";
+  switch (length) {
+    case 'short':
+      lengthInstruction = "Keep the reading short and succinct.";
+      break;
+    case 'medium':
+      lengthInstruction = "";
+      break;
+    case 'long':
+      lengthInstruction = "Provide a deep and detailed reading.";
+      break;
   }
 
 
@@ -87,7 +100,7 @@ Conclude by reopening to the querent - beckoning them to pull another card.
 ]
 Separate each paragraph with a line break
 Answer in the same language as the question was asked
-Maximum ${(80 * drawnCards.length + 80)*multiplier} words OR LESS depending on user preference. Do not ever return word count`
+${lengthInstruction}`
 
   const messages = [
     { role: ChatCompletionRequestMessageRoleEnum.System, 'content': system },

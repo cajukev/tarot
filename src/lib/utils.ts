@@ -22,9 +22,21 @@ export let objToMap = (obj: { [key: string]: any }) => {
 	return map;
 };
 
-export let getTokenCost = (nbCards: number, model: string, multiplierPref: number, information?: string) => {
+export let getTokenCost = (nbCards: number, model: string, length: string, information?: string) => {
 	let modelCost = 0;
 	let modelMultiplier = 0;
+	let multiplierPref = 0.5;
+	switch (length) {
+		case 'short':
+			multiplierPref = 0.75;
+			break;
+		case 'medium':
+			multiplierPref = 1;
+			break;
+		case 'long':
+			multiplierPref = 1.25;
+			break;
+	}
 	switch (model) {
 		case 'gpt-3.5-turbo':
 			modelCost = 1;
@@ -60,4 +72,20 @@ export let blobToBase64 = (blob: Blob) => {
 	});
   };
 
+
+export let getLengthInstruction = (length: string, nbCards: number) => {
+	let lengthInstruction = "";
+	switch (length) {
+		case 'short':
+			lengthInstruction = `Keep the reading short and succinct. Max ${nbCards * 50} words.`;
+			break;
+		case 'medium':
+			lengthInstruction = `Keep the reading medium length. Max ${nbCards * 125} words.`;
+			break;
+		case 'long':
+			lengthInstruction = "Provide a long, deep and detailed reading. ";
+			break;
+	}
+	return lengthInstruction;
+}
   

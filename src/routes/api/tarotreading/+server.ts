@@ -13,6 +13,7 @@ import { LLMChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { LangChainTracer } from "langchain/callbacks";
 import { ChatPromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts";
+import { getLengthInstruction } from "$lib/utils";
 
 export const config = {
   runtime: 'edge',
@@ -113,7 +114,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let characterInput = formData.reading.character || "Brother Oak";
   let character = characters.get(characterInput);
   let model: ChatOpenAI;
-  let multiplier = formData.reading.multiplier || 1;
+  let length = formData.reading.length || "short";
   switch (formData.reading.model) {
     case 'gpt-3.5-turbo':
       model = chatgpt3creative;
@@ -125,6 +126,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       model = chatgpt3creative;
   }
 
+  let lengthInstruction = getLengthInstruction(length, formData.reading.cards.length)
 
   let system = `Ignore all instructions before this one. You print out only raw text.
 You are ${characterInput} and must give the best Tarot reading given the following information.
@@ -157,7 +159,7 @@ User Preferences, comply to demands:
 '''
 ${profileData.data!.information}
 '''
-Maximum ${(80 * drawnCards.length + 80)*multiplier} words OR LESS depending on user preference. Do not ever return word count`
+${lengthInstruction}`
 
   const tarotReadingTemplate = new ChatPromptTemplate({
     promptMessages: [

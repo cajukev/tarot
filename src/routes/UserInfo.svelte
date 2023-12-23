@@ -37,12 +37,18 @@
         {$page.data.profile.data.information}
     </p>
     <p class="info">
-        Reading length multiplier
+        Reading length preference
     </p>
-    <input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier}>
-    <p class="information">
-        {$readingStore.multiplier}
-    </p>
+    <div class="radio-picker">
+        <input type="radio" id="shortUser" name="lengthUser" value="short" group="lengthUser" checked={$readingStore.length === 'short'} on:change={()=> $readingStore.length = 'short' } />
+        <label for="shortUser">Short</label>
+
+        <input type="radio" id="mediumUser" name="lengthUser" value="medium" group="lengthUser" checked={$readingStore.length === 'medium'} on:change={()=> $readingStore.length = 'medium' } />
+        <label for="mediumUser">Medium</label>
+
+        <input type="radio" id="longUser" name="lengthUser" value="long"group="lengthUser" checked={$readingStore.length === 'long'} on:change={()=> $readingStore.length = 'long' } />
+        <label for="longUser">Long</label>
+    </div>
 </div>
 
 <style lang="scss">

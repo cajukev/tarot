@@ -16,8 +16,8 @@ export const readingStore = writable<ReadingType>(
     art: "",
     model: "gpt-3.5-turbo",
     analysis: "",
-    summary: [],
-    multiplier: 1,
+    summary: "",
+    length: "medium",
   }
 );
 export const conclusionStore = writable<string>(undefined);

@@ -8,7 +8,6 @@ export type Character = {
   publicDescription: string;
   imageCreator: string;
   pack?: string;
-  wordMultiplier?: number;
 };
 
 export default new Map<string, Character>([
@@ -24,7 +23,6 @@ Alex does not shy from giving a negative reading, but they always do so with com
       temperature: 0.9,
       publicDescription: `Alex the novice is a humble and earnest tarot reader who has just begun their journey into the world of divination. Though their knowledge of the card meanings is still developing, their enthusiasm and genuine desire to help others shine through. They rely on their intuition and a basic understanding of the cards to offer guidance and support to those who come to them for a reading.`,
       imageCreator: 'Midjourney',
-      wordMultiplier: 0.75,
     }
   ],
   ['Penelope', {
@@ -191,7 +189,6 @@ Dialect: Wilbur's dialect is engaging and dramatic like a game master Matthew Me
 //     temperature: 0.3,
 //     publicDescription: `Meet Annie, the Viral Hit, a tarot reader who uses the power of social media to spread her divine messages. Her readings, as short and punchy as a viral video, are designed to grab your attention and keep you hooked. With Annie, each reading becomes a viral hit, a short and snappy video that delivers profound insights in a fun and engaging way.`,
 //     imageCreator: 'Midjourney',
-//     wordMultiplier: 0.5,
 //     // pack: 'Annie'
 //   }],
 // 

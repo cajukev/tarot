@@ -292,7 +292,7 @@
 		$readingStore.conclusion = '';
 		$readingStore.analysis = '';
 		$readingStore.energy = '';
-		$readingStore.summary = [];
+		$readingStore.summary = '';
 		$readingStore.question = question || placeholder;
 		// Validate question
 		fetch('/api/validateQuestion', {

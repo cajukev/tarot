@@ -1,6 +1,7 @@
 import characters from "$lib/characters";
 import type { ReadingSpreadType } from "$lib/readingSpreads";
 import readingSpreads from "$lib/readingSpreads";
+import { getLengthInstruction } from "$lib/utils";
 import type { RequestHandler } from "@sveltejs/kit";
 import { LLMChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
@@ -72,7 +73,9 @@ export const POST: RequestHandler = async ({request, locals}) => {
             model = chatgpt3creative;
     }
 
-    let multiplier = formData.readingStore.multiplier || 1;
+    let length = formData.readingStore.length || "short";
+
+    let lengthInstruction = getLengthInstruction(length, spread.positions.length)
 
     let tarotReadingAnalysisPromptText = `You are ${character?.name} and must give the best Tarot reading given the following information.
 TO give the best Tarot reading you must match the tone of the reading to the tone of the cards. Cards can be either positive negative or mixed, make sure the reading matches the tone of the cards.
@@ -103,7 +106,7 @@ User preferences comply to demands:
 '''
 ${profileData.data!.information}
 '''
-Maximum ${(80 * cards.length + 80)*multiplier} words OR LESS depending on user preference. Do not ever return word count`
+${lengthInstruction}`
 
     const tarotReadingAnalysisTemplate = new ChatPromptTemplate({
         promptMessages: [

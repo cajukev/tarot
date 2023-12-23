@@ -81,7 +81,7 @@
 		state = 1;
 		document.body.scrollIntoView();
 		storyMode = false;
-		$readingStore.summary = [];
+		$readingStore.summary = '';
 	};
 
 	let reset = () => {
@@ -89,7 +89,7 @@
 		storyMode = false;
 		$readingStore.ready = false;
 		$readingStore.conclusion = '';
-		$readingStore.summary = [];
+		$readingStore.summary = '';
 		readingElem.scrollIntoView();
 		// Kill fetch request
 	};
@@ -104,7 +104,7 @@
 		tokenCost = getTokenCost(
 			$flippedCardsStore?.length,
 			$readingStore.model || 'default',
-			$readingStore.multiplier || 1,
+			$readingStore.length || 'short',
 			$page.data.profile?.data?.information
 		);
 		analysisTokenCost = getAnalysisTokenCost($flippedCardsStore?.length);
@@ -315,7 +315,7 @@
 			.then((data) => {
 				console.log(data);
 				$readingStore.conclusion = data.conclusion;
-				$readingStore.summary.push(data.summary);
+				$readingStore.summary = data.summary;
 				loading = false;
 			});
 		setTimeout(() => {
@@ -406,11 +406,7 @@
 			<!-- Show hide -->
 			<details open>
 				<summary>Summary</summary>
-				<ul>
-					{#each $readingStore.summary as summary}
-						<li>{summary}</li>
-					{/each}
-				</ul>
+				<p>{$readingStore.summary}</p>
 			</details>
 		</div>
 	{/if}
@@ -489,8 +485,19 @@
 							With Analysis
 						</button>
 					{/if}
-					<p class="info mt-1">Reading length multiplier</p>
-					<input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier} />
+					<p class="info mt-1">
+						Reading length preference
+					</p>
+					<div class="radio-picker">
+						<input type="radio" id="short" name="length" value="short" group="length" checked={$readingStore.length === 'short'} on:change={()=> $readingStore.length = 'short' } />
+						<label for="short">Short</label>
+				
+						<input type="radio" id="medium" name="medium" value="medium" group="length" checked={$readingStore.length === 'medium'} on:change={()=> $readingStore.length = 'medium' } />
+						<label for="medium">Medium</label>
+				
+						<input type="radio" id="long" name="long" value="long"group="length" checked={$readingStore.length === 'long'} on:change={()=> $readingStore.length = 'long' } />
+						<label for="long">Long</label>
+					</div>
 				</div>
 			{:else}
 				<div>
@@ -535,8 +542,19 @@
 			placeholder="Card Meaning / Position"
 			bind:value={nextPosition}
 		/>
-		<p class="info">Reading length multiplier</p>
-		<input type="range" min="0.5" max="2" step="0.1" bind:value={$readingStore.multiplier} />
+		<p class="info mt-1">
+			Reading length preference
+		</p>
+		<div class="radio-picker">
+			<input type="radio" id="short" name="length" value="short" group="length" checked={$readingStore.length === 'short'} on:change={()=> $readingStore.length = 'short' } />
+			<label for="short">Short</label>
+	
+			<input type="radio" id="medium" name="length" value="medium" group="length" checked={$readingStore.length === 'medium'} on:change={()=> $readingStore.length = 'medium' } />
+			<label for="medium">Medium</label>
+	
+			<input type="radio" id="long" name="length" value="long"group="length" checked={$readingStore.length === 'long'} on:change={()=> $readingStore.length = 'long' } />
+			<label for="long">Long</label>
+		</div>
 		<p class="cost">
 			Costs {tokenCost} token{tokenCost !== 1 ? 's' : ''}
 		</p>
@@ -550,7 +568,6 @@
 		{/if}
 		<button class="btn-link" on:click={() => restart()}>New reading</button>
 	</div>
-	<!-- Reading length multiplier slider -->
 </div>
 
 <div>

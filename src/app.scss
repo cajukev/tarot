@@ -208,4 +208,16 @@ button.action {
   }
 }
 
+.radio-picker {
+  display: flex;
+  justify-content: center;
+  & label {
+    margin-right: 0.5rem;
+    margin-left: 0.25rem;
+  }
+  & input {
+    margin-left: 1rem;
+  }
+}
+
 @keyframes menuEnterAnim {}
