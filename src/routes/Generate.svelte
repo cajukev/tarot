@@ -212,7 +212,9 @@
 	};
 
 	let placeholder = 'What do the cards have to say?';
+	let previousQuestion = '';
 	let draw = () => {
+		console.log('draw', $readingStore.question, previousQuestion);
 		$achievementsStore = { action: 'AskQuestion', value: 'default' };
 		state = 2; // loading
 		// window.scrollTo(0, 0);
@@ -242,7 +244,8 @@
 			body: JSON.stringify({
 				reading: $readingStore,
 				collectionDecks: $collectionStore,
-				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting)
+				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
+				previousQuestion: previousQuestion
 				// tokenCost: tokenCost
 			})
 		})
@@ -254,6 +257,7 @@
 					question?: string;
 					error?: string;
 				}) => {
+					previousQuestion = $readingStore.question;
 					if (body.error) {
 						state = 4;
 						error = body.error;

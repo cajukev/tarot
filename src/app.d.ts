@@ -61,7 +61,7 @@ declare global {
 		analysis: string,
 		summary: string,
 		length?: string,
-
+		storyCardMeaning: string,
 	}
 
 	type ListItem = {

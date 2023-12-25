@@ -69,11 +69,10 @@
 
 	let actionState = 0;
 
-	$: if ($flippedCardsStore?.every((card) => card) && !$readingStore.conclusion) {
+	$: if ($flippedCardsStore?.every((card) => card) && $readingStore.conclusion?.length === 0 && !storyMode) {
 		actionState = 1;
 	} else {
 		actionState = 0;
-		loading = false;
 	}
 
 	let readingElem: HTMLDivElement;
@@ -221,16 +220,18 @@
 				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
 				tokenCost: tokenCost
 			})
-		}).then(async (res) => {
-			$achievementsStore = { action: 'StartReading', value: 'default' };
-			return res.json();
-		}).then((result) => {
-			loading = false;
-			actionState = 1;
-			$achievementsStore = { action: 'CompleteReading', value: 'default' };
-			$readingStore.conclusion = result.result;
-			invalidateAll();
-		});
+		})
+			.then(async (res) => {
+				$achievementsStore = { action: 'StartReading', value: 'default' };
+				return res.json();
+			})
+			.then((result) => {
+				loading = false;
+				actionState = 1;
+				$achievementsStore = { action: 'CompleteReading', value: 'default' };
+				$readingStore.conclusion = result.result;
+				invalidateAll();
+			});
 	};
 
 	let getReading = () => {
@@ -249,20 +250,24 @@
 				customSpread: $customSpreadsStore.find((spread) => spread.name === $readingStore.setting),
 				tokenCost: tokenCost
 			})
-		}).then(async (res) => {
-			console.log(res);
-			$achievementsStore = { action: 'StartReading', value: 'default' };
-			return res.json();
-		}).then((result) => {
-			console.log(result);
-			loading = false;
-			actionState = 1;
-			$readingStore.conclusion = result.result;
-			$achievementsStore = { action: 'CompleteReading', value: 'default' };
-			$readingStore.conclusion = $readingStore.conclusion + `
+		})
+			.then(async (res) => {
+				console.log(res);
+				$achievementsStore = { action: 'StartReading', value: 'default' };
+				return res.json();
+			})
+			.then((result) => {
+				console.log(result);
+				loading = false;
+				actionState = 1;
+				$readingStore.conclusion = result.result;
+				$achievementsStore = { action: 'CompleteReading', value: 'default' };
+				$readingStore.conclusion =
+					$readingStore.conclusion +
+					`
 	...`;
-			invalidateAll();
-		});
+				invalidateAll();
+			});
 	};
 
 	let readingUrl = '';
@@ -291,14 +296,18 @@
 	let pullStoryCard = () => {
 		storyMode = true;
 		$readingStore.cards = [{ name: 'undefined' }];
+		$readingStore.storyCardMeaning = nextPosition;
 		$flippedCardsStore = [false];
-		flipCard(0);
+		setTimeout(() => {
+			flipCard(0);
+		}, 0);
 	};
 
 	let getStoryReading = () => {
 		if (loading) return;
+		$readingStore.conclusion = '';
+		actionState = 1;
 		loading = true;
-		actionState = 0;
 		va.track('StoryReading');
 		fetch('/api/storyCardReading', {
 			method: 'POST',
@@ -318,9 +327,6 @@
 				$readingStore.summary = data.summary;
 				loading = false;
 			});
-		setTimeout(() => {
-			$readingStore.conclusion = 'Story card reading in progress. . .';
-		}, 0);
 	};
 </script>
 
@@ -338,12 +344,17 @@
 		{#each new Array($flippedCardsStore?.length) as card, i}
 			<div>
 				<p class="text-center">
-					{(readingSpreads.get($readingStore.setting)?.positions &&
-						readingSpreads.get($readingStore.setting)?.positions[i]) ||
-						''}
-					{$customSpreadsStore.find((spread) => spread.name === $readingStore.setting)?.positions[
-						i
-					] || ''}
+					<!-- If story mode, use storyCardMeaning -->
+					{#if storyMode}
+						{$readingStore.storyCardMeaning}
+					{:else}
+						{(readingSpreads.get($readingStore.setting)?.positions &&
+							readingSpreads.get($readingStore.setting)?.positions[i]) ||
+							''}
+						{$customSpreadsStore.find((spread) => spread.name === $readingStore.setting)?.positions[
+							i
+						] || ''}
+					{/if}
 				</p>
 				<div class="stacked">
 					{#if $readingStore.cards[i]}
@@ -419,6 +430,10 @@
 			</details>
 		</div>
 	{:else if $readingStore.cards.length > 1 && actionState === 1}
+		<!-- Analysis loading -->
+		{#if loading}
+			<p class="info loading">Loading...</p>
+		{/if}
 		{#if analysisTokenCost <= $page.data.profile.data.tokens}
 			<div>
 				<button class="action analyse" on:click={() => analyseCards()}>Analyse Cards</button>
@@ -485,17 +500,39 @@
 							With Analysis
 						</button>
 					{/if}
-					<p class="info mt-1">
-						Reading length preference
-					</p>
+					<p class="info mt-1">Reading length preference</p>
 					<div class="radio-picker">
-						<input type="radio" id="short" name="length" value="short" group="length" checked={$readingStore.length === 'short'} on:change={()=> $readingStore.length = 'short' } />
+						<input
+							type="radio"
+							id="short"
+							name="length"
+							value="short"
+							group="length"
+							checked={$readingStore.length === 'short'}
+							on:change={() => ($readingStore.length = 'short')}
+						/>
 						<label for="short">Short</label>
-				
-						<input type="radio" id="medium" name="medium" value="medium" group="length" checked={$readingStore.length === 'medium'} on:change={()=> $readingStore.length = 'medium' } />
+
+						<input
+							type="radio"
+							id="medium"
+							name="medium"
+							value="medium"
+							group="length"
+							checked={$readingStore.length === 'medium'}
+							on:change={() => ($readingStore.length = 'medium')}
+						/>
 						<label for="medium">Medium</label>
-				
-						<input type="radio" id="long" name="long" value="long"group="length" checked={$readingStore.length === 'long'} on:change={()=> $readingStore.length = 'long' } />
+
+						<input
+							type="radio"
+							id="long"
+							name="long"
+							value="long"
+							group="length"
+							checked={$readingStore.length === 'long'}
+							on:change={() => ($readingStore.length = 'long')}
+						/>
 						<label for="long">Long</label>
 					</div>
 				</div>
@@ -542,17 +579,39 @@
 			placeholder="Card Meaning / Position"
 			bind:value={nextPosition}
 		/>
-		<p class="info mt-1">
-			Reading length preference
-		</p>
+		<p class="info mt-1">Reading length preference</p>
 		<div class="radio-picker">
-			<input type="radio" id="short" name="length" value="short" group="length" checked={$readingStore.length === 'short'} on:change={()=> $readingStore.length = 'short' } />
+			<input
+				type="radio"
+				id="short"
+				name="length"
+				value="short"
+				group="length"
+				checked={$readingStore.length === 'short'}
+				on:change={() => ($readingStore.length = 'short')}
+			/>
 			<label for="short">Short</label>
-	
-			<input type="radio" id="medium" name="length" value="medium" group="length" checked={$readingStore.length === 'medium'} on:change={()=> $readingStore.length = 'medium' } />
+
+			<input
+				type="radio"
+				id="medium"
+				name="length"
+				value="medium"
+				group="length"
+				checked={$readingStore.length === 'medium'}
+				on:change={() => ($readingStore.length = 'medium')}
+			/>
 			<label for="medium">Medium</label>
-	
-			<input type="radio" id="long" name="length" value="long"group="length" checked={$readingStore.length === 'long'} on:change={()=> $readingStore.length = 'long' } />
+
+			<input
+				type="radio"
+				id="long"
+				name="length"
+				value="long"
+				group="length"
+				checked={$readingStore.length === 'long'}
+				on:change={() => ($readingStore.length = 'long')}
+			/>
 			<label for="long">Long</label>
 		</div>
 		<p class="cost">
@@ -562,7 +621,9 @@
 	<div class="actions">
 		{#if actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0}
 			{#if $readingStore.conclusion.length > 0}
-				<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+				{#if !storyMode}
+					<button class="btn-link" on:click={() => reset()}>Select a different reader</button>
+				{/if}
 				<button class="btn-link" on:click={() => saveReading()}>Share reading</button>
 			{/if}
 		{/if}
@@ -580,6 +641,15 @@
 	style={currentSelectCard ? 'overflow: initial' : 'overflow-y: auto; overflow-x: hidden;'}
 >
 	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard />
+</div>
+
+<!-- Box top right absolute shows actionstate, loading -->
+<div
+	style="position: fixed; top: 0; right: 0; z-index: 1000; background-color: rgba(0,0,0,0.5); padding: 0.5rem;"
+>
+	<p>Action State: {actionState}</p>
+
+	<p>Loading: {loading}</p>
 </div>
 
 <style lang="scss">

@@ -12,6 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     reading: ReadingType;
     collectionDecks: CollectionDeck[];
     customSpread: ReadingSpreadType;
+    previousQuestion: string;
     // tokenCost: number;
   } = await request.json();
   
@@ -25,19 +26,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
   let energy = formData.reading.energy || "";
   let question = formData.reading.question || "No question";
+  let previousQuestion = formData.previousQuestion || "No question";
+  console.log('previousQuestion', previousQuestion, question)
   let collectionDecks = formData.collectionDecks || [];
-  let trimmedQuestion = await trimQuestion(question);
-  if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
-    return new Response(
-      JSON.stringify({
-        status: 200,
-        body: {
-          error: "... Try again ... " + trimmedQuestion.trim().slice(6)
-        }
-      }),
-    );
+  // Only if previous question is not the same as the current question
+  if(previousQuestion !== question){
+    let trimmedQuestion = await trimQuestion(question);
+    if (trimmedQuestion.toLowerCase().trim().slice(0, 5) === 'false') {
+      return new Response(
+        JSON.stringify({
+          status: 200,
+          body: {
+            error: "... Try again ... " + trimmedQuestion.trim().slice(6)
+          }
+        }),
+      );
+    } else {
+      question = trimmedQuestion;
+    }
   } else {
-    question = trimmedQuestion;
+    question = previousQuestion;
   }
 
   // let tokenCost = formData.tokenCost || 999999999;

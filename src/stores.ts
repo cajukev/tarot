@@ -18,6 +18,7 @@ export const readingStore = writable<ReadingType>(
     analysis: "",
     summary: "",
     length: "medium",
+    storyCardMeaning: "",
   }
 );
 export const conclusionStore = writable<string>(undefined);
