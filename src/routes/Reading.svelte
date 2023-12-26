@@ -284,7 +284,7 @@
 			.then((res) => res.json())
 			.then((res) => {
 				if (res.body.reading.data) {
-					readingUrl = 'aitarot.website/reading/' + res.body.reading.data[0].id;
+					readingUrl = 'https://aitarot.website/reading/' + res.body.reading.data[0].id;
 				}
 				navigator.clipboard.writeText(readingUrl);
 				secret(`Link copied to clipboard!`);
@@ -643,14 +643,13 @@
 	<CardSelect bind:currentCard={currentSelectCard} bind:selectedCard />
 </div>
 
-<!-- Box top right absolute shows actionstate, loading -->
-<div
+<!-- <div
 	style="position: fixed; top: 0; right: 0; z-index: 1000; background-color: rgba(0,0,0,0.5); padding: 0.5rem;"
 >
 	<p>Action State: {actionState}</p>
 
 	<p>Loading: {loading}</p>
-</div>
+</div> -->
 
 <style lang="scss">
 	.reading {
