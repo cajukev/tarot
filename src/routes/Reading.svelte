@@ -571,7 +571,7 @@
 		</button>
 		{/if} -->
 	</p>
-	{#if (actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0) && $readingStore.conclusion.length > 0 && !loading}
+	{#if (actionState || $readingStore.conclusion.endsWith('...') || $readingStore.incomplete || $readingStore.cards.length === 0) && $readingStore.conclusion.length > 0 && !loading && $page.data.profile?.data}
 		<button class="action story" on:click={() => pullStoryCard()}>Pull a story card</button>
 		<input
 			type="text"
